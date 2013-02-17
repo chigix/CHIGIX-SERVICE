@@ -5,7 +5,7 @@ For ThinkPHP 3.1.0 +
 
 Version 1.0.0
 
-Author 千木郷 chigix@zoho.com
+Author 千木郷（李颖豪） chigix@zoho.com
 
 Facebook: http://facebook.com/chigix
 
