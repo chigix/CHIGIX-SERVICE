@@ -59,4 +59,34 @@ function chigiTrace() {
 function chigiAuth($username, $password) {
     return to_guid_string(array($username, $password, APP_NAME));
 }
+
+/**
+ * 判断参数是否等效于true
+ * 根据参数的操作码直接转换成布尔，方便在条件中使用
+ * @param mixed $param
+ * @return boolean
+ */
+function chigiNormal($param) {
+    if (is_array($param)) {
+        if (($param['status'] >= 200) && ($param['status'] < 300)) {
+            return true;
+        }  else {
+            return false;
+        }
+    } elseif (is_object($param)) {
+        if (($param->code >= 200) && ($param->code < 300)) {
+            return true;
+        }  else {
+            return false;
+        }
+    } elseif (is_int($param)) {
+        if (($param >= 200) && ($param < 300)) {
+            return true;
+        }  else {
+            return false;
+        }
+    }  else {
+        return true;
+    }
+}
 ?>
