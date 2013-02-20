@@ -66,7 +66,7 @@ function chigiAuth($username, $password) {
  * @param mixed $param
  * @return boolean
  */
-function chigiNormal($param) {
+function chigiValid($param) {
     if (is_array($param)) {
         if (($param['status'] >= 200) && ($param['status'] < 300)) {
             return true;
@@ -87,6 +87,36 @@ function chigiNormal($param) {
         }
     }  else {
         return true;
+    }
+}
+
+/**
+ *判断参数是否等效于false
+ * 根据参数的操作码，将所有5xx编码的参数均转换为FALSE，方便在条件中使用
+ * @param mixed $param
+ * @return boolean
+ */
+function chigiErrorstate($param) {
+    if (is_array($param)) {
+        if (($param['status'] >= 500) && ($param['status'] < 600)) {
+            return true;
+        }  else {
+            return false;
+        }
+    } elseif (is_object($param)) {
+        if (($param->code >= 500) && ($param->code < 600)) {
+            return true;
+        }  else {
+            return false;
+        }
+    } elseif (is_int($param)) {
+        if (($param >= 500) && ($param < 600)) {
+            return true;
+        }  else {
+            return false;
+        }
+    }  else {
+        return false;
     }
 }
 ?>
