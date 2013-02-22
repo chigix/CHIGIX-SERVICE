@@ -61,21 +61,27 @@ MVC架构是在软件开发中已占据不可动摇的地位，其架构模式�
 
 模板目录Tpl下的文件部署如下：
 
-		|-Tpl/Default				主题目录
-		|        ├Index/			Index控制器下的页面渲染入口（即主模板文件）
-		|        	├index.html		index页面主模板文件
-		|        	├method.html	其他页面主模板文件
-		|        ├Main/				Index:index操作的页面模块文件
-		|        	├starter-module.html		Index:index页面的HTML起始模块
-		|        	├starter-module.less		Index:index页面的全局样式定义
-		|        	├starter-module.js			Index:index页面的起始脚本模块（通常用作全局脚本）
-		|        ├Public	公用模板文件
-		|        ├Utils		可移植服务接口模板文件（由对应的Widget来导入）
+		|-Tpl/Default               主题目录
+		|        ├Index/            Index控制器下的页面渲染入口（即主模板文件）
+		|        	├index.html     index页面主模板文件
+		|        	├method.html    其他页面主模板文件
+		|        ├Main/             Index:index操作的页面模块文件
+		|        	├starter-module.html        Index:index页面的HTML起始模块
+		|        	├starter-module.less        Index:index页面的全局样式定义
+		|        	├starter-module.js          Index:index页面的起始脚本模块（通常用作全局脚本）
+		|        ├Public    公用模板文件
+		|        ├Utils     可移植服务接口模板文件
 		|
 
 ### Widget部署
 
-暂无想法~~~欢迎建议与交流
+		|-Widget/				Widget扩展目录
+		|     ├DemoServiceWidget.class.php    DemoService对应Widget类
+		|     ├DemoService/                   DemoService对应Widget类调用模板目录
+		|              ├method1.html          Widget类下method1操作对应模板文件
+		|              ├demoMethod.html       DemoServiceWidget类下的demoMethod操作对应模板文件
+		|     ├OtherServiceWidget.class.php   其他同样型的Widget类部署
+		|
 
 # 开发规范
 
