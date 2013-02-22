@@ -20,4 +20,6 @@
   	'LESS_COMPRESS' => 'lessjs', //LESS是否压缩
   	'JS_DEBUG' => true,  //FALSE则会JS压缩
   ),
+  //模板引擎编译配置
+  'TMPL_VAR_IDENTIFY' => "obj",
 );
