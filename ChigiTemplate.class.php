@@ -53,7 +53,7 @@ class  ThinkTemplate {
         return str_replace(
             array('{','}','(',')','|','[',']','-','+','*','.','^','?'),
             array('\{','\}','\(','\)','\|','\[','\]','\-','\+','\*','\.','\^','\?'),
-            $str);        
+            $str);
     }
 
     // 模板变量获取和设置
@@ -265,7 +265,7 @@ class  ThinkTemplate {
     // 解析模板中的extend标签
     protected function parseExtend($content) {
         $begin      =   $this->config['taglib_begin'];
-        $end        =   $this->config['taglib_end'];        
+        $end        =   $this->config['taglib_end'];
         // 读取模板中的继承标签
         $find       =   preg_match('/'.$begin.'extend\s(.+?)\s*?\/'.$end.'/is',$content,$matches);
         if($find) {
@@ -279,7 +279,7 @@ class  ThinkTemplate {
             // 替换block标签
             $content    =   preg_replace('/'.$begin.'block\sname=(.+?)\s*?'.$end.'(.*?)'.$begin.'\/block'.$end.'/eis',"\$this->replaceBlock('\\1','\\2')",$content);
         }else{
-            $content    =   preg_replace('/'.$begin.'block\sname=(.+?)\s*?'.$end.'(.*?)'.$begin.'\/block'.$end.'/eis',"stripslashes('\\2')",$content);            
+            $content    =   preg_replace('/'.$begin.'block\sname=(.+?)\s*?'.$end.'(.*?)'.$begin.'\/block'.$end.'/eis',"stripslashes('\\2')",$content);
         }
         return $content;
     }
@@ -409,7 +409,7 @@ class  ThinkTemplate {
                 }else{
                     $patterns       = '/'.$begin.$parseTag.$n1.$end.'(.*?)'.$begin.'\/'.$parseTag.'(\s*?)'.$end.'/eis';
                     $replacement    = "\$this->parseXmlTag('$tagLib','$tag','$1','$2')";
-                    for($i=0;$i<$level;$i++) 
+                    for($i=0;$i<$level;$i++)
                         $content=preg_replace($patterns,$replacement,$content);
                 }
             }
@@ -671,7 +671,7 @@ class  ThinkTemplate {
      * @access private
      * @param string $tmplPublicName  模板文件名
      * @return string
-     */    
+     */
     private function parseTemplateName($templateName){
         if(substr($templateName,0,1)=='$')
             //支持加载变量文件名
@@ -695,5 +695,5 @@ class  ThinkTemplate {
             $parseStr .= file_get_contents($templateName);
         }
         return $parseStr;
-    }    
+    }
 }
