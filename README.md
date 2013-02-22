@@ -43,6 +43,40 @@ MVC架构是在软件开发中已占据不可动摇的地位，其架构模式�
 
 连接服务亦非常简单，只需一句 `service("ServiceName")` 
 
+## 架构部署
+
+### 控制器部署
+
+1.	IndexAction	——所有直接显示的网页及显式URL访问的操作均在Index中，每个页面有各自对应的操作方法。
+2.	EmptyAction	——空模块，主负责Service在URL访问下的安全包装
+3.	AjaxAction	——ajax模块，主负责所有页面上异步交互的执行操作
+
+### 模型部署
+
+由于一切业务逻辑均服务化，所以对于一些主要的业务逻辑均已封装于已有的服务中，而对于已有服务提供的模型则无需作任何部署，直接连接到对应的Service类即可，在千木服务化架构下会替开发者完成所有本服务下的业务逻辑。
+
+### 模板部署
+
+由于在千木架构下，所有的模板都是直接采用与当前控制器及操作一一对应，故在控制器中只需 `$this->display()` 即可完成前端的输出，而不用开发者再作其他的工作。当然，这需要一个非常严格的模板目录部署机制，以做到 `display` 方法输出时可以直接定位及渲染模板。另外千路前端服务中会自动渲染CSS和JS并完成智能合并及压缩。详见千路前端服务ChijiService类的使用API。
+
+模板目录Tpl下的文件部署如下：
+
+		|-Tpl/Default				主题目录
+		|        ├Index/			Index控制器下的页面渲染入口（即主模板文件）
+		|        	├index.html		index页面主模板文件
+		|        	├method.html	其他页面主模板文件
+		|        ├Main/				Index:index操作的页面模块文件
+		|        	├starter-module.html		Index:index页面的HTML起始模块
+		|        	├starter-module.less		Index:index页面的全局样式定义
+		|        	├starter-module.js			Index:index页面的起始脚本模块（通常用作全局脚本）
+		|        ├Public	公用模板文件
+		|        ├Utils		可移植服务接口模板文件（由对应的Widget来导入）
+		|
+
+### Widget部署
+
+暂无想法~~~欢迎建议与交流
+
 # 开发规范
 
 ## 返回值统一规范
