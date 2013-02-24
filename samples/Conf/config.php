@@ -20,6 +20,15 @@
   	'LESS_COMPRESS' => 'lessjs', //LESS是否压缩
   	'JS_DEBUG' => true,  //FALSE则会JS压缩
   ),
+  "TMPL_PARSE_STRING" => array(
+    '__CHIJI__' => 'http://chiji.five.com',
+  ),
   //模板引擎编译配置
   'TMPL_VAR_IDENTIFY' => "obj",
+  //URL模式开启
+  'URL_MODEL' => 2,
+  "URL_ROUTER_ON" => true,
+  "URL_ROUTE_RULES" => array(
+      //"xx" => "Index/xx",
+  ),
 );
