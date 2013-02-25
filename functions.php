@@ -70,28 +70,28 @@ function chigiValid($param) {
     if (is_array($param)) {
         if (($param['status'] >= 200) && ($param['status'] < 300)) {
             return true;
-        }  else {
+        } else {
             return false;
         }
     } elseif (is_object($param)) {
         if (($param->code >= 200) && ($param->code < 300)) {
             return true;
-        }  else {
+        } else {
             return false;
         }
     } elseif (is_int($param)) {
         if (($param >= 200) && ($param < 300)) {
             return true;
-        }  else {
+        } else {
             return false;
         }
-    }  else {
+    } else {
         return true;
     }
 }
 
 /**
- *判断参数是否等效于false
+ * 判断参数是否等效于false
  * 根据参数的操作码，将所有5xx编码的参数均转换为FALSE，方便在条件中使用
  * @param mixed $param
  * @return boolean
@@ -100,23 +100,50 @@ function chigiErrorstate($param) {
     if (is_array($param)) {
         if (($param['status'] >= 500) && ($param['status'] < 600)) {
             return true;
-        }  else {
+        } else {
             return false;
         }
     } elseif (is_object($param)) {
         if (($param->code >= 500) && ($param->code < 600)) {
             return true;
-        }  else {
+        } else {
             return false;
         }
     } elseif (is_int($param)) {
         if (($param >= 500) && ($param < 600)) {
             return true;
-        }  else {
+        } else {
             return false;
         }
-    }  else {
+    } else {
         return false;
     }
 }
+
+/**
+ * 客户端真实IP探测
+ *
+ * @return String
+ */
+function getClientIp() {
+    $cip = getenv('HTTP_CLIENT_IP');
+    $xip = getenv('HTTP_X_FORWARDED_FOR');
+    $rip = getenv('REMOTE_ADDR');
+    $srip = $_SERVER['REMOTE_ADDR'];
+    $onlineip = "";
+    //优先cip以尽可能获取最真实的客户端IP
+    if ($cip && strcasecmp($cip, 'unknown')) {
+        $onlineip = $cip;
+    } elseif ($xip && strcasecmp($xip, 'unknown')) {
+        $onlineip = $xip;
+    } elseif ($rip && strcasecmp($rip, 'unknown')) {
+        $onlineip = $rip;
+    } elseif ($srip && strcasecmp($srip, 'unknown')) {
+        $onlineip = $srip;
+    }
+    $match = "";
+    preg_match("/[\d\.]{7,15}/", $onlineip, $match);
+    return $match[0] ? $match[0] : 'unknown';
+}
+
 ?>

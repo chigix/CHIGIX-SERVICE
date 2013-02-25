@@ -8,6 +8,7 @@
 abstract class ChigiApiAction extends Action {
 
     static public $appHost;
+    public $appHostIp; //连接本API的应用所在服务器IP
 
     /**
      * 千木架构Api类定义初始化
@@ -19,6 +20,7 @@ abstract class ChigiApiAction extends Action {
         if (self::$appHost === null) {
             _404();
         }
+        $this->appHostIp = getClientIp();
         $this->_ChigiApiInit();
     }
 
