@@ -1,5 +1,9 @@
 <?php
-
+/**
+ * 模块跳转控制器
+ * @version 1.1.0
+ * @author Richard Lea <chigix@zoho.com>
+ */
 class EmptyAction extends ChigiAction {
 
     public $actionName; //模块名

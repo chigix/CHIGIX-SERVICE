@@ -49,18 +49,6 @@ function chigiTrace() {
 }
 
 /**
- * 生成唯一CHIGI_AUTH信息字符串
- *
- * 可标示当前用户的当前应用
- * @param String $username
- * @param String $password
- * @return unknown
- */
-function chigiAuth($username, $password) {
-    return to_guid_string(array($username, $password, APP_NAME));
-}
-
-/**
  * 判断参数是否等效于true
  * 根据参数的操作码直接转换成布尔，方便在条件中使用
  * @param mixed $param

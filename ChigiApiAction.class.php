@@ -20,6 +20,9 @@ abstract class ChigiApiAction extends Action {
         if (self::$appHost === null) {
             _404();
         }
+        if (is_array(self::$appHost)) {
+            //连接SugarService转换成APPHOST
+        }
         $this->appHostIp = getClientIp();
         $this->_ChigiApiInit();
     }
