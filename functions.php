@@ -134,4 +134,36 @@ function getClientIp() {
     return $match[0] ? $match[0] : 'unknown';
 }
 
+/**
+ * 返回个位数
+ *
+ * @param Integer $int
+ * @return Integer
+ */
+function getNumOnes($int) {
+    $i = $int % 10;
+    return $i;
+}
+
+/**
+ * 返回十位数
+ *
+ * @param Integer $int
+ * @return Integer
+ */
+function getNumTens($int) {
+    $two=($int/10)%10;//十位
+    return $two;
+}
+
+/**
+ * 返回百位数
+ *
+ * @param type $int
+ * @return type
+ */
+function getNumHundreds($int) {
+    $three=($int/100)%10;//百位
+    return $three;
+}
 ?>
