@@ -29,7 +29,7 @@ class EmptyAction extends ChigiAction {
             if (!M()->autoCheckToken($_POST)) {
                 _404();
             }
-            unset($_POST[C(TOKEN_NAME)]);
+            unset($_POST[C("TOKEN_NAME")]);
             $serviceName = $this->actionName;
             $methodName = $this->methodName;
             import('@.Service.' . $serviceName);
