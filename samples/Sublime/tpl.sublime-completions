@@ -17,6 +17,7 @@
 		{ "trigger": "|def", "contents": "{\\$${1:name}|default=\"${2:***}\"}$0" },
 		{ "trigger": "ender", "contents": "<!-- 加载JavaScript\n================================================== -->\n<!-- 置于文档最后以优先加载内容 -->\n<script src=\"__CHIJI__/${1:ProjectName}/js/jquery.js\" type=\"text/javascript\" charset=\"utf-8\"></script>\n<script src=\"__CHIJI__/${1:ProjectName}/js/bootstrap.min.js\" type=\"text/javascript\" charset=\"utf-8\"></script>\n<script src=\"__CHIJI__/${1:ProjectName}/js/jquery.mvc.js\" type=\"text/javascript\" charset=\"utf-8\"></script>\n<script src=\"__CHIJI__/${1:ProjectName}/js/page-${2:PageName}.js\" type=\"text/javascript\" charset=\"utf-8\"></script></body></html>$0" },
 		{ "trigger": "tva", "contents": "{\\$${var}}$0" },
+		{ "trigger": "tpif", "contents": "<if condition=\"${1:condition}\">\n${2:exec}\n</if>$0" },
 		{ "trigger": "starter", "contents": "<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"utf-8\">\n<title>${1:PageTitle}</title><meta name=\"viewport\" content=\"width=device-width,initial-scale=1.0\">\n<meta name=\"description\" content=\"${2:PageDescription}\">\n<!-- 加载CSS样式表 -->\n<link href=\"__CHIJI__/${3:ProjectName}/css/bootstrap.min.css\" rel=\"stylesheet\">\n<link href=\"__CHIJI__/${3:ProjectName}/css/bootstrap-responsive.min.css\" rel=\"stylesheet\">\n<link href=\"__CHIJI__/${3:ProjectName}/css/page-${4:PageName}.css\" rel=\"stylesheet\">\n<!-- HTML5 shim, for IE6-8 support of HTML5 elements --><!--[if lt IE 9]><script src=\"__CHIJI__/js/html5.js\"></script><![endif]--></head><body>$0" }
 	]
 }

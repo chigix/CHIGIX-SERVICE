@@ -30,8 +30,7 @@ class ChigiService {
 
     public function __construct() {
         import($this->apiAction);
-        ApiAction::$appHost = C('CHIGI_AUTH');
-        $this->apiAction = new ApiAction();
+        $this->apiAction = new ApiAction(C('CHIGI_AUTH'));
         $this->setDirect();//初始化默认跳转地址
         if (method_exists($this, '_initialize'))
             $this->_initialize();
