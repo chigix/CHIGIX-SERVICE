@@ -6,7 +6,7 @@
  */
 abstract class ChigiApiAction extends Action {
 
-    protected public $appHost;
+    protected $appHost;
     public $appHostIp; //连接本API的应用所在服务器IP
     protected $time;
 
@@ -14,7 +14,7 @@ abstract class ChigiApiAction extends Action {
         if ($appHost === null) {
             _404();
         }
-        if (is_array(self::$appHost)) {
+        if (is_array($this->appHost)) {
             //连接SugarService转换成APPHOST
         }
         $this->appHostIp = getClientIp();

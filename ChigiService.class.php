@@ -28,6 +28,12 @@ class ChigiService {
      */
     protected $errorRedirect = "";
 
+    /**
+     * 地址栏传参
+     *
+     * @var Array
+     */
+    protected $addrParams = array();
     public function __construct() {
         import($this->apiAction);
         $this->apiAction = new ApiAction(C('CHIGI_AUTH'));
@@ -48,13 +54,29 @@ class ChigiService {
         if ($errorAdd !== null) {
             $this->errorRedirect = $errorAdd;
         } elseif (session("CHIGI_ERRORDIRECT") !== null) {
-            $this->successRedirect = session("CHIGI_ERRORDIRECT");
+            $this->errorRedirect = session("CHIGI_ERRORDIRECT");
             session("CHIGI_ERRORDIRECT", NULL);
         } else {
-            $this->successRedirect = C("CHIGI_ERRORDIRECT");
+            $this->errorRedirect = C("CHIGI_ERRORDIRECT");
         }
     }
 
+    public function addAddrParams($key,$value) {
+        $this->addrParams[$key] = $value;
+    }
+
+    /**
+     * 跳转至执行成功页面
+     */
+    public function successDirectHeader() {
+        header('location:' . U($this->successRedirect) . (($this->addrParams == array())? '' : '?' . arrayImplode('=', '&', $this->addrParams)));
+    }
+    /**
+     * 跳转至执行失败页面
+     */
+    public function errorDirectHeader() {
+        header('location:' . U($this->errorRedirect) . (($this->addrParams == array())? '' : '?' . arrayImplode('=', '&', $this->addrParams)));
+    }
 }
 
 ?>
