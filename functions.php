@@ -31,8 +31,7 @@ function service($serviceName) {
  */
 function apiConnect(&$address) {
     import($address);
-    ApiAction::$appHost = C('CHIGI_AUTH');
-    $address = new ApiAction();
+    $address = new ApiAction(C('CHIGI_AUTH'));
 }
 
 /**
