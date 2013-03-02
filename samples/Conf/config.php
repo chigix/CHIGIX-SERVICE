@@ -19,6 +19,7 @@ return array(
     "CHIGI_SUCCESSDIRECT" => "index",
     "CHIGI_ERRORDIRECT" => "index",
     'COM_POST_ON' => true, //是否启用POST通信，不启用则无法接收来自POST的数据，并且API服务上接到POST会返回404
+    'SIDDOMAIN' => "host.com", //设置用户会话SID的作用域名
     //千路前端配置
     'CHIJI' => array(
         'LESS_COMPRESS' => 'lessjs', //LESS是否压缩

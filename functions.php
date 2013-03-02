@@ -1,27 +1,24 @@
 <?php
 
-function keywordSpaceClip($targetString) {
-    $array = explode(' ', $targetString);
-    foreach ($array as $key => $value) {
-        $array[$key] = array('keyword' => $value);
-    }
-    return $array;
-}
-
 /**
- * 指定Service连接函数
- *
- * @param String $serviceName Service名称，如“Article”即可
- * @return Object
+ * Implode an array with the key and value pair giving
+ * a glue, a separator between pairs and the array
+ * to implode.
+ * @param string $glue The glue between key and value
+ * @param string $separator Separator between pairs
+ * @param array $array The array to implode
+ * @return string The imploded array
  */
-function service($serviceName) {
-    $service = $serviceName . 'Service';
-    if (import('@.Service.' . $service)) {
-        return (new $service());
-    } else {
-        $traceInfo = debug_backtrace();
-        throw_exception('Service ' . $serviceName . ' not found ' . $traceInfo[0]['file'] . ' 第 ' . $traceInfo[0]['line'] . ' 行.');
+function arrayImplode($glue, $separator, $array) {
+    if (!is_array($array))
+        return $array;
+    $string = array();
+    foreach ($array as $key => $val) {
+        if (is_array($val))
+            $val = implode(',', $val);
+        $string[] = "{$key}{$glue}{$val}";
     }
+    return implode($separator, $string);
 }
 
 /**
@@ -32,6 +29,36 @@ function service($serviceName) {
 function apiConnect(&$address) {
     import($address);
     $address = new ApiAction(C('CHIGI_AUTH'));
+}
+
+/**
+ * 判断参数是否等效于false
+ * 根据参数的操作码，将所有5xx编码的参数均转换为FALSE，方便在条件中使用
+ * @param mixed $param
+ * @return boolean
+ */
+function chigiErrorstate($param) {
+    if (is_array($param)) {
+        if (($param['status'] >= 500) && ($param['status'] < 600)) {
+            return true;
+        } else {
+            return false;
+        }
+    } elseif (is_object($param)) {
+        if (($param->code >= 500) && ($param->code < 600)) {
+            return true;
+        } else {
+            return false;
+        }
+    } elseif (is_int($param)) {
+        if (($param >= 500) && ($param < 600)) {
+            return true;
+        } else {
+            return false;
+        }
+    } else {
+        return false;
+    }
 }
 
 /**
@@ -78,36 +105,6 @@ function chigiValid($param) {
 }
 
 /**
- * 判断参数是否等效于false
- * 根据参数的操作码，将所有5xx编码的参数均转换为FALSE，方便在条件中使用
- * @param mixed $param
- * @return boolean
- */
-function chigiErrorstate($param) {
-    if (is_array($param)) {
-        if (($param['status'] >= 500) && ($param['status'] < 600)) {
-            return true;
-        } else {
-            return false;
-        }
-    } elseif (is_object($param)) {
-        if (($param->code >= 500) && ($param->code < 600)) {
-            return true;
-        } else {
-            return false;
-        }
-    } elseif (is_int($param)) {
-        if (($param >= 500) && ($param < 600)) {
-            return true;
-        } else {
-            return false;
-        }
-    } else {
-        return false;
-    }
-}
-
-/**
  * 客户端真实IP探测
  *
  * @return String
@@ -134,6 +131,17 @@ function getClientIp() {
 }
 
 /**
+ * 返回百位数
+ *
+ * @param type $int
+ * @return type
+ */
+function getNumHundreds($int) {
+    $three = ($int / 100) % 10; //百位
+    return $three;
+}
+
+/**
  * 返回个位数
  *
  * @param Integer $int
@@ -156,35 +164,63 @@ function getNumTens($int) {
 }
 
 /**
- * 返回百位数
+ * 以空格作为分隔符的关键词数组生成
  *
- * @param type $int
- * @return type
+ * @param String $targetString
+ * @return Array
  */
-function getNumHundreds($int) {
-    $three = ($int / 100) % 10; //百位
-    return $three;
+function keywordSpaceClip($targetString) {
+    $array = explode(' ', $targetString);
+    foreach ($array as $key => $value) {
+        $array[$key] = array('keyword' => $value);
+    }
+    return $array;
 }
 
 /**
- * Implode an array with the key and value pair giving
- * a glue, a separator between pairs and the array
- * to implode.
- * @param string $glue The glue between key and value
- * @param string $separator Separator between pairs
- * @param array $array The array to implode
- * @return string The imploded array
+ * 指定Service连接函数
+ *
+ * @param String $serviceName Service名称，如“Article”即可
+ * @return Object
  */
-function arrayImplode($glue, $separator, $array) {
-    if (!is_array($array))
-        return $array;
-    $string = array();
-    foreach ($array as $key => $val) {
-        if (is_array($val))
-            $val = implode(',', $val);
-        $string[] = "{$key}{$glue}{$val}";
+function service($serviceName) {
+    $service = $serviceName . 'Service';
+    if (import('@.Service.' . $service)) {
+        return (new $service());
+    } else {
+        $traceInfo = debug_backtrace();
+        throw_exception('Service ' . $serviceName . ' not found ' . $traceInfo[0]['file'] . ' 第 ' . $traceInfo[0]['line'] . ' 行.');
     }
-    return implode($separator, $string);
+}
+
+/**
+ * ching会话机制
+ * 可用于代替session，并可以通过配置文件指定缓存方式，亦可当作session的包装函数使用
+ *
+ * @param type $name
+ * @param type $value
+ * @return mixed
+ */
+function ching() {
+    if (defined("CHING")) {
+        $data = C("CHING")->get(SID);
+        $argNum = func_num_args();
+        switch ($argNum) {
+            case 0:
+                return $data;
+                break;
+            case 1:
+                return isset($data[func_get_arg(0)]) ? $data[func_get_arg(0)] : null;
+                break;
+            case 2:
+                $data[func_get_arg(0)] = func_get_arg(1);
+                C("CHING")->set(SID, $data, 900); //缓存仅存在15分钟
+            default:
+                break;
+        }
+    } else {
+        return null;
+    }
 }
 
 ?>

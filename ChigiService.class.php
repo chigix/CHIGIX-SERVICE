@@ -34,7 +34,16 @@ class ChigiService {
      * @var Array
      */
     protected $addrParams = array();
+
+    /**
+     * 当前客户端中是否有cookie("sid")
+     *
+     * @var type
+     */
+    public $cookie_status = 1;
+
     public function __construct() {
+        $this->cookie_status = isset($_COOKIE['sid']) ? 1 : 0;
         import($this->apiAction);
         $this->apiAction = new ApiAction(C('CHIGI_AUTH'));
         $this->setDirect();//初始化默认跳转地址
@@ -69,12 +78,18 @@ class ChigiService {
      * 跳转至执行成功页面
      */
     public function successDirectHeader() {
+        if ($this->cookie_status == 0) {
+            $this->addAddrParams("sid", SID);
+        }
         header('location:' . U($this->successRedirect) . (($this->addrParams == array())? '' : '?' . arrayImplode('=', '&', $this->addrParams)));
     }
     /**
      * 跳转至执行失败页面
      */
     public function errorDirectHeader() {
+        if ($this->cookie_status == 0) {
+            $this->addAddrParams('sid', SID);
+        }
         header('location:' . U($this->errorRedirect) . (($this->addrParams == array())? '' : '?' . arrayImplode('=', '&', $this->addrParams)));
     }
 }
