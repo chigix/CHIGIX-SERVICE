@@ -67,6 +67,7 @@ MVC架构是在软件开发中已占据不可动摇的地位，其架构模式�
 		//'ThinkTemplate' => EXTEND_PATH.'Chigi/ChigiTemplate.class.php',
 		'ChigiAction' => EXTEND_PATH . 'Chigi/ChigiAction.class.php',
 		'ChigiApiAction' => EXTEND_PATH . 'Chigi/ChigiApiAction.class.php',
+		'ChigiService' => EXTEND_PATH . 'Chigi/ChigiService.class.php',
 
 至此整个项目便可以完全使用千木服务架构来进行开发。
 
