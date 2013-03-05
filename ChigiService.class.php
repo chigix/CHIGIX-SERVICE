@@ -47,17 +47,17 @@ class ChigiService {
     public function setDirect($successAdd = null, $errorAdd = null) {
         if ($successAdd !== null) {
             $this->successRedirect = $successAdd;
-        } elseif (session("CHIGI_SUCCESSDIRECT") !== null) {
-            $this->successRedirect = session("CHIGI_SUCCESSDIRECT");
-            session("CHIGI_SUCCESSDIRECT", NULL);
+        } elseif (ching("CHIGI_SUCCESSDIRECT") !== null) {
+            $this->successRedirect = ching("CHIGI_SUCCESSDIRECT");
+            ching("CHIGI_SUCCESSDIRECT", NULL);
         } else {
             $this->successRedirect = C("CHIGI_SUCCESSDIRECT");
         }
         if ($errorAdd !== null) {
             $this->errorRedirect = $errorAdd;
-        } elseif (session("CHIGI_ERRORDIRECT") !== null) {
-            $this->errorRedirect = session("CHIGI_ERRORDIRECT");
-            session("CHIGI_ERRORDIRECT", NULL);
+        } elseif (ching("CHIGI_ERRORDIRECT") !== null) {
+            $this->errorRedirect = ching("CHIGI_ERRORDIRECT");
+            ching("CHIGI_ERRORDIRECT", NULL);
         } else {
             $this->errorRedirect = C("CHIGI_ERRORDIRECT");
         }
