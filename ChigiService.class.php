@@ -8,13 +8,6 @@
 class ChigiService {
 
     /**
-     * 指定对应Api地址，方法中调用时则为该模块对象实例
-     *
-     * @var Object | String
-     */
-    protected $apiAction = 'Sugar.Action.ApiAction';
-
-    /**
      * 执行成功后跳转页面→指向Index模块中的操作
      *
      * @var String
@@ -46,7 +39,7 @@ class ChigiService {
         $this->cookie_status = isset($_COOKIE['sid']) ? 1 : 0;
         import($this->apiAction);
         $this->apiAction = new ApiAction(C('CHIGI_AUTH'));
-        $this->setDirect();//初始化默认跳转地址
+        $this->setDirect(); //初始化默认跳转地址
         if (method_exists($this, '_initialize'))
             $this->_initialize();
     }
@@ -70,7 +63,7 @@ class ChigiService {
         }
     }
 
-    public function addAddrParams($key,$value) {
+    public function addAddrParams($key, $value) {
         $this->addrParams[$key] = $value;
     }
 
@@ -79,19 +72,21 @@ class ChigiService {
      */
     public function successDirectHeader() {
         if ($this->cookie_status == 0) {
-            $this->addAddrParams("sid", SID);
+            $this->addAddrParams("sid", CHING);
         }
-        header('location:' . U($this->successRedirect) . (($this->addrParams == array())? '' : '?' . arrayImplode('=', '&', $this->addrParams)));
+        header('location:' . U($this->successRedirect) . (($this->addrParams == array()) ? '' : '?' . arrayImplode('=', '&', $this->addrParams)));
     }
+
     /**
      * 跳转至执行失败页面
      */
     public function errorDirectHeader() {
         if ($this->cookie_status == 0) {
-            $this->addAddrParams('sid', SID);
+            $this->addAddrParams('sid', CHING);
         }
-        header('location:' . U($this->errorRedirect) . (($this->addrParams == array())? '' : '?' . arrayImplode('=', '&', $this->addrParams)));
+        header('location:' . U($this->errorRedirect) . (($this->addrParams == array()) ? '' : '?' . arrayImplode('=', '&', $this->addrParams)));
     }
+
 }
 
 ?>

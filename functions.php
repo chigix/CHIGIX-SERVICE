@@ -22,13 +22,24 @@ function arrayImplode($glue, $separator, $array) {
 }
 
 /**
- * 指定Api模块地址连接函数
+ * 指定Api模块地址连接函数（将被废弃，不建议使用）
  *
  * @param String $address Api模块地址
  */
 function apiConnect(&$address) {
     import($address);
     $address = new ApiAction(C('CHIGI_AUTH'));
+}
+
+/**
+ * 获取目标数组的指定key键对应的值
+ *
+ * @param Array $array
+ * @param mixed $key
+ * @return mixed 指定的key对应的值
+ */
+function arrayGetElement($array , $key) {
+    return $array[$key];
 }
 
 /**
@@ -203,7 +214,7 @@ function service($serviceName) {
  */
 function ching() {
     if (defined("CHING")) {
-        $data = C("CHING")->get(SID);
+        $data = C("CHING")->get(CHING);
         $argNum = func_num_args();
         switch ($argNum) {
             case 0:
@@ -214,7 +225,7 @@ function ching() {
                 break;
             case 2:
                 $data[func_get_arg(0)] = func_get_arg(1);
-                C("CHING")->set(SID, $data, 900); //缓存仅存在15分钟
+                C("CHING")->set(CHING, $data, 900); //缓存仅存在15分钟
             default:
                 break;
         }

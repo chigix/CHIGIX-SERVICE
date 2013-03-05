@@ -14,11 +14,19 @@ abstract class ChigiAction extends Action {
             define("CHING", $_COOKIE['sid']);
         }elseif(isset($_GET['sid'])) {
             define("CHING", $_GET['sid']);
+        }  elseif (isset ($_POST['sid'])) {
+            define("CHING", $_POST['sid']);
+        }  else {
+            //当前浏览器上无sid记录
+            //↓则生成一条新的游客记录
+            $cid = md5(getClientIp() . microtime());
+            cookie("sid" , $cid,array('domain'=>C("SIDDOMAIN")));
+            define("CHING", $cid);
         }
         $cache = Cache::getInstance("File", array("temp" => THINK_PATH . '../Ching/'));
         //Ching会话初始化
-        if ($cache->get(SID) === false) {
-            $cache->set(SID, array());
+        if ($cache->get(CHING) === false) {
+            $cache->set(CHING, array());
         }
         C("CHING", $cache);
         parent::__construct();
