@@ -38,7 +38,7 @@ function apiConnect(&$address) {
  * @param mixed $key
  * @return mixed 指定的key对应的值
  */
-function arrayGetElement($array , $key) {
+function arrayGetElement($array, $key) {
     return $array[$key];
 }
 
@@ -232,6 +232,69 @@ function ching() {
     } else {
         return null;
     }
+}
+
+/**
+ * 进行地址跳转
+ *
+ * @param string $addr 支持HTTP地址或U生成地址
+ * @param string $params 地址参数，会自动根据当前COOKIE状态添加SID的显式传递
+ */
+function redirectHeader($addr, $params = array()) {
+    if (!isset($_COOKIE['sid'])) {
+        $params['sid'] = CHING;
+    }
+    $paramString = "";
+    if ($params != array()) {
+        $paramString = "?";
+        foreach ($params as $value) {
+            $paramString .= $value;
+        }
+    }
+    if (!startsWith($addr, 'http://')) {
+        $addr = U($addr);
+    }
+    header("location:" . $addr . $paramString);
+}
+
+/**
+ * 检测目标字符串$haystack是否以$needle开头
+ *
+ * @param String $haystack
+ * @param String $needle
+ * @param Boolean $case
+ * @return Boolean
+ */
+function startsWith($haystack, $needle, $case = false) {
+    if ($case) {
+        return (strcmp(substr($haystack, 0, strlen($needle)), $needle) === 0);
+    }
+    return (strcasecmp(substr($haystack, 0, strlen($needle)), $needle) === 0);
+}
+
+/**
+ * 检测目标字符串$haystack是否以$needle结尾
+ *
+ * @param String $haystack
+ * @param String $needle
+ * @param Boolean $case
+ * @return Boolean
+ */
+function endsWith($haystack, $needle, $case = false) {
+    if ($case) {
+        return (strcmp(substr($haystack, strlen($haystack) - strlen($needle)), $needle) === 0);
+    }
+    return (strcasecmp(substr($haystack, strlen($haystack) - strlen($needle)), $needle) === 0);
+}
+
+function getToken() {
+    $tokenName = C('TOKEN_NAME');
+    // 标识当前页面唯一性
+    $tokenKey = md5($_SERVER['REQUEST_URI']);
+    $tokenAray = session($tokenName);
+    //获取令牌
+    $tokenValue = $tokenAray[$tokenKey];
+    return $tokenKey . '_' . $tokenValue;
 }
 
 ?>

@@ -1,7 +1,7 @@
 <?php
 /**
  * 模块跳转控制器
- * @version 1.1.0
+ * @version 1.2.0
  * @author Richard Lea <chigix@zoho.com>
  */
 class EmptyAction extends ChigiAction {
@@ -15,21 +15,27 @@ class EmptyAction extends ChigiAction {
     }
 
     public function index() {
-        if ($this->endsWith($this->actionName, 'Service')) {
+        if (endsWith($this->actionName, 'Service')) {
             _404();
-        }  else {
+        } else {
             _404();
         }
     }
 
     public function _empty($name) {
         //服务类库调用
-        if ($this->endsWith($this->actionName, 'Service')) {
-            //服务类调用安全检测：
+        if (endsWith($this->actionName, 'Service')) {
+            //服务类调用安全令牌检测：
             if (!M()->autoCheckToken($_POST)) {
                 _404();
             }
             unset($_POST[C("TOKEN_NAME")]);
+            if ($_SESSION['verify'] !== null) {
+                if ($_SESSION['verify'] != md5($_POST['verify'])) {
+                    $this->error("验证码错误");
+                }
+                unset($_POST['verify']);
+            }
             $serviceName = $this->actionName;
             $methodName = $this->methodName;
             import('@.Service.' . $serviceName);
@@ -38,36 +44,6 @@ class EmptyAction extends ChigiAction {
         } else {
             _404();
         }
-    }
-
-    /**
-     * 检测目标字符串$haystack是否以$needle开头
-     *
-     * @param String $haystack
-     * @param String $needle
-     * @param Boolean $case
-     * @return Boolean
-     */
-    function startsWith($haystack, $needle, $case = false) {
-        if ($case) {
-            return (strcmp(substr($haystack, 0, strlen($needle)), $needle) === 0);
-        }
-        return (strcasecmp(substr($haystack, 0, strlen($needle)), $needle) === 0);
-    }
-
-    /**
-     * 检测目标字符串$haystack是否以$needle结尾
-     *
-     * @param String $haystack
-     * @param String $needle
-     * @param Boolean $case
-     * @return Boolean
-     */
-    public function endsWith($haystack, $needle, $case = false) {
-        if ($case) {
-            return (strcmp(substr($haystack, strlen($haystack) - strlen($needle)), $needle) === 0);
-        }
-        return (strcasecmp(substr($haystack, strlen($haystack) - strlen($needle)), $needle) === 0);
     }
 
 }
