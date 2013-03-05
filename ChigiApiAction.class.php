@@ -18,6 +18,7 @@ abstract class ChigiApiAction extends Action {
             //连接SugarService转换成APPHOST
         }
         $this->appHostIp = getClientIp();
+        $this->appHost = $appHost;
         $this->time = time();
         parent::__construct();
     }
