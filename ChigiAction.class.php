@@ -8,7 +8,7 @@
  */
 abstract class ChigiAction extends Action {
 
-    public $cacheChing;
+    private $cacheChing;
 
     public function __construct() {
         require_once("functions.php");
