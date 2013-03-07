@@ -223,6 +223,9 @@ function ching() {
                 return $data;
                 break;
             case 1:
+                if (is_null(func_get_arg(0))) {  // 清空ching
+                    return C("CHING" , array());
+                }
                 $arr = explode('.', func_get_arg(0));
                 if (isset($data[$arr[0]])) {
                     $result = $data;
