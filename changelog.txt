@@ -2,7 +2,13 @@
 // 千木服务框架更新文档
 //=========================================
 
-UCenter 1.2.0 Realease 20130302
+ChigiX-Service 1.3.0 Realease 20130307
+1.增加ching会话数组元素获取机制
+2.ChigiApiAction变更为ChigiApi根类
+3.增加cut_string_using_last字符串处理工具函数提供
+4.解决apiAction类名冲突问题
+
+ChigiX-Service 1.2.0 Realease 20130302
 1.增加Service根类
 2.提供CHING会话机制
 3.修正 1.1 版本中的BUG

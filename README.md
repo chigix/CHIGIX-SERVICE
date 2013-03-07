@@ -3,7 +3,7 @@
 
 For ThinkPHP 3.1.0 +
 
-Version 1.2.1
+Version 1.3.0
 
 Author 千木郷（李颖豪） chigix@zoho.com
 
@@ -66,7 +66,7 @@ MVC架构是在软件开发中已占据不可动摇的地位，其架构模式�
 		//加载千木调试模板引擎
 		//'ThinkTemplate' => EXTEND_PATH.'Chigi/ChigiTemplate.class.php',
 		'ChigiAction' => EXTEND_PATH . 'Chigi/ChigiAction.class.php',
-		'ChigiApiAction' => EXTEND_PATH . 'Chigi/ChigiApiAction.class.php',
+		'ChigiApi' => EXTEND_PATH . 'Chigi/ChigiApi.class.php',
 		'ChigiService' => EXTEND_PATH . 'Chigi/ChigiService.class.php',
 
 至此整个项目便可以完全使用千木服务架构来进行开发。
@@ -185,6 +185,20 @@ CHING会话机制提供开发者与SESSION几乎完全一样的使用方法，�
 SID的CHING会话的暴露标识，用以让浏览器在页面切换之间可以继续上一页面的访问情况，关于SID则比session_id更加灵活与安全，SID可以通过COOKIE、GET、POST三种方式传递给服务器，为了安全起见，可以直接将CHING会话与用户挂钩。
 
 从1.2.1版本开始，本框架会自动为所有访问者创建SID，包括游客，开发者则无需考虑SID的任何有关实现，只需直接操作用户会话即可。同时游客SID与SugarService下的用户加密SID完全兼容配合，不同类型的SID可以在SugarService下直接进行检测识别。
+
+### ching()函数使用
+
+ching会话在使用上与session完全一样，仅是普通的键值型数据的临时存储。
+
+基本使用如下：
+
+1.	`ching("newName",$newValue);`      设置新的ching会话值
+2.	`ching()`                          获取当前全局ching会话内容（数组）
+3.	`ching("name");`                   ching会话取值
+4.	`ching("Array.Element1.Ele2")`     ching会话数组取值（1.3.0+）
+5.	`ching("name",null)`               删除指定ching
+
+将在1.3.5版本中提供ching(null)清空当前ching实现。
 
 ### 关于操作时效
 
