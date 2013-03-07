@@ -35,10 +35,18 @@ class ChigiService {
      */
     public $cookie_status = 1;
 
+    /**
+     * api地址参数，实例化后会直接变成目标对象
+     *
+     * @var String
+     */
+    public $apiAction = "";
+
     public function __construct() {
         $this->cookie_status = isset($_COOKIE['sid']) ? 1 : 0;
         import($this->apiAction);
-        $this->apiAction = new ApiAction(C('CHIGI_AUTH'));
+        $apiName = cut_string_using_last('.', $this->apiAction, 'right', false);
+        $this->apiAction = new $apiName(C('CHIGI_AUTH'));
         $this->setDirect(); //初始化默认跳转地址
         if (method_exists($this, '_initialize'))
             $this->_initialize();
