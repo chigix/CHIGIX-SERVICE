@@ -208,8 +208,10 @@ function service($serviceName) {
  * ching会话机制
  * 可用于代替session，并可以通过配置文件指定缓存方式，亦可当作session的包装函数使用
  *
- * @param type $name
- * @param type $value
+ * @param string $name 要获取或新设置的ching名，
+ * 获取时支持点号来表示要获取的目标数组元素，形如ching("Sugar.start.ele1")
+ * 设置数组请直接将数组放入value参数中
+ * @param mixed $value
  * @return mixed
  */
 function ching() {
@@ -221,7 +223,20 @@ function ching() {
                 return $data;
                 break;
             case 1:
-                return isset($data[func_get_arg(0)]) ? $data[func_get_arg(0)] : null;
+                $arr = explode('.', func_get_arg(0));
+                if (isset($data[$arr[0]])) {
+                    $result = $data;
+                    foreach ($arr as $value) {
+                        if (isset($result[$value])) {
+                            $result = $result[$value];
+                        }  else {
+                            return null;
+                        }
+                    }
+                    return $result;
+                }  else {
+                    return null;
+                }
                 break;
             case 2:
                 $data[func_get_arg(0)] = func_get_arg(1);
@@ -295,6 +310,37 @@ function getToken() {
     //获取令牌
     $tokenValue = $tokenAray[$tokenKey];
     return $tokenKey . '_' . $tokenValue;
+}
+
+/**
+ * 查找字符在指定字符串中从后面开始的第一次出现的位置，并进行自定义切割字符串
+ *
+ * @param string $character 目标要搜索的标记字符
+ * @param string $string 要进行切割的母字符串
+ * @param string $side 要切割出标记字符左边的内容还是右边的内容
+ * 支持参数: left  right.
+ * @param bool $keep_character 返回字符串中是否保留标记字符
+ * 支持参数: true  false.
+ * @return string
+ */
+function cut_string_using_last($character, $string, $side, $keep_character=true) {
+    $offset = ($keep_character ? 1 : 0);
+    $whole_length = strlen($string);
+    $right_length = (strlen(strrchr($string, $character)) - 1);
+    $left_length = ($whole_length - $right_length - 1);
+    switch($side) {
+        case 'left':
+            $piece = substr($string, 0, ($left_length + $offset));
+            break;
+        case 'right':
+            $start = (0 - ($right_length + $offset));
+            $piece = substr($string, $start);
+            break;
+        default:
+            $piece = false;
+            break;
+    }
+    return($piece);
 }
 
 ?>
