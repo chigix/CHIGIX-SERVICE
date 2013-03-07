@@ -8,6 +8,7 @@
  */
 abstract class ChigiAction extends Action {
 
+    private $cacheChing;
     public function __construct() {
         require_once("functions.php");
         if (isset($_COOKIE['sid'])) {
@@ -23,16 +24,18 @@ abstract class ChigiAction extends Action {
             cookie("sid" , $cid,array('domain'=>C("SIDDOMAIN")));
             define("CHING", $cid);
         }
-        $cache = Cache::getInstance("File", array("temp" => THINK_PATH . '../Ching/'));
+        $this->cacheChing = Cache::getInstance("File", array("temp" => THINK_PATH . '../Ching/'));
+        $content = $this->cacheChing->get(CHING);
         //Ching会话初始化
-        if ($cache->get(CHING) === false) {
-            $cache->set(CHING, array());
+        if ($content === false) {
+            $this->cacheChing->set(CHING, array());
         }
-        C("CHING", $cache);
+        C("CHING", $content);
         parent::__construct();
     }
 
     public function __destruct() {
+        $this->cacheChing->set(CHING, C("CHING"), 900); //缓存仅存在15分钟
         parent::__destruct();
     }
 
