@@ -4,7 +4,7 @@
  * 千木架构Api类定义抽象
  *
  */
-abstract class ChigiApiAction extends Action {
+abstract class ChigiApi extends Action {
 
     protected $appHost;
     public $appHostIp; //连接本API的应用所在服务器IP
