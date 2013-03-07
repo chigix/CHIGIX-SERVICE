@@ -8,23 +8,24 @@
  */
 abstract class ChigiAction extends Action {
 
-    private $cacheChing;
+    public $cacheChing;
+
     public function __construct() {
         require_once("functions.php");
         if (isset($_COOKIE['sid'])) {
             define("CHING", $_COOKIE['sid']);
-        }elseif(isset($_GET['sid'])) {
+        } elseif (isset($_GET['sid'])) {
             define("CHING", $_GET['sid']);
-        }  elseif (isset ($_POST['sid'])) {
+        } elseif (isset($_POST['sid'])) {
             define("CHING", $_POST['sid']);
-        }  else {
+        } else {
             //当前浏览器上无sid记录
             //↓则生成一条新的游客记录
             $cid = md5(getClientIp() . microtime());
-            cookie("sid" , $cid,array('domain'=>C("SIDDOMAIN")));
+            cookie("sid", $cid, array('domain' => C("SIDDOMAIN")));
             define("CHING", $cid);
         }
-        $this->cacheChing = Cache::getInstance("File", array("temp" => THINK_PATH . '../Ching/'));
+        $this->cacheChing = Cache::getInstance("File", array("temp" => dirname($_SERVER['SCRIPT_FILENAME']) . '/' . THINK_PATH . '../Ching/'));
         $content = $this->cacheChing->get(CHING);
         //Ching会话初始化
         if ($content === false) {
