@@ -23,6 +23,24 @@ abstract class ChigiApi extends Action {
         parent::__construct();
     }
 
+    /**
+     * 数据模型获取包装函数（避免无用SQL查询）
+     *
+     * @param string $model
+     * @return object
+     */
+    protected function dm($model) {
+        $property = "dm" . $model;
+        if (!property_exists($this, $property)) {
+            //属性不存在
+            throw_exception($model . "模型未在当前类中定义");
+        }
+        if (is_string($this->$property)) {
+            //当前是第一次调用，需要先初始化数据模型
+            $this->$property = D($this->$property);
+        }
+        return $this->$property;
+    }
 }
 
 ?>
