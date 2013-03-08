@@ -82,7 +82,7 @@ class ChigiService {
         if ($this->cookie_status == 0) {
             $this->addAddrParams("sid", CHING);
         }
-        header('location:' . U($this->successRedirect) . (($this->addrParams == array()) ? '' : '?' . arrayImplode('=', '&', $this->addrParams)));
+        return (header('location:' . U($this->successRedirect) . (($this->addrParams == array()) ? '' : '?' . arrayImplode('=', '&', $this->addrParams))));
     }
 
     /**
@@ -92,7 +92,7 @@ class ChigiService {
         if ($this->cookie_status == 0) {
             $this->addAddrParams('sid', CHING);
         }
-        header('location:' . U($this->errorRedirect) . (($this->addrParams == array()) ? '' : '?' . arrayImplode('=', '&', $this->addrParams)));
+        return (header('location:' . U($this->errorRedirect) . (($this->addrParams == array()) ? '' : '?' . arrayImplode('=', '&', $this->addrParams))));
     }
 
 }
