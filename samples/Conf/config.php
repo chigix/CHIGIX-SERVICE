@@ -19,7 +19,6 @@ return array(
     "CHIGI_SUCCESSDIRECT" => "index",
     "CHIGI_ERRORDIRECT" => "index",
     'COM_POST_ON' => true, //是否启用POST通信，不启用则无法接收来自POST的数据，并且API服务上接到POST会返回404
-    'SIDDOMAIN' => "host.com", //设置用户会话SID的作用域名
     //千路前端配置
     'CHIJI' => array(
         'LESS_COMPRESS' => 'lessjs', //LESS是否压缩
@@ -34,6 +33,15 @@ return array(
     'URL_MODEL' => 1,
     "URL_ROUTER_ON" => true,
     "URL_ROUTE_RULES" => array(
-        //"xx" => "Index/xx",
+        '/^test(\/.+)*$/' => "Index/test:1",  //采用正则机制，延续传递地址参数
+    ),
+    //CHING参数设置
+    'CHINGSET' => array(
+    	//↓ching会话所采用的底层缓存机制
+        'TYPE' => 'File',
+        //↓ching会话文件存储位置，可实现会话共享，仅对File有效
+        'DIR' => dirname($_SERVER['SCRIPT_FILENAME']) . '/' . THINK_PATH . '../Ching/',
+        'EXPIRE' => 900,  //ching会话操作时效，默认为15分钟
+        'DOMAIN' => "host.com", //设置ching会话SID的作用域名
     ),
 );
