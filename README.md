@@ -3,7 +3,7 @@
 
 For ThinkPHP 3.1.0 +
 
-Version 1.3.7
+Version 1.4.5
 
 Author 千木郷（李颖豪） chigix@zoho.com
 
@@ -165,6 +165,28 @@ App目录部署如下：
 
 关于status操作码，可参考最后所附的ChigiCode。
 
+## GET地址传参统一规范
+
+所有参数均基于PATH-INFO，且均以标准的 `key/value` 型书写，其中key则直接可从 `$_GET` 中获取，而value需经过 `base64_encode` 函数加密写入，获取时由 `base64_decode` 函数解密使用。
+
+建议使用架构自提供的 `redirectHeader()` `redirect_link()` 和继承ChigiService的服务子类中的 `addAddrParams()` 方法来自动生成URL。
+
+而获取时ChigiAction根类已自动将所有的$_GET参数（除ThinkPHP的URL索引外）全部进行了 `base64_decode` 解码。
+
+而在URL路由上，则可全部采用统一的正则规范：
+
+`'/^login(\/.+)*$/' => "http://sugar.five.com/index.php/login:1",`
+
+具体的操作名可直接替换上面的login即可，而关键上面的书写则可十分顺利地将所有的参数进行传递。 
+
+*注：在2.0+版本中再提供根据现有的URL_MODEL配置参数，提供基于其他选项的URL地址生成支持*
+
+## POST、REQUEST传参统一规范
+
+POST认为是来自表单的参数传递，故所有的POST请求中均需有表单令牌验证。
+
+REQUEST由于包含了GET的信息，但却不与GET一起统一进行BASE64的解密，所以不建议使用REQUEST。
+
 ## CHING-SESSION会话机制
 
 从1.2版本开始，提供CHING会话机制，该会话机制旨在分布式的会话实现，并作为PHP原生的SESSION机制的替代方案。
@@ -198,6 +220,25 @@ ching会话在使用上与session完全一样，仅是普通的键值型数据�
 4.	`ching("Array.Element1.Ele2")`     ching会话数组取值（1.3.0+）
 5.	`ching("name",null)`               删除指定ching
 5.	`ching(null)`                      清空当前ching（1.3.5+）
+
+### CHING会话初始化
+
+通过全局工具函数 `cache_ching()` 即可返回一个初始化完毕的全新的CHING会话缓存对象。
+
+该对象实例来自Cache基类，直接通过调用其内部的 `get()` 方法和 `set()` 方法来进行手动数据缓存。
+
+`cache_ching()` 函数使用时无参数需求，所有可配置参数均来自项目配置文件中的CHINGSET配置项。
+
+缓存机制上，目前ching会话配置仅支持 Apc、Xcache和File（文件存储）三种底层缓存实现，对于一般的非分布式架构网站则足矣，而对于分布式大规模网站的ching会话则更需求于Memcache之类的缓存机制，此类支持将在后续版本中提供实现。
+
+### CHING会话配置参数
+
+		'CHINGSET' => array(
+				'TYPE' => 'File',     //底层缓存方式
+				'DIR' => dirname($_SERVER['SCRIPT_FILENAME']) . '/' . THINK_PATH . '../Ching/',  //缓存目录（仅针对File缓存方式有效）
+				'EXPIRE' => 60,      //缓存时效，超时该缓存中的内容将不可读，并且尝试读取的操作将返回false
+				'DOMAIN' => "five.com", //设置ching会话SID的作用域名
+		)
 
 ### 关于操作时效
 
@@ -283,6 +324,50 @@ CHING会话目前默认时效为15分钟，若需在项目配置文件中自定�
 * 参数：无
 * 返回值：无
 
+# 工具函数系列
+
+## string arrayImplode( string $glue, string $separator, array $array);
+
+* 功能：将关联数组合并成一个字符串，弥补PHP原生的implode函数仅能处理数值数组的不足。
+* 参数：
+
+		$glue       键值之间的连接，形如 `{$key}{$glue}{$value}` 
+		$separator  数组元素与元素之间的整体分隔符
+		$array      要进行合并的目标数组（关联数组）
+
+## void redirectHeader($addr, $params = array());
+
+* 功能：直接进行地址跳转
+* 参数：
+
+		$addr    主地址，可以是http开头的独立地址，若调用项目内部操作页面，则需使用U();
+						 如果是http开头的独立地址，则允许自带有地址参数，$params中的参数本函数会自动处理添加
+		$params  地址参数，例如array("iframe"=>U('Action/Module'))则会生成 ?iframe=index.php/......这样的地址
+
+* 关于iframe：iframe参数是本架构特别定义的一个地址栏参数，用于显式指示目标跳转页面，主用于避免ching会话超时问题
+
+	iframe采用rawurlencode/rawurldecode进行编解码。
+
+	本函数仅用于生成地址并直接跳转，故在主地址和iframe参数中可以直接使用U函数生成地址，然后 `redirect_link()` 函数中可以继续使用 `$_GET` 来获取iframe参数。关于 `redirect_link()` 的参数转发中，详见相应的函数说明。
+
+## string redirect_link($addr, $params = array());
+
+* 功能：生成带参复杂地址链接，并以字符串返回
+* 参数：
+
+		$addr    主地址，可以是http开头的独立地址，若调用项目内部操作页面，则需使用U();
+						 如果是http开头的独立地址，则允许自带有地址参数，$params中的参数本函数会自动处理添加
+		$params  地址参数，例如array("iframe"=>U('Action/Module'))则会生成 ?iframe=index.php/......这样的地址
+
+* 关于iframe：iframe参数是本架构特别定义的一个地址栏参数，用于显式指示目标跳转页面，主用于避免ching会话超时问题
+
+	iframe采用rawurlencode/rawurldecode进行编解码。
+
+	使用时与 `U()` 函数、 `$_GET['iframe']` 配合示例：
+
+		redirect_link($addr,array("iframe"=>U('Action/Module')));  //用U函数时直接在里面使用
+		redirect_link($addr,array("iframe"=>$_GET['iframe']));     //从iframe中获取地址参数再传入时无需再使用U函数
+
 # ChigiCode
 
 ## 第一位数说明
@@ -321,7 +406,6 @@ CHING会话目前默认时效为15分钟，若需在项目配置文件中自定�
 *	`231` ——执行正常，返回为数组，一般返回数据，无附加说明
 *	`234` ——执行正常，返回array("tag","data")，并注入COOKIE
 *	`235` ——执行正常，返回array("tag","data")，并注入CHING
-*	`236` ——执行正常，返回字符串内容作为messageSuccess内容
 *	`237` ——执行正常，返回array("tag","data")，并注入SESSION
 *	`241` ——执行正常，返回为布尔，一般返回数据，无附加说明
 *	`251` ——执行正常，没有返回，返回数据为null
