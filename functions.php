@@ -224,7 +224,7 @@ function ching() {
                 break;
             case 1:
                 if (is_null(func_get_arg(0))) {  // 清空ching
-                    return C("CHING" , array());
+                    return C("CHING", array());
                 }
                 $arr = explode('.', func_get_arg(0));
                 if (isset($data[$arr[0]])) {
@@ -232,18 +232,18 @@ function ching() {
                     foreach ($arr as $value) {
                         if (isset($result[$value])) {
                             $result = $result[$value];
-                        }  else {
+                        } else {
                             return null;
                         }
                     }
                     return $result;
-                }  else {
+                } else {
                     return null;
                 }
                 break;
             case 2:
                 $data[func_get_arg(0)] = func_get_arg(1);
-                C("CHING" , $data); //缓存仅存在15分钟
+                C("CHING", $data); //缓存仅存在15分钟
             default:
                 break;
         }
@@ -257,6 +257,7 @@ function ching() {
  *
  * @param string $addr 支持HTTP地址或U生成地址
  * @param string $params 地址参数，会自动根据当前COOKIE状态添加SID的显式传递
+ * 地址参数写法："key"=>"value"  →  ?key=value
  */
 function redirectHeader($addr, $params = array()) {
     if (!isset($_COOKIE['sid'])) {
@@ -264,15 +265,59 @@ function redirectHeader($addr, $params = array()) {
     }
     $paramString = "";
     if ($params != array()) {
-        $paramString = "?";
-        foreach ($params as $value) {
-            $paramString .= $value;
+        foreach ($params as $key => $val) {
+            if (is_array($val))
+                $val = implode(',', $val);
+            $val = base64_encode($val);
+            $paramString .= '/' . $key . '/' . $val;
         }
     }
-    if (!startsWith($addr, 'http://')) {
+    $paramString = cut_string_using_first('/', $paramString, 'right', false);
+    if (startsWith($addr, 'http%3A%2F%2F')) {
+        $addr = rawurldecode($addr);
+    } elseif (!startsWith($addr, 'http://')) {
         $addr = U($addr);
     }
-    header("location:" . $addr . $paramString);
+    if (endsWith($addr, '/') === false) {
+        //斜杠不存在
+        return(header("location:" . $addr . '/' . $paramString));
+    } else {
+        return(header("location:" . $addr . $paramString));
+    }
+}
+
+/**
+ * 生成带参复杂地址链接
+ *
+ * @param string $addr 支持HTTP地址或U生成地址
+ * @param string $params 地址参数，会自动根据当前COOKIE状态添加SID的显式传递
+ * 地址参数写法："key"=>"value"  →  ?key=value
+ */
+function redirect_link($addr, $params = array()) {
+    if (!isset($_COOKIE['sid'])) {
+        $params['sid'] = CHING;
+    }
+    $paramString = "";
+    if ($params != array()) {
+        foreach ($params as $key => $val) {
+            if (is_array($val))
+                $val = implode(',', $val);
+            $val = base64_encode($val);
+            $paramString .= '/' . $key . '/' . $val;
+        }
+    }
+    $paramString = cut_string_using_first('/', $paramString, 'right', false);
+    if (startsWith($addr, 'http%3A%2F%2F')) {
+        $addr = rawurldecode($addr);
+    } elseif (!startsWith($addr, 'http://')) {
+        $addr = U($addr);
+    }
+    if (endsWith($addr, '/') === false) {
+        //斜杠不存在
+        return($addr . '/' . $paramString);
+    } else {
+        return($addr . $paramString);
+    }
 }
 
 /**
@@ -326,12 +371,12 @@ function getToken() {
  * 支持参数: true  false.
  * @return string
  */
-function cut_string_using_last($character, $string, $side, $keep_character=true) {
+function cut_string_using_last($character, $string, $side, $keep_character = true) {
     $offset = ($keep_character ? 1 : 0);
     $whole_length = strlen($string);
     $right_length = (strlen(strrchr($string, $character)) - 1);
     $left_length = ($whole_length - $right_length - 1);
-    switch($side) {
+    switch ($side) {
         case 'left':
             $piece = substr($string, 0, ($left_length + $offset));
             break;
@@ -344,6 +389,68 @@ function cut_string_using_last($character, $string, $side, $keep_character=true)
             break;
     }
     return($piece);
+}
+
+/**
+ * 查找字符在指定字符串中从前面开始的第一次出现的位置，并进行自定义切割字符串
+ *
+ * @param string $character 目标要搜索的标记字符
+ * @param string $string 要进行切割的母字符串
+ * @param string $side 要切割出标记字符左边的内容还是右边的内容
+ * 支持参数: left  right.
+ * @param bool $keep_character 返回字符串中是否保留标记字符
+ * 支持参数: true  false.
+ * @return string
+ */
+function cut_string_using_first($character, $string, $side, $keep_character = true) {
+    $offset = ($keep_character ? 1 : 0);
+    $whole_length = strlen($string);
+    $left_length = (strlen(strstr($string, $character)) - 1);
+    $right_length = ($whole_length - $right_length - 1);
+    switch ($side) {
+        case 'left':
+            $piece = substr($string, 0, ($left_length + $offset));
+            break;
+        case 'right':
+            $start = (0 - ($left_length + $offset));
+            $piece = substr($string, $start);
+            break;
+        default:
+            $piece = false;
+            break;
+    }
+    return($piece);
+}
+
+/**
+ * ching会话缓存初始化
+ *
+ * @return object
+ */
+function cache_ching() {
+    $type = C('CHINGSET.TYPE');
+    $expire = C('CHINGSET.EXPIRE');
+    if ($expire === null) {
+        $expire = 900; //设定默认超时时间
+    }
+    switch ($type) {
+        case 'Apc':
+            //采用Apc缓存机制存储
+            return(Cache::getInstance('Apc', array("expire" => $expire)));
+            break;
+        case 'Xcache':
+            //采用Xcache缓存机制存储
+            return(Cache::getInstance('Xcache', array("expire" => $expire)));
+            break;
+        default:
+            //默认采用文件存储
+            $dir = C('CHINGSET.DIR');
+            if ($dir === null) {
+                $dir = dirname($_SERVER['SCRIPT_FILENAME']) . '/' . THINK_PATH . '../Ching/';
+            }
+            return(Cache::getInstance('File', array("temp" => $dir, "expire" => $expire)));
+            break;
+    }
 }
 
 ?>

@@ -47,7 +47,7 @@ class ChigiService {
         import($this->apiAction);
         $apiName = cut_string_using_last('.', $this->apiAction, 'right', false);
         $this->apiAction = new $apiName(C('CHIGI_AUTH'));
-        $this->setDirect(); //初始化默认跳转地址
+        isset($_GET['iframe']) ? $this->setDirect(rawurldecode($_GET['iframe'])) : $this->setDirect();
         if (method_exists($this, '_initialize'))
             $this->_initialize();
     }
@@ -72,7 +72,7 @@ class ChigiService {
     }
 
     public function addAddrParams($key, $value) {
-        $this->addrParams[$key] = $value;
+        $this->addrParams[$key] = base64_encode($value);
     }
 
     /**
@@ -82,7 +82,21 @@ class ChigiService {
         if ($this->cookie_status == 0) {
             $this->addAddrParams("sid", CHING);
         }
-        return (header('location:' . U($this->successRedirect) . (($this->addrParams == array()) ? '' : '?' . arrayImplode('=', '&', $this->addrParams))));
+        if (startsWith($this->successRedirect, 'http://')) {
+            if (endsWith($this->successRedirect, '/') === false) {
+                return (header('location:' . $this->successRedirect . (($this->addrParams == array()) ? '' : '/' . arrayImplode('/', '/', $this->addrParams))));
+            } else {
+                return (header('location:' . $this->successRedirect . (($this->addrParams == array()) ? '' : arrayImplode('/', '/', $this->addrParams))));
+            }
+        } elseif (startsWith($this->successRedirect, '/index.php/')) {
+            if (endsWith($this->successRedirect, '/') === false) {
+                return (header('location:' . $this->successRedirect . (($this->addrParams == array()) ? '' : '/' . arrayImplode('/', '/', $this->addrParams))));
+            } else {
+                return (header('location:' . $this->successRedirect . (($this->addrParams == array()) ? '' : arrayImplode('/', '/', $this->addrParams))));
+            }
+        } else {
+            return (header('location:' . U($this->successRedirect) . (($this->addrParams == array()) ? '' : arrayImplode('/', '/', $this->addrParams))));
+        }
     }
 
     /**
@@ -92,7 +106,21 @@ class ChigiService {
         if ($this->cookie_status == 0) {
             $this->addAddrParams('sid', CHING);
         }
-        return (header('location:' . U($this->errorRedirect) . (($this->addrParams == array()) ? '' : '?' . arrayImplode('=', '&', $this->addrParams))));
+        if (startsWith($this->errorRedirect, 'http://')) {
+            if (endsWith($this->errorRedirect, '?') === false) {
+                return (header('location:' . $this->errorRedirect . (($this->addrParams == array()) ? '' : '/' . arrayImplode('/', '/', $this->addrParams))));
+            } else {
+                return (header('location:' . $this->errorRedirect . (($this->addrParams == array()) ? '' : arrayImplode('/', '/', $this->addrParams))));
+            }
+        } elseif (startsWith($this->errorRedirect, '/index.php/')) {
+            if (endsWith($this->errorRedirect, '?') === false) {
+                return (header('location:' . $this->errorRedirect . (($this->addrParams == array()) ? '' : '/' . arrayImplode('/', '/', $this->addrParams))));
+            } else {
+                return (header('location:' . $this->errorRedirect . (($this->addrParams == array()) ? '' : arrayImplode('/', '/', $this->addrParams))));
+            }
+        } else {
+            return (header('location:' . U($this->errorRedirect) . (($this->addrParams == array()) ? '' : arrayImplode('/', '/', $this->addrParams))));
+        }
     }
 
 }

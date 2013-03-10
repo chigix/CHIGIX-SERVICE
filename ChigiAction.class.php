@@ -12,6 +12,12 @@ abstract class ChigiAction extends Action {
 
     public function __construct() {
         require_once("functions.php");
+        foreach ($_GET as $key => $value) {
+            if (in_array($key, array('_URL_' , C('TOKEN_NAME')))) {
+                continue;
+            }
+            $_GET[$key] = base64_decode($value);
+        }
         if (isset($_COOKIE['sid'])) {
             define("CHING", $_COOKIE['sid']);
         } elseif (isset($_GET['sid'])) {
@@ -22,21 +28,22 @@ abstract class ChigiAction extends Action {
             //当前浏览器上无sid记录
             //↓则生成一条新的游客记录
             $cid = md5(getClientIp() . microtime());
-            cookie("sid", $cid, array('domain' => C("SIDDOMAIN")));
+            cookie("sid", $cid, array('domain' => C("CHINGSET.DOMAIN")));
             define("CHING", $cid);
         }
-        $this->cacheChing = Cache::getInstance("File", array("temp" => dirname($_SERVER['SCRIPT_FILENAME']) . '/' . THINK_PATH . '../Ching/'));
+        $this->cacheChing = cache_ching();
         $content = $this->cacheChing->get(CHING);
         //Ching会话初始化
         if ($content === false) {
             $this->cacheChing->set(CHING, array());
+            $content = array();
         }
         C("CHING", $content);
         parent::__construct();
     }
 
     public function __destruct() {
-        $this->cacheChing->set(CHING, C("CHING"), 900); //缓存仅存在15分钟
+        $this->cacheChing->set(CHING, C("CHING"), C("CHINGSET.EXPIRE")); //缓存仅存在15分钟
         parent::__destruct();
     }
 
