@@ -12,12 +12,15 @@ abstract class ChigiAction extends Action {
 
     public function __construct() {
         require_once("functions.php");
+        // <editor-fold defaultstate="collapsed" desc="地址栏参数处理">
         foreach ($_GET as $key => $value) {
-            if (in_array($key, array('_URL_' , C('TOKEN_NAME')))) {
+            if (in_array($key, array('_URL_', C('TOKEN_NAME')))) {
                 continue;
             }
             $_GET[$key] = base64_decode($value);
         }
+        // </editor-fold>
+        // <editor-fold defaultstate="collapsed" desc="客户端SID处理">
         if (isset($_COOKIE['sid'])) {
             define("CHING", $_COOKIE['sid']);
         } elseif (isset($_GET['sid'])) {
@@ -31,6 +34,8 @@ abstract class ChigiAction extends Action {
             cookie("sid", $cid, array('domain' => C("CHINGSET.DOMAIN")));
             define("CHING", $cid);
         }
+        // </editor-fold>
+        // <editor-fold defaultstate="collapsed" desc="CHING会话初始化">
         $this->cacheChing = cache_ching();
         $content = $this->cacheChing->get(CHING);
         //Ching会话初始化
@@ -39,7 +44,38 @@ abstract class ChigiAction extends Action {
             $content = array();
         }
         C("CHING", $content);
+        // </editor-fold>
+        $this->__chigiEmptyRedirection();
         parent::__construct();
+    }
+
+    //目标操作不在控制器中，进行自动跳转
+    protected function __chigiEmptyRedirection() {
+        if (method_exists($this, ACTION_NAME)) {
+            return ;
+        }  else {
+            $result = array();
+            $isInt = intval(ACTION_NAME);
+            $pageName = ACTION_NAME;
+            if ($isInt > 0) {
+                $result = M('ChigiPage')->field('pagename,domain,protocol')->find($isInt);
+                $pageName  = $result['pagename'];
+            }  else {
+                $result = M('ChigiPage')->field('domain,protocol')->where(array('pagename'=>ACTION_NAME , 'status'=>1))->find();
+            }
+            //查询结果处理，正确则进行跳转
+            if ($result === null) {
+                return;
+            }  else {
+                if (isset($_GET['_URL_'])) {
+                    unset($_GET['_URL_']);
+                }
+                if (isset($_GET['method'])) {
+                    unset($_GET['method']);
+                }
+                return(redirectHeader($result['protocol'] . '://' . $result['domain'] . U('/' . $pageName . '/'),$_GET));
+            }
+        }
     }
 
     public function __destruct() {
