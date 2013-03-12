@@ -406,13 +406,13 @@ function cut_string_using_first($character, $string, $side, $keep_character = tr
     $offset = ($keep_character ? 1 : 0);
     $whole_length = strlen($string);
     $left_length = (strlen(strstr($string, $character)) - 1);
-    $right_length = ($whole_length - $right_length - 1);
+    $right_length = ($whole_length - $left_length - 1);
     switch ($side) {
         case 'left':
             $piece = substr($string, 0, ($left_length + $offset));
             break;
         case 'right':
-            $start = (0 - ($left_length + $offset));
+            $start = (0 - ($right_length + $offset));
             $piece = substr($string, $start);
             break;
         default:
