@@ -307,6 +307,7 @@ function redirect_link($addr, $params = array()) {
         }
     }
     $paramString = cut_string_using_first('/', $paramString, 'right', false);
+    trace($paramString);
     if (startsWith($addr, 'http%3A%2F%2F')) {
         $addr = rawurldecode($addr);
     } elseif (!startsWith($addr, 'http://')) {
@@ -405,8 +406,8 @@ function cut_string_using_last($character, $string, $side, $keep_character = tru
 function cut_string_using_first($character, $string, $side, $keep_character = true) {
     $offset = ($keep_character ? 1 : 0);
     $whole_length = strlen($string);
-    $left_length = (strlen(strstr($string, $character)) - 1);
-    $right_length = ($whole_length - $left_length - 1);
+    $right_length = (strlen(strstr($string, $character)) - 1);
+    $left_length = ($whole_length - $right_length - 1);
     switch ($side) {
         case 'left':
             $piece = substr($string, 0, ($left_length + $offset));
