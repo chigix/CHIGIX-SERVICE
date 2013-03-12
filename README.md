@@ -3,7 +3,7 @@
 
 For ThinkPHP 3.1.0 +
 
-Version 1.4.5
+Version 1.5.0
 
 Author 千木郷（李颖豪） chigix@zoho.com
 
@@ -112,6 +112,18 @@ MVC架构是在软件开发中已占据不可动摇的地位，其架构模式�
 		|              ├demoMethod.html       DemoServiceWidget类下的demoMethod操作对应模板文件
 		|     ├OtherServiceWidget.class.php   其他同样型的Widget类部署
 		|
+
+### URL部署
+
+从千木服务架构1.5.0起，提供全局URL跳转机制，方便连接多站以轻松组建站群。
+
+只需将需要整合在一起的网站共同连接到同一URL跳转池中即可在。
+
+而现1.5.0中的URL跳转池是创建在数据库中的，ChigiAction会自动连接该数据库并进行跳转检测，从而实现全局统一页面跳转。
+
+而开发者使用该功能则必须保证已定义的全局页面仅能存在一个项目中，不能出现多个项目共有，否则会出现非全局跳转。
+
+而对于已有项目的页面重名问题，例如index操作，则可以在操作名前加两个下划线，以避开重名。
 
 # 上线部署
 
