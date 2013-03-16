@@ -55,34 +55,7 @@ abstract class ChigiAction extends Action {
             //如果目标操作直接在当前控制器中
             return;
         } elseif (startsWith(ACTION_NAME, 'on')) {
-            //对于15分钟内简单表单，无需再单独定义表单接收操作
-            $serviceName = ACTION_NAME;
-            $methodName = $_POST['__tag__'];
-            unset($_POST['__tag__']);
-            if (ching('CHIGI_TAG') === null) {
-                //操作超时
-                $serviceAlert = service("Alert");
-                $serviceAlert->push(array(
-                    'status' => 401,
-                    'info' => "对不起，操作超时"
-                ));
-                $serviceAlert->alert();
-                return(redirectHeader($_SERVER['HTTP_REFERER']));
-            }
-            //服务类调用安全令牌检测：
-            if (!M()->autoCheckToken($_POST)) {
-                _404();
-            }
-            unset($_POST[C("TOKEN_NAME")]);
-            if ($_SESSION['verify'] !== null) {
-                if ($_SESSION['verify'] != md5($_POST['verify'])) {
-                    $this->error("验证码错误");
-                }
-                unset($_POST['verify']);
-            }
-            import('@.Service.' . $serviceName);
-            $service = new $serviceName();
-            return($service->$methodName());
+            return($this->on());
         } elseif (endsWith(ACTION_NAME, 'Service')) {
             if (!isset($_POST['__tag__'])) {
                 _404();
@@ -139,6 +112,46 @@ abstract class ChigiAction extends Action {
             }
             // </editor-fold>
         }
+    }
+
+    public function on($serviceName = null, $methodName = null, $successDirect = null, $errorDirect = null) {
+        //对于15分钟内简单表单，无需再单独定义表单接收操作
+        if (ching('CHIGI_TAG') === null) {
+            //操作超时
+            $serviceAlert = service("Alert");
+            $serviceAlert->push(array(
+                'status' => 401,
+                'info' => "对不起，操作超时"
+            ));
+            $serviceAlert->alert();
+            return(redirectHeader($_SERVER['HTTP_REFERER']));
+        }
+        //对表单进行安全令牌验证：
+        if (!M()->autoCheckToken($_POST)) {
+            _404();
+        }
+        unset($_POST[C("TOKEN_NAME")]);
+        if ($_SESSION['verify'] !== null) {
+            if ($_SESSION['verify'] != md5($_POST['verify'])) {
+                $this->error("验证码错误");
+            }
+            unset($_POST['verify']);
+        }
+        if ($serviceName === null) {
+            //本操作暴露于HTTP下执行
+            $serviceName = ching("CHIGI_TAG.SERVICE");
+            $methodName = ching("CHIGI_TAG.METHOD");
+        }
+        $serviceName .= 'Service';
+        import('@.Service.' . $serviceName);
+        $service = new $serviceName();
+        if ($successDirect) {
+            $service->setDirect($successDirect);
+        }
+        if ($errorDirect) {
+            $service->setDirect(null, $errorDirect);
+        }
+        return($service->$methodName());
     }
 
     public function __destruct() {
