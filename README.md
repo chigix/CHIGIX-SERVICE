@@ -3,7 +3,7 @@
 
 For ThinkPHP 3.1.0 +
 
-Version 1.5.0
+Version 1.5.1
 
 Author 千木郷（李颖豪） chigix@zoho.com
 
@@ -176,6 +176,42 @@ App目录部署如下：
 采用建议的返回值规范格式可以很方便地通过返回值处理服务ReturnService来接收返回值并进行智能处理和包装，方便开发与模块间开发的规范统一。提升开发体验。
 
 关于status操作码，可参考最后所附的ChigiCode。
+
+## 表单提交规范
+
+表单能让服务器接收来自客户端的大量复杂数据，为保证服务器的安全性，需要对表单提交进行多重安全检测过滤。
+
+在千木架构上，建议将表单提交至服务类，经服务类处理后再转跳至相应的页面，避免表单数据的处理与页面的输出产生耦合。
+
+同时千木服务根类ChigiService本身是经由千木控制器进行包裹后才暴露于HTTP下，故开发者无需担心直接暴露于HTTP下的处理类的安全性问题。
+
+但若要提交到千木服务类，则必须符合本架构所设计的表单提交规范，否则将无法通过千木服务的表单安全验证通道：
+
+1. 控制器中
+
+		//设置成功跳转地址↓
+		ching("CHIGI_SUCCESSDIRECT", '/profile/');
+
+		//设置失败跳转地址↓
+        ching("CHIGI_ERRORDIRECT", '/login/');
+
+        //设置表单"CHIGI_TAG"验证值，需与表单中的 `__tag__` 所对应的值一致。
+        ching('CHIGI_TAG','login');
+
+2. 表单设计上
+
+		<!-- 提交到服务类后所需执行的操作 -->
+		<input type="hidden" name="__tag__" value="login">
+
+		<!-- 目标跳转地址，一般与成功跳转地址相同 -->
+		<input type="hidden" name="iframe" value="/index.php/profile">
+
+		<!-- 表单令牌 -->
+		<input type="hidden" name="__hash__" value="970e9c4e7b4ce03d57694536a82b46a0_11dbf80f6813d6b4b024f27346dff35b">
+
+		<!-- 表单验证码（可选） -->
+		<input type="text" name="verify" value="">
+		<img src="__APP__/Public/verify" >
 
 ## GET地址传参统一规范
 
