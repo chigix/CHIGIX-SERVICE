@@ -58,6 +58,8 @@ class ChigiService {
         } elseif (ching("CHIGI_SUCCESSDIRECT") !== null) {
             $this->successRedirect = ching("CHIGI_SUCCESSDIRECT");
             ching("CHIGI_SUCCESSDIRECT", NULL);
+        } elseif ($this->successRedirect != "") {
+            ;
         } else {
             $this->successRedirect = C("CHIGI_SUCCESSDIRECT");
         }
@@ -66,6 +68,8 @@ class ChigiService {
         } elseif (ching("CHIGI_ERRORDIRECT") !== null) {
             $this->errorRedirect = ching("CHIGI_ERRORDIRECT");
             ching("CHIGI_ERRORDIRECT", NULL);
+        } elseif ($this->errorRedirect != "") {
+            ;
         } else {
             $this->errorRedirect = C("CHIGI_ERRORDIRECT");
         }
