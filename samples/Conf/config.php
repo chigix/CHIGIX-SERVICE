@@ -33,7 +33,7 @@ return array(
     'URL_MODEL' => 1,
     "URL_ROUTER_ON" => true,
     "URL_ROUTE_RULES" => array(
-        '/^test(\/.+)*$/' => "Index/test:1",  //采用正则机制，延续传递地址参数
+        ':method^Ajax' => 'Index/:1',  //所有的操作均指向Index控制器
     ),
     //CHING参数设置
     'CHINGSET' => array(

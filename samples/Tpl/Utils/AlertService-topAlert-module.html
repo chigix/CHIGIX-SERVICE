@@ -1,0 +1,11 @@
+{/*<literal>=========================================================
+AlertService模板输出示例
+使用：include file="Utils:AlertService-topAlert-module"
+====================================================================</literal>*/}
+<if condition="ching('chijiAlertOn')">
+	{~ching('chijiAlertOn' , null)}
+	<div class="alert {:ching('chijiAlert.option')}">
+		<button type="button" class="close" data-dismiss="alert">&times;</button>
+		<strong>{:ching('chijiAlert.message')}</strong>
+		</div>{~ching('chijiAlert' , null)}
+</if>
