@@ -54,6 +54,35 @@ abstract class ChigiAction extends Action {
         if (method_exists($this, ACTION_NAME)) {
             //如果目标操作直接在当前控制器中
             return;
+        } elseif (startsWith(ACTION_NAME, 'on')) {
+            //对于15分钟内简单表单，无需再单独定义表单接收操作
+            $serviceName = ACTION_NAME;
+            $methodName = $_POST['__tag__'];
+            unset($_POST['__tag__']);
+            if (ching('CHIGI_TAG') === null) {
+                //操作超时
+                $serviceAlert = service("Alert");
+                $serviceAlert->push(array(
+                    'status' => 401,
+                    'info' => "对不起，操作超时"
+                ));
+                $serviceAlert->alert();
+                return(redirectHeader($_SERVER['HTTP_REFERER']));
+            }
+            //服务类调用安全令牌检测：
+            if (!M()->autoCheckToken($_POST)) {
+                _404();
+            }
+            unset($_POST[C("TOKEN_NAME")]);
+            if ($_SESSION['verify'] !== null) {
+                if ($_SESSION['verify'] != md5($_POST['verify'])) {
+                    $this->error("验证码错误");
+                }
+                unset($_POST['verify']);
+            }
+            import('@.Service.' . $serviceName);
+            $service = new $serviceName();
+            return($service->$methodName());
         } elseif (endsWith(ACTION_NAME, 'Service')) {
             if (!isset($_POST['__tag__'])) {
                 _404();
@@ -113,7 +142,15 @@ abstract class ChigiAction extends Action {
     }
 
     public function __destruct() {
-        $this->cacheChing->set(CHING, C("CHING"), C("CHINGSET.EXPIRE")); //缓存仅存在15分钟
+        // <editor-fold defaultstate="collapsed" desc="去除ching会话null值">
+        $arrChing = ching();
+        foreach ($arrChing as $key => $value) {
+            if ($value === null) {
+                unset($arrChing[$key]);
+            }
+        }
+        // </editor-fold>
+        $this->cacheChing->set(CHING, $arrChing, C("CHINGSET.EXPIRE")); //缓存仅存在15分钟
         parent::__destruct();
     }
 
