@@ -52,29 +52,63 @@ abstract class ChigiAction extends Action {
     //目标操作不在控制器中，进行自动跳转
     protected function __chigiEmptyRedirection() {
         if (method_exists($this, ACTION_NAME)) {
-            return ;
-        }  else {
+            //如果目标操作直接在当前控制器中
+            return;
+        } elseif (endsWith(ACTION_NAME, 'Service')) {
+            if (!isset($_POST['__tag__'])) {
+                _404();
+            }
+            $serviceName = ACTION_NAME;
+            $methodName = $_POST['__tag__'];
+            unset($_POST['__tag__']);
+            if (ching('CHIGI_TAG') === null) {
+                //操作超时
+                $serviceAlert = service("Alert");
+                $serviceAlert->push(array(
+                    'status' => 401,
+                    'info' => "对不起，操作超时"
+                ));
+                $serviceAlert->alert();
+                return(redirectHeader($_SERVER['HTTP_REFERER']));
+            }
+            //服务类调用安全令牌检测：
+            if (!M()->autoCheckToken($_POST)) {
+                _404();
+            }
+            unset($_POST[C("TOKEN_NAME")]);
+            if ($_SESSION['verify'] !== null) {
+                if ($_SESSION['verify'] != md5($_POST['verify'])) {
+                    $this->error("验证码错误");
+                }
+                unset($_POST['verify']);
+            }
+            import('@.Service.' . $serviceName);
+            $service = new $serviceName();
+            return($service->$methodName());
+        } else {
+            // <editor-fold defaultstate="collapsed" desc="查询全局页面定义">
             $result = array();
             $isInt = intval(ACTION_NAME);
             $pageName = ACTION_NAME;
             if ($isInt > 0) {
                 $result = M('ChigiPage')->field('pagename,domain,protocol')->find($isInt);
-                $pageName  = $result['pagename'];
-            }  else {
-                $result = M('ChigiPage')->field('domain,protocol')->where(array('pagename'=>ACTION_NAME , 'status'=>1))->find();
+                $pageName = $result['pagename'];
+            } else {
+                $result = M('ChigiPage')->field('domain,protocol')->where(array('pagename' => ACTION_NAME, 'status' => 1))->find();
             }
             //查询结果处理，正确则进行跳转
             if ($result === null) {
                 return;
-            }  else {
+            } else {
                 if (isset($_GET['_URL_'])) {
                     unset($_GET['_URL_']);
                 }
                 if (isset($_GET['method'])) {
                     unset($_GET['method']);
                 }
-                return(redirectHeader($result['protocol'] . '://' . $result['domain'] . U('/' . $pageName . '/'),$_GET));
+                return(redirectHeader($result['protocol'] . '://' . $result['domain'] . U('/' . $pageName . '/'), $_GET));
             }
+            // </editor-fold>
         }
     }
 
