@@ -3,7 +3,7 @@
 
 For ThinkPHP 3.1.0 +
 
-Version 1.5.2
+Version 1.5.5
 
 Author 千木郷（李颖豪） chigix@zoho.com
 
@@ -181,11 +181,22 @@ App目录部署如下：
 
 表单能让服务器接收来自客户端的大量复杂数据，为保证服务器的安全性，需要对表单提交进行多重安全检测过滤。
 
-在千木架构上，建议将表单提交至服务类，经服务类处理后再转跳至相应的页面，避免表单数据的处理与页面的输出产生耦合。
+对于表单提交，从1.5.5版本开始，千木服务架构专门提供了一个on万能操作，用于接收所有的表单数据并送至指定服务类进行处理和输出跳转。
 
-同时千木服务根类ChigiService本身是经由千木控制器进行包裹后才暴露于HTTP下，故开发者无需担心直接暴露于HTTP下的处理类的安全性问题。
+通过on操作可以避开数据处理和结果输出之间的耦合，而关于on操作的使用则有如下两种接口方案：
 
-但若要提交到千木服务类，则必须符合本架构所设计的表单提交规范，否则将无法通过千木服务的表单安全验证通道：
+1. 公共接收接口：on操作直接暴露在HTTP下接收提交过来的表单，通过通用表单接收规范，千木架构会自动将数据送至对应服务类。
+2. 自定义接收接口：在控制器中定义表单的接收方法，手动调用on操作来指定目标服务类。
+
+以上两种方法仅仅是on操作的调用方式不同，而on操作本身就是负责将数据送至服务类进行处理，数据存储和业务逻辑当然则是由Api基于数据模型完成，而数据处理完毕后的输出与跳转机制则是定义在服务类中。
+
+从1.5.5开始，服务类不再允许暴露于HTTP下，而改由on操作包装调用，目标服务类的指定均通过给on操作传参完成，而两种不同的接收接口则对应两种不同的传参方式，提升开发体验。
+
+### 公共接收接口规范：
+
+表单直接提交至 `{:redirect_link('/on/',array('iframe'=>$_GET['iframe']))}` 即可，无需做任何变动。
+
+控制器中在输出表单的操作中定义ching内容，on操作会自动处理ching会话：
 
 1. 控制器中
 
@@ -195,13 +206,13 @@ App目录部署如下：
 		//设置失败跳转地址↓
         ching("CHIGI_ERRORDIRECT", '/login/');
 
-        //设置表单"CHIGI_TAG"验证值，需与表单中的 `__tag__` 所对应的值一致。
-        ching('CHIGI_TAG','login');
+        //设置表单"CHIGI_TAG"目标数组
+        ching("CHIGI_TAG",array(
+			"SERVICE" => "Sugar",  //指定向Sugar服务
+			"METHOD" => "login"
+		))
 
 2. 表单设计上
-
-		<!-- 提交到服务类后所需执行的操作 -->
-		<input type="hidden" name="__tag__" value="login">
 
 		<!-- 目标跳转地址，一般与成功跳转地址相同 -->
 		<input type="hidden" name="iframe" value="/index.php/profile">
@@ -212,6 +223,27 @@ App目录部署如下：
 		<!-- 表单验证码（可选） -->
 		<input type="text" name="verify" value="">
 		<img src="__APP__/Public/verify" >
+
+公用表单接收操作方案主要是减免自定义表单接收操作的定义，提升开发体验。但是相应地就有一定的弊端，因为调用服务类所用的传参方式完全基于ching会话，所以采用on操作会存在超时问题。
+
+根据千木架构的底层定义，一旦操作超时，系统会自动跳回上一页面，并提示“操作超时”。该时效即ching会话配置 `CHINGSET.EXPIRE` 中定义的时间。
+
+### 自定义接收接口规范：
+
+表单提交地址为： `{:redirect_link('/onxxx/',array('iframe'=>$_GET['iframe']))}` ，对应在Index控制器中定义的 `onxxx` 操作。
+
+控制器中操作定义：必须以on开头：
+
+		public function onxxx(){
+			$serviceName = "Article";
+			$methodName = "add";
+			$successDirect = '/profile/';
+			$errorDirect = '/login/';
+			//手动调用on方法
+			return($this->on($serviceName,$methodName,$successDirect,$errorDirect));
+		}
+
+由于这种手动传参调用的方式不依赖ching会话，所以服务器的资源开销会小一些，同时不存在表单提交的时效问题，可以应用在文章提交之类的表单页需要长时间停留的业务上。
 
 ## GET地址传参统一规范
 
