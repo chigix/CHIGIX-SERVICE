@@ -253,9 +253,9 @@ App目录部署如下：
 
 而获取时ChigiAction根类已自动将所有的$_GET参数（除ThinkPHP的URL索引外）全部进行了 `base64_decode` 解码。
 
-而在URL路由上，则可全部采用统一的正则规范：
+而在URL路由上，则可全部采用统一的规则规范：
 
-`'/^login(\/.+)*$/' => "http://sugar.five.com/index.php/login:1",`
+':method^Ajax' => 'Index/:1',
 
 具体的操作名可直接替换上面的login即可，而关键上面的书写则可十分顺利地将所有的参数进行传递。 
 
