@@ -260,30 +260,7 @@ function ching() {
  * 地址参数写法："key"=>"value"  →  ?key=value
  */
 function redirectHeader($addr, $params = array()) {
-    if (!isset($_COOKIE['sid'])) {
-        $params['sid'] = CHING;
-    }
-    $paramString = "";
-    if ($params != array()) {
-        foreach ($params as $key => $val) {
-            if (is_array($val))
-                $val = implode(',', $val);
-            $val = base64_encode($val);
-            $paramString .= '/' . $key . '/' . $val;
-        }
-    }
-    $paramString = cut_string_using_first('/', $paramString, 'right', false);
-    if (startsWith($addr, 'http%3A%2F%2F')) {
-        $addr = rawurldecode($addr);
-    } elseif (!startsWith($addr, 'http://')) {
-        $addr = U($addr);
-    }
-    if (endsWith($addr, '/') === false) {
-        //斜杠不存在
-        return(header("location:" . $addr . '/' . $paramString));
-    } else {
-        return(header("location:" . $addr . $paramString));
-    }
+    return(header("location:" . redirect_link($addr, $params)));
 }
 
 /**
@@ -300,6 +277,9 @@ function redirect_link($addr, $params = array()) {
     $paramString = "";
     if ($params != array()) {
         foreach ($params as $key => $val) {
+            if ($val === NULL) {
+                continue;
+            }
             if (is_array($val))
                 $val = implode(',', $val);
             $val = base64_encode($val);
