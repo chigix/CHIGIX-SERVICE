@@ -3,7 +3,7 @@
 
 For ThinkPHP 3.1.0 +
 
-Version 1.5.6
+Version 1.5.7
 
 Author 千木郷（李颖豪） chigix@zoho.com
 
@@ -209,7 +209,7 @@ App目录部署如下：
         ching("CHIGI_TAG",array(
 			"SERVICE" => "Sugar",  //指定向Sugar服务
 			"METHOD" => "login"
-		))
+		));
 
 2. 表单设计上
 
@@ -296,9 +296,9 @@ ching会话在使用上与session完全一样，仅是普通的键值型数据�
 1.	`ching("newName",$newValue);`      设置新的ching会话值
 2.	`ching()`                          获取当前全局ching会话内容（数组）
 3.	`ching("name");`                   ching会话取值
-4.	`ching("Array.Element1.Ele2")`     ching会话数组取值（1.3.0+）
-5.	`ching("name",null)`               删除指定ching
-5.	`ching(null)`                      清空当前ching（1.3.5+）
+4.	`ching("Array.Element1.Ele2");`     ching会话数组取值（1.3.0+）
+5.	`ching("name",null);`               删除指定ching
+5.	`ching(null);`                      清空当前ching（1.3.5+）
 
 ### CHING会话初始化
 
@@ -317,7 +317,7 @@ ching会话在使用上与session完全一样，仅是普通的键值型数据�
 				'DIR' => dirname($_SERVER['SCRIPT_FILENAME']) . '/' . THINK_PATH . '../Ching/',  //缓存目录（仅针对File缓存方式有效）
 				'EXPIRE' => 60,      //缓存时效，超时该缓存中的内容将不可读，并且尝试读取的操作将返回false
 				'DOMAIN' => "five.com", //设置ching会话SID的作用域名
-		)
+		);
 
 ### 关于操作时效
 
