@@ -260,7 +260,7 @@ function ching() {
  * 地址参数写法："key"=>"value"  →  ?key=value
  */
 function redirectHeader($addr, $params = array()) {
-    return(header("location:" . redirect_link($addr, $params)));
+    exit(header("location:" . redirect_link($addr, $params)));
 }
 
 /**

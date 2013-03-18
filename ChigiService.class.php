@@ -88,18 +88,18 @@ class ChigiService {
         }
         if (startsWith($this->successRedirect, 'http://')) {
             if (endsWith($this->successRedirect, '/') === false) {
-                return (header('location:' . $this->successRedirect . (($this->addrParams == array()) ? '' : '/' . arrayImplode('/', '/', $this->addrParams))));
+                exit(header('location:' . $this->successRedirect . (($this->addrParams == array()) ? '' : '/' . arrayImplode('/', '/', $this->addrParams))));
             } else {
-                return (header('location:' . $this->successRedirect . (($this->addrParams == array()) ? '' : arrayImplode('/', '/', $this->addrParams))));
+                exit(header('location:' . $this->successRedirect . (($this->addrParams == array()) ? '' : arrayImplode('/', '/', $this->addrParams))));
             }
         } elseif (startsWith($this->successRedirect, '/index.php/')) {
             if (endsWith($this->successRedirect, '/') === false) {
-                return (header('location:' . $this->successRedirect . (($this->addrParams == array()) ? '' : '/' . arrayImplode('/', '/', $this->addrParams))));
+                exit(header('location:' . $this->successRedirect . (($this->addrParams == array()) ? '' : '/' . arrayImplode('/', '/', $this->addrParams))));
             } else {
-                return (header('location:' . $this->successRedirect . (($this->addrParams == array()) ? '' : arrayImplode('/', '/', $this->addrParams))));
+                exit(header('location:' . $this->successRedirect . (($this->addrParams == array()) ? '' : arrayImplode('/', '/', $this->addrParams))));
             }
         } else {
-            return (header('location:' . U($this->successRedirect) . (($this->addrParams == array()) ? '' : arrayImplode('/', '/', $this->addrParams))));
+            exit(header('location:' . U($this->successRedirect) . (($this->addrParams == array()) ? '' : arrayImplode('/', '/', $this->addrParams))));
         }
     }
 
@@ -112,18 +112,19 @@ class ChigiService {
         }
         if (startsWith($this->errorRedirect, 'http://')) {
             if (endsWith($this->errorRedirect, '?') === false) {
-                return (header('location:' . $this->errorRedirect . (($this->addrParams == array()) ? '' : '/' . arrayImplode('/', '/', $this->addrParams))));
+                exit(header('location:' . $this->errorRedirect . (($this->addrParams == array()) ? '' : '/' . arrayImplode('/', '/', $this->addrParams))));
             } else {
-                return (header('location:' . $this->errorRedirect . (($this->addrParams == array()) ? '' : arrayImplode('/', '/', $this->addrParams))));
+                exit(header('location:' . $this->errorRedirect . (($this->addrParams == array()) ? '' : arrayImplode('/', '/', $this->addrParams))));
             }
         } elseif (startsWith($this->errorRedirect, '/index.php/')) {
             if (endsWith($this->errorRedirect, '?') === false) {
-                return (header('location:' . $this->errorRedirect . (($this->addrParams == array()) ? '' : '/' . arrayImplode('/', '/', $this->addrParams))));
+                exit (header('location:' . $this->errorRedirect . (($this->addrParams == array()) ? '' : '/' . arrayImplode('/', '/', $this->addrParams))));
             } else {
-                return (header('location:' . $this->errorRedirect . (($this->addrParams == array()) ? '' : arrayImplode('/', '/', $this->addrParams))));
+                header('location:' . $this->errorRedirect . (($this->addrParams == array()) ? '' : arrayImplode('/', '/', $this->addrParams)));
+                exit;
             }
         } else {
-            return (header('location:' . U($this->errorRedirect) . (($this->addrParams == array()) ? '' : arrayImplode('/', '/', $this->addrParams))));
+            exit(header('location:' . U($this->errorRedirect) . (($this->addrParams == array()) ? '' : arrayImplode('/', '/', $this->addrParams))));
         }
     }
 
