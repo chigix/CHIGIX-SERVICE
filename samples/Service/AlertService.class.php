@@ -81,6 +81,9 @@ class AlertService {
      * 启动alert前端推送
      */
     public function alert() {
+        if ($this->message == "") {
+            return;
+        }
         ching("chijiAlertOn", true);
         ching("chijiAlert", array(
             "option" => $this->option,
