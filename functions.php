@@ -192,7 +192,7 @@ function keywordSpaceClip($targetString) {
  * 指定Service连接函数
  *
  * @param String $serviceName Service名称，如“Article”即可
- * @return Object
+ * @return \ChigiService
  */
 function service($serviceName) {
     $service = $serviceName . 'Service';
