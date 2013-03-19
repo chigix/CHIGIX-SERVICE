@@ -47,7 +47,7 @@ class ChigiService {
         import($this->apiAction);
         $apiName = cut_string_using_last('.', $this->apiAction, 'right', false);
         $this->apiAction = new $apiName(C('CHIGI_AUTH'));
-        isset($_GET['iframe']) ? $this->setDirect(rawurldecode($_GET['iframe'])) : $this->setDirect();
+        isset($_GET['iframe']) ? $this->setDirect($_GET['iframe']) : $this->setDirect();
         if (method_exists($this, '_initialize'))
             $this->_initialize();
     }
@@ -118,13 +118,137 @@ class ChigiService {
             }
         } elseif (startsWith($this->errorRedirect, '/index.php/')) {
             if (endsWith($this->errorRedirect, '?') === false) {
-                exit (header('location:' . $this->errorRedirect . (($this->addrParams == array()) ? '' : '/' . arrayImplode('/', '/', $this->addrParams))));
+                exit(header('location:' . $this->errorRedirect . (($this->addrParams == array()) ? '' : '/' . arrayImplode('/', '/', $this->addrParams))));
             } else {
                 header('location:' . $this->errorRedirect . (($this->addrParams == array()) ? '' : arrayImplode('/', '/', $this->addrParams)));
                 exit;
             }
         } else {
             exit(header('location:' . U($this->errorRedirect) . (($this->addrParams == array()) ? '' : arrayImplode('/', '/', $this->addrParams))));
+        }
+    }
+
+    /**
+     * 环境保障操作【链写】
+     *
+     * @param string $method
+     * @param string $url
+     * @param string $alert
+     * @param array $urlParams
+     * @return \underCheck
+     *
+     * 使用：
+     * $service->under('Login')->setDirect('/login/')->pushAlert("对不起，请先登录")->check();
+     */
+    public function under($method) {
+        $method = 'under' . $method;
+        $result = $this->$method();
+        $underObj = new underCheck($result);
+        return $underObj;
+    }
+
+    /**
+     * Alert推送操作【支持链写】
+     *
+     * @param string $message
+     * @param string $option
+     * @return \ChigiService
+     */
+    public function pushAlert($message = "", $option = "alert-error") {
+        if (empty($message)) {
+            return $this;
+        }
+        $serviceAlert = service("Alert");
+        $serviceAlert->pushSet($message, $option);
+        return $this;
+    }
+
+}
+
+/**
+ * 环境保障链式操作类
+ *
+ */
+class underCheck {
+
+    /**
+     * 当前环境是否达标，true为达标；false为不达标，将进行跳转。
+     *
+     * @var boolean
+     */
+    private $under_status = false;
+    private $addr = '';
+    private $params = array();
+
+    /**
+     * 构造传入返回标准结果数组
+     *
+     * @param array $result
+     */
+    public function __construct($result) {
+        if (isset($_GET['iframe'])) {
+            $this->addAddrParams('iframe' , $_GET['iframe']);
+        }
+        if (is_int($result)) {
+            $result == 1 ? $this->under_status = true : $this->under_status = false;
+        } elseif (is_bool($result)) {
+            $this->under_status = $result;
+        } elseif (is_array($result)) {
+            getNumHundreds($result['status']) == 2 ? $this->under_status = true : $this->under_status = false;
+             if (getNumTens($result['status']) == 2) {
+                 $this->pushAlert($result['data']);
+             }
+        }  else {
+            throw_exception("underCheck传参错误");
+        }
+    }
+
+    /**
+     * 设置目标跳转地址
+     *
+     * @param string $addr
+     * @return \underCheck
+     */
+    public function setDirect($addr) {
+        $this->addr = $addr;
+        return $this;
+    }
+
+    /**
+     * 添加地址栏参数
+     *
+     * @param type $key
+     * @param type $value
+     * @return \underCheck
+     */
+    public function addAddrParams($key, $value) {
+        $this->params[$key] = $value;
+        return $this;
+    }
+
+    /**
+     * Alert推送操作【支持链写】
+     *
+     * @param string $message
+     * @param string $option
+     * @return \underCheck
+     */
+    public function pushAlert($message = "") {
+        if (empty($message) || $this->under_status == true) {
+            return $this;
+        }
+        $option = "alert-error";
+        $serviceAlert = service("Alert");
+        $serviceAlert->pushSet($message, $option)->alert();
+        return $this;
+    }
+
+    /**
+     * 手动检测环境，若不达标则直接跳转
+     */
+    public function check() {
+        if ($this->under_status == false) {
+            redirectHeader($this->addr, $this->params);
         }
     }
 
