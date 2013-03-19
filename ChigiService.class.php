@@ -131,14 +131,11 @@ class ChigiService {
     /**
      * 环境保障操作【链写】
      *
-     * @param string $method
-     * @param string $url
-     * @param string $alert
-     * @param array $urlParams
-     * @return \underCheck
-     *
-     * 使用：
+     * 使用示例：
      * $service->under('Login')->setDirect('/login/')->pushAlert("对不起，请先登录")->check();
+     *
+     * @param string $method
+     * @return \underCheck
      */
     public function under($method) {
         $method = 'under' . $method;
