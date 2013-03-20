@@ -415,6 +415,8 @@ CHING会话目前默认时效为15分钟，若需在项目配置文件中自定�
 
 * **关于数据**：on方法会直接接收并包装POST数据，而后传入指定的服务与其中的操作，自动执行，而至于具体的操作中的逻辑流程则定义在服务类中对应的以 “on” 开头的方法中。
 
+[返回目录](#contents)
+
 # API——ChigiApi
 
 ## $this->appHost;
@@ -463,14 +465,6 @@ CHING会话目前默认时效为15分钟，若需在项目配置文件中自定�
 * 描述：当前客户端cookie中是否存有sid。
 * 使用：无需安装配置，由ChigiService根类自动进行调整，其值为布尔型。
 
-## $this->setDirect( string $successAdd = null, string $errorAdd = null);
-
-* 描述：设置当前Service操作的跳转地址。
-* 使用：无返回，仅用于在Service类中设置跳转地址，而该地址可通过控制器传入，其中技巧不作赘述。
-* 说明：所有的ChigiService子类初始化时会自动拥有初始跳转地址，其地址获取优先级为：参数传入→ching→项目配置参数
-* ching配合：支持 `ching("CHIGI_ERRORDIRECT")` 和 `ching("CHIGI_SUCCESSDIRECT")` 。
-* 项目配置： `C("CHIGI_ERRORDIRECT")` 和 `C("CHIGI_SUCCESSDIRECT")` 。
-
 ## $this->addAddrParams( string $key, mixed $value);
 
 * 功能：为当前服务的跳转地址添加活动参数，即地址栏“?”后面的部分
@@ -490,6 +484,24 @@ CHING会话目前默认时效为15分钟，若需在项目配置文件中自定�
 * 功能：手动执行失败页面跳转
 * 参数：无
 * 返回值：无
+
+## $this->setDirect( string $successAdd = null, string $errorAdd = null);
+
+* 描述：设置当前Service操作的跳转地址。
+* 使用：无返回，仅用于在Service类中设置跳转地址，而该地址可通过控制器传入，其中技巧不作赘述。
+* 说明：所有的ChigiService子类初始化时会自动拥有初始跳转地址，其地址获取优先级为：参数传入→ching→项目配置参数
+* ching配合：支持 `ching("CHIGI_ERRORDIRECT")` 和 `ching("CHIGI_SUCCESSDIRECT")` 。
+* 项目配置： `C("CHIGI_ERRORDIRECT")` 和 `C("CHIGI_SUCCESSDIRECT")` 。
+
+## $this->under($method);
+
+* 描述：环境保障操作，执行指定的$method操作以检测当前环境是否达标，若不达标则会跳转，达标则继续往下执行。
+* 使用：采用链式书写→ `$service->under('Login')->setDirect('/login/')->pushAlert("对不起，请先登录")->check();` 
+* 说明：执行链中项目均为可选，整个链必须做到 `under()` 开头到 `check()` 结尾才正确。
+* ching配合：pushAlert会通过AlertService将message写入到 `ching("chijiAlert")` 中。
+* under机制参见[环境保障规范](#-10)
+
+[返回目录](#contents)
 
 # 工具函数系列
 
@@ -535,6 +547,8 @@ CHING会话目前默认时效为15分钟，若需在项目配置文件中自定�
 		redirect_link($addr,array("iframe"=>U('Action/Module')));  //用U函数时直接在里面使用
 		redirect_link($addr,array("iframe"=>$_GET['iframe']));     //从iframe中获取地址参数再传入时无需再使用U函数
 
+[返回目录](#contents)
+
 # ChigiCode
 
 ## 第一位数说明
@@ -543,6 +557,8 @@ CHING会话目前默认时效为15分钟，若需在项目配置文件中自定�
 *	`2` ——函数执行正常，返回成功信息
 *	`4` ——函数本体执行正常，返回业务逻辑上的失败信息
 *	`5` ——函数本体执行失败，即应用逻辑上出错，主要有 `脚本错误` 和 `数据库查询错误` 两种
+
+[返回目录](#contents)
 
 ## 第二位数说明
 
@@ -554,6 +570,8 @@ CHING会话目前默认时效为15分钟，若需在项目配置文件中自定�
 *	`5` ——无返回，返回数据为null
 *	`6` ——对象型返回
 
+[返回目录](#contents)
+
 ## 第三位数说明
 
 *	`1` ——一般返回数据，无附加说明
@@ -563,6 +581,8 @@ CHING会话目前默认时效为15分钟，若需在项目配置文件中自定�
 *	`5` ——注入CHING→返回数据必须为一个双元素关联数组
 *	`6` ——返回数据作为输出信息（默认是使用info作为输出信息）
 *	`7` ——注入SESSION→返回数据必须为一个双元素关联数组
+
+[返回目录](#contents)
 
 ## 具体代码说明
 
@@ -590,3 +610,5 @@ CHING会话目前默认时效为15分钟，若需在项目配置文件中自定�
 *	`502` ——函数执行中断，抛出_404()
 *	`523` ——数据库查询出错，返回数据库查询错误信息内容
 *	`526` ——程序执行出错，返回字符串作为messageError内容
+
+[返回目录](#contents)
