@@ -27,7 +27,7 @@ abstract class ChigiApi extends Action {
      * 数据模型获取包装函数（避免无用SQL查询）
      *
      * @param string $model
-     * @return object
+     * @return /Model
      */
     protected function dm($model) {
         $property = "dm" . $model;
