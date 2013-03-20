@@ -1,4 +1,18 @@
-- [千木服务架构](#)
+千木服务架构
+=======================
+
+For ThinkPHP 3.1.0 +
+
+Version 1.5.9
+
+Author 千木郷（李颖豪） chigix@zoho.com
+
+Facebook: http://facebook.com/chigix
+
+Weibo: http://weibo.com/chigix
+
+# CONTENTS
+
 - [Introduction](#introduction)
 	- [关于2.0版本](#20)
 - [Overview](#overview)
@@ -26,6 +40,7 @@
 		- [CHING会话服务注册](#ching-4)
 		- [关于操作时效](#-11)
 - [API——ChigiAction](#apichigiaction)
+	- [$this->on($serviceName = null, $methodName = null, $successDirect = null, $errorDirect = null);](#this-onservicename--null-methodname--null-successdirect--null-errordirect--null)
 - [API——ChigiApi](#apichigiapi)
 	- [$this->appHost;](#this-apphost)
 	- [$this->appHostIp;](#this-apphostip)
@@ -47,21 +62,6 @@
 	- [第二位数说明](#-14)
 	- [第三位数说明](#-15)
 	- [具体代码说明](#-16)
-
-千木服务架构
-=======================
-
-For ThinkPHP 3.1.0 +
-
-Version 1.5.9
-
-Author 千木郷（李颖豪） chigix@zoho.com
-
-Facebook: http://facebook.com/chigix
-
-Weibo: http://weibo.com/chigix
-
-{:toc}
 
 # Introduction
 
