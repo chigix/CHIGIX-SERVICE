@@ -13,6 +13,8 @@ Weibo: http://weibo.com/chigix
 
 # CONTENTS
 
+- [千木服务架构](#)
+- [CONTENTS](#contents)
 - [Introduction](#introduction)
 	- [关于2.0版本](#20)
 - [Overview](#overview)
@@ -49,10 +51,11 @@ Weibo: http://weibo.com/chigix
 - [API——ChigiService](#apichigiservice)
 	- [$this->apiAction;](#this-apiaction)
 	- [$this->cookie_status = 1;](#this-cookie_status--1)
-	- [$this->setDirect( string $successAdd = null, string $errorAdd = null);](#this-setdirect-string-successadd--null-string-erroradd--null)
 	- [$this->addAddrParams( string $key, mixed $value);](#this-addaddrparams-string-key-mixed-value)
 	- [$this->successDirectHeader();](#this-successdirectheader)
 	- [$this->errorDirectHeader();](#this-errordirectheader)
+	- [$this->setDirect( string $successAdd = null, string $errorAdd = null);](#this-setdirect-string-successadd--null-string-erroradd--null)
+	- [$this->under($method);](#this-undermethod)
 - [工具函数系列](#-12)
 	- [string arrayImplode( string $glue, string $separator, array $array);](#string-arrayimplode-string-glue-string-separator-array-array)
 	- [void redirectHeader($addr, $params = array());](#void-redirectheaderaddr-params--array)
@@ -180,7 +183,7 @@ MVC架构是在软件开发中已占据不可动摇的地位，其架构模式�
 
 而对于已有项目的页面重名问题，例如index操作，则可以在操作名前加两个下划线，以避开重名。
 
-# 上线部署
+## 上线部署
 
 App目录部署如下：
 
@@ -405,7 +408,7 @@ CHING会话目前默认时效为15分钟，若需在项目配置文件中自定�
 ## $this->on($serviceName = null, $methodName = null, $successDirect = null, $errorDirect = null);
 
 * 描述：表单提交统一接收操作
-* 说明：本操作可以直接暴露于HTTP下提交运行，则所有的参数会自动从ching会话中获取，关于此部分详细的规范见【公共接收接口规范】一节。
+* 说明：本操作可以直接暴露于HTTP下提交运行，则所有的参数会自动从ching会话中获取，关于此部分详细的规范见[公共接收接口规范](#-8)一节。
 * 参数：
 
 		$serviceName    指定负责处理表单的服务名
@@ -497,6 +500,7 @@ CHING会话目前默认时效为15分钟，若需在项目配置文件中自定�
 
 * 描述：环境保障操作，执行指定的$method操作以检测当前环境是否达标，若不达标则会跳转，达标则继续往下执行。
 * 使用：采用链式书写→ `$service->under('Login')->setDirect('/login/')->pushAlert("对不起，请先登录")->check();` 
+* **书写注意**：$method首字母需大写。
 * 说明：执行链中项目均为可选，整个链必须做到 `under()` 开头到 `check()` 结尾才正确。
 * ching配合：pushAlert会通过AlertService将message写入到 `ching("chijiAlert")` 中。
 * under机制参见[环境保障规范](#-10)
