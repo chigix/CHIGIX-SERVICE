@@ -114,6 +114,15 @@ abstract class ChigiAction extends Action {
         }
     }
 
+    /**
+     * 表单提交统一接收操作
+     *
+     * @param string $serviceName
+     * @param string $methodName
+     * @param string $successDirect
+     * @param string $errorDirect
+     * @return void
+     */
     public function on($serviceName = null, $methodName = null, $successDirect = null, $errorDirect = null) {
         //对于15分钟内简单表单，无需再单独定义表单接收操作
         if (ching('CHIGI_TAG') === null) {
