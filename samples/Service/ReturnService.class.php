@@ -68,10 +68,11 @@ class ReturnService {
 
     /**
      * 将返回值包装成本类实体对象
-     * @param mixed $returnValue
-     * @return Object
+     *
      * 若传入参数不是数组，则直接返回参数本身。
      * 若传入数组具有“status”元素，则包装成本类实体对象
+     * @param mixed $returnValue
+     * @return /ReturnService
      */
     public function get($returnValue) {
         if ($returnValue['status'] !== null) {
