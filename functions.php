@@ -287,7 +287,6 @@ function redirect_link($addr, $params = array()) {
         }
     }
     $paramString = cut_string_using_first('/', $paramString, 'right', false);
-    trace($paramString);
     if (startsWith($addr, 'http%3A%2F%2F')) {
         $addr = rawurldecode($addr);
     } elseif (!startsWith($addr, 'http://')) {
