@@ -235,6 +235,8 @@ App目录部署如下：
 
 关于status操作码，可参考最后所附的ChigiCode。
 
+[返回目录](#contents)
+
 ## 表单提交规范
 
 表单能让服务器接收来自客户端的大量复杂数据，为保证服务器的安全性，需要对表单提交进行多重安全检测过滤。
@@ -286,6 +288,8 @@ App目录部署如下：
 
 根据千木架构的底层定义，一旦操作超时，系统会自动跳回上一页面，并提示“操作超时”。该时效即ching会话配置 `CHINGSET.EXPIRE` 中定义的时间。
 
+[返回目录](#contents)
+
 ### 自定义接收接口规范：
 
 表单提交地址为： `{:redirect_link('/onxxx/',array('iframe'=>$_GET['iframe']))}` ，对应在Index控制器中定义的 `onxxx` 操作。
@@ -332,6 +336,47 @@ REQUEST由于包含了GET的信息，但却不与GET一起统一进行BASE64的�
 而手动的操作由对应的服务类提供。
 
 开发上，此类操作名要求以 `under` 开头。
+
+通过调用根类提供的under()操作，直接便捷地执行对应服务类中的环境检测逻辑：
+
+**控制器中**：
+
+		$serviceSugar->under('Login')->setDirect('/login/')->pushAlert("对不起，请先登录")->check();
+
+则在SugarService **服务类中** 有对应的 `underLogin()` 方法以封装检测逻辑，支持Integer、Boolean、Array三种返回类型：
+
+		/**
+		 * @return integer
+		 */
+		public function underLogin(){
+			return isset(ching("uid"))? 1 : 0;
+		}
+
+		/**
+		 * @return boolean
+		 */
+		public function underLogin(){
+			return isset(ching("uid"))? true : false;
+		}
+
+		/**
+		 * @return array 需符合本架构的返回值规范
+		 */
+		public function underLogin(){
+			if(isset(ching("uid"))){
+				return array(
+					"status" => 201,
+					"info" => "LOGINED"
+				);
+			}else{
+				return array(
+					"status" => 401,
+					"info" => "UNLOGINED"
+				);
+			}
+		}
+
+[返回目录](#contents)
 
 ## CHING-SESSION会话机制
 
