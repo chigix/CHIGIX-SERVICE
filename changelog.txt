@@ -1,12 +1,20 @@
 //=========================================
 // 千木服务框架更新文档
 //=========================================
+ChigiX-Service 1.6.0 Realease 20130321
+1.增加Service类暴露在HTTP下访问的限制
+2.增加表单统一提交机制on
+3.增加业务环境检测及保障机制under
+4.集成ReturnService与AlertService并开放源码
+5.修复跳转报头对ching会话的存入影响
+6.撤销EmptyAction的部署，减少框架依赖
+
 ChigiX-Service 1.5.0 Realease 20130312
 1.增加全局URL跳转池设计
 2.修复cut_string_using_first字符串处理函数BUG
 
 ChigiX-Service 1.4.5 Realease 20130310
-1.ChigiApi要类增加dm()数据模型包装函数提供
+1.ChigiApi根类增加dm()数据模型包装函数提供
 2.Ching会话提供可配置机制
 3.增加地址栏显式传参规范支持
 4.解决Ching会话超时自动重建问题
