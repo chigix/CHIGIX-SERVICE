@@ -3,7 +3,7 @@
 
 For ThinkPHP 3.1.0 +
 
-Version 1.6.1
+Version 1.6.2
 
 Author 千木郷（李颖豪） chigix@zoho.com
 
@@ -448,6 +448,20 @@ ching会话在使用上与session完全一样，仅是普通的键值型数据�
 CHING会话目前默认时效为15分钟，若需在项目配置文件中自定义，在1.4版本中提供实现。
 
 **注意** 任何会话机制在底层都是有缓存方式在支持，所以规定会话的时效性十分重要，可以为服务器避免不必要的开销，另外可以直接根据文件的最后修改时间删除超过15分钟的文件，进行会话垃圾清理。
+
+## 模板变量assign命名规范
+
+文件：`/Theme/AlertService/TopAlertMODULE.html`
+
+include标签：`<include file="AlertService:TopALertMODULE" />`
+
+assign变量：`$this->assign("PackageName_ELeNameMODULE_Var");`
+
+`$this->assign("Public_Header_" . ACTION_NAME, "active");`
+
+模板使用变量：`{$PackageName_EleNameMODULE_var}`
+
+`{$Public_Header_index}`
 
 # API——ChigiAction
 
