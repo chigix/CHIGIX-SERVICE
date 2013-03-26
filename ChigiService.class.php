@@ -185,6 +185,8 @@ class underCheck {
     public function __construct($result) {
         if (isset($_GET['iframe'])) {
             $this->addAddrParams('iframe' , $_GET['iframe']);
+        }  else {
+            $this->addAddrParams('iframe' , 'http://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']);
         }
         if (is_int($result)) {
             $result == 1 ? $this->under_status = true : $this->under_status = false;
