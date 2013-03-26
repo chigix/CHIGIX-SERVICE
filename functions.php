@@ -235,26 +235,27 @@ function ching() {
                 $temp = getNestedVar($data, func_get_arg(0));
                 set_value($data, func_get_arg(0), func_get_arg(1));
                 // <editor-fold defaultstate="collapsed" desc="过滤当前数据索引路径上的null数组">
-
-                $pathString = func_get_arg(0);
-                $lastKey = "";
-                $valTmp = getNestedVar($data, $pathString);
-                while ($pathString != "") {
-                    if (empty($valTmp)) {
-                        $lastKey = cut_string_using_last('.', $pathString, 'right', false);
-                        $pathString = cut_string_using_last('.', $pathString, 'left', false);
-                        if ($lastKey == $pathString) {
-                            unset($data[$lastKey]);
-                            break;
-                        } else {
-                            $valTmp = getNestedVar($data, $pathString);
-                            if ($lastKey != "") {
-                                unset($valTmp[$lastKey]);
-                                set_value($data, $pathString, $valTmp);
+                if (func_get_arg(1) === null) {
+                    $pathString = func_get_arg(0);
+                    $lastKey = "";
+                    $valTmp = getNestedVar($data, $pathString);
+                    while ($pathString != "") {
+                        if (empty($valTmp)) {
+                            $lastKey = cut_string_using_last('.', $pathString, 'right', false);
+                            $pathString = cut_string_using_last('.', $pathString, 'left', false);
+                            if ($lastKey == $pathString) {
+                                unset($data[$lastKey]);
+                                break;
+                            } else {
+                                $valTmp = getNestedVar($data, $pathString);
+                                if ($lastKey != "") {
+                                    unset($valTmp[$lastKey]);
+                                    set_value($data, $pathString, $valTmp);
+                                }
                             }
+                        } else {
+                            break;
                         }
-                    } else {
-                        break;
                     }
                 }
                 // </editor-fold>
