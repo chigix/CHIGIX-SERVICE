@@ -209,8 +209,8 @@ function service($serviceName) {
  * 可用于代替session，并可以通过配置文件指定缓存方式，亦可当作session的包装函数使用
  *
  * @param string $name 要获取或新设置的ching名，
- * 获取时支持点号来表示要获取的目标数组元素，形如ching("Sugar.start.ele1")
- * 设置数组请直接将数组放入value参数中
+ * 支持点号来表示要获取的目标数组元素，形如ching("Sugar.start.ele1")
+ * ching("Sugar.start.ele1" , 1234); //给元素$_CHING["Sugar"]["start"]["ele1"]设置为1234，同时返回设置前的那次的值。
  * @param mixed $value
  * @return mixed
  */
@@ -220,36 +220,105 @@ function ching() {
         $argNum = func_num_args();
         switch ($argNum) {
             case 0:
+                //返回当前所有ching会话
                 return $data;
                 break;
             case 1:
                 if (is_null(func_get_arg(0))) {  // 清空ching
                     return C("CHING", array());
                 }
-                $arr = explode('.', func_get_arg(0));
-                if (isset($data[$arr[0]])) {
-                    $result = $data;
-                    foreach ($arr as $value) {
-                        if (isset($result[$value])) {
-                            $result = $result[$value];
-                        } else {
-                            return null;
-                        }
-                    }
-                    return $result;
-                } else {
-                    return null;
-                }
+                //获取目标ching会话内容，支持数组元素筛选
+                return getNestedVar($data, func_get_arg(0));
                 break;
             case 2:
-                $data[func_get_arg(0)] = func_get_arg(1);
+                //设置ching会话值，支持数组筛选
+                $temp = getNestedVar($data, func_get_arg(0));
+                set_value($data, func_get_arg(0), func_get_arg(1));
+                // <editor-fold defaultstate="collapsed" desc="过滤当前数据索引路径上的null数组">
+
+                $pathString = func_get_arg(0);
+                $lastKey = "";
+                $valTmp = getNestedVar($data, $pathString);
+                while ($pathString != "") {
+                    if (empty($valTmp)) {
+                        $lastKey = cut_string_using_last('.', $pathString, 'right', false);
+                        $pathString = cut_string_using_last('.', $pathString, 'left', false);
+                        if ($lastKey == $pathString) {
+                            unset($data[$lastKey]);
+                            break;
+                        } else {
+                            $valTmp = getNestedVar($data, $pathString);
+                            if ($lastKey != "") {
+                                unset($valTmp[$lastKey]);
+                                set_value($data, $pathString, $valTmp);
+                            }
+                        }
+                    } else {
+                        break;
+                    }
+                }
+                // </editor-fold>
                 C("CHING", $data); //缓存仅存在15分钟
+                return $temp;
+                break;
             default:
                 break;
         }
     } else {
         return null;
     }
+}
+
+/**
+ * 通过点号设置目标数组
+ *
+ * 使用：
+ * $foo = array();
+ * set_value($foo, 'bar.color', 'black');
+ * print_r($foo);
+ * 输出：
+ * array(
+ *     'bar' => array(
+ *         'clock' => 'black'
+ *     )
+ * )
+ *
+ * @param array $root 目标数组变量
+ * @param string $compositeKey 点号索引路径
+ * @param mixed $value 目标要赋入的值
+ * @return type
+ */
+function set_value(&$root, $compositeKey, $value) {
+    $keys = explode('.', $compositeKey);
+    while (count($keys) > 1) {
+        $key = array_shift($keys);
+        if (!isset($root[$key])) {
+            $root[$key] = array();
+        }
+        $root = &$root[$key];
+    }
+    $key = reset($keys);
+    $root[$key] = $value;
+}
+
+/**
+ * 通过点号字符串获取目标数组元素
+ * 使用：getNestedVar($arr, 'AA.BB.CC');  //返回$arr['AA']['BB']['CC'];
+ *
+ * @param array $context 目标数组
+ * @param string $name 点号索引字符串
+ * @return mixed 若不存在，则默认返回null
+ */
+function getNestedVar(&$context, $name) {
+    $pieces = explode('.', $name);
+    foreach ($pieces as $piece) {
+        if (!is_array($context) || !array_key_exists($piece, $context)) {
+            // error occurred
+            return null;
+        }
+        $context = &$context[$piece];
+    }
+    return $context;
 }
 
 /**
@@ -342,10 +411,11 @@ function getToken() {
 
 /**
  * 查找字符在指定字符串中从后面开始的第一次出现的位置，并进行自定义切割字符串
+ * 若字符串中无对应的切割字符标记，则返回原字符串
  *
  * @param string $character 目标要搜索的标记字符
  * @param string $string 要进行切割的母字符串
- * @param string $side 要切割出标记字符左边的内容还是右边的内容
+ * @param string $side 要保留并返回切割字符左边的内容还是右边的内容
  * 支持参数: left  right.
  * @param bool $keep_character 返回字符串中是否保留标记字符
  * 支持参数: true  false.
@@ -355,6 +425,9 @@ function cut_string_using_last($character, $string, $side, $keep_character = tru
     $offset = ($keep_character ? 1 : 0);
     $whole_length = strlen($string);
     $right_length = (strlen(strrchr($string, $character)) - 1);
+    if ($right_length == -1) {
+        return $string;
+    }
     $left_length = ($whole_length - $right_length - 1);
     switch ($side) {
         case 'left':

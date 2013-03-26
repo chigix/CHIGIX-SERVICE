@@ -3,7 +3,7 @@
 
 For ThinkPHP 3.1.0 +
 
-Version 1.6.0
+Version 1.6.1
 
 Author 千木郷（李颖豪） chigix@zoho.com
 
@@ -405,12 +405,13 @@ ching会话在使用上与session完全一样，仅是普通的键值型数据�
 
 基本使用如下：
 
-1.	`ching("newName",$newValue);`      设置新的ching会话值
-2.	`ching()`                          获取当前全局ching会话内容（数组）
-3.	`ching("name");`                   ching会话取值
-4.	`ching("Array.Element1.Ele2");`     ching会话数组取值（1.3.0+）
-5.	`ching("name",null);`               删除指定ching
-5.	`ching(null);`                      清空当前ching（1.3.5+）
+1.	`ching("newName",$newValue);`              设置新的ching会话值
+1.	`ching("newName.se.ele1",$newValue);`      设置新的ching会话值，数组索引直接设置元素值(1.7.0+)
+2.	`ching()`                                  获取当前全局ching会话内容（数组）
+3.	`ching("name");`                           ching会话取值
+4.	`ching("Array.Element1.Ele2");`            ching会话数组取值（1.3.0+）
+5.	`ching("name",null);`                      删除指定ching
+5.	`ching(null);`                             清空当前ching（1.3.5+）
 
 ### CHING会话初始化
 

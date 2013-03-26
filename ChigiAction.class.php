@@ -164,15 +164,7 @@ abstract class ChigiAction extends Action {
     }
 
     public function __destruct() {
-        // <editor-fold defaultstate="collapsed" desc="去除ching会话null值">
-        $arrChing = ching();
-        foreach ($arrChing as $key => $value) {
-            if ($value === null) {
-                unset($arrChing[$key]);
-            }
-        }
-        // </editor-fold>
-        $this->cacheChing->set(CHING, $arrChing, C("CHINGSET.EXPIRE")); //缓存仅存在15分钟
+        $this->cacheChing->set(CHING, ching(), C("CHINGSET.EXPIRE")); //缓存仅存在15分钟
         parent::__destruct();
     }
 
