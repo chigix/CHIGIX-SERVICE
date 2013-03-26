@@ -13,8 +13,6 @@ Weibo: http://weibo.com/chigix
 
 # CONTENTS
 
-- [千木服务架构](#)
-- [CONTENTS](#contents)
 - [Introduction](#introduction)
 	- [关于2.0版本](#20)
 - [Overview](#overview)
@@ -25,7 +23,7 @@ Weibo: http://weibo.com/chigix
 		- [模板部署](#-3)
 		- [Widget部署](#widget)
 		- [URL部署](#url)
-- [上线部署](#-4)
+	- [上线部署](#-4)
 - [开发规范](#-5)
 	- [返回值统一规范](#-6)
 	- [表单提交规范](#-7)
@@ -33,14 +31,15 @@ Weibo: http://weibo.com/chigix
 		- [自定义接收接口规范：](#-9)
 	- [GET地址传参统一规范](#get)
 	- [POST、REQUEST传参统一规范](#postrequest)
-	- [under机制规范](#-10)
+	- [under机制规范](#under)
 	- [CHING-SESSION会话机制](#ching-session)
 		- [CHING会话部署](#ching)
 		- [ching()函数使用](#ching-1)
 		- [CHING会话初始化](#ching-2)
 		- [CHING会话配置参数](#ching-3)
 		- [CHING会话服务注册](#ching-4)
-		- [关于操作时效](#-11)
+		- [关于操作时效](#-10)
+	- [模板变量assign命名规范](#assign)
 - [API——ChigiAction](#apichigiaction)
 	- [$this->on($serviceName = null, $methodName = null, $successDirect = null, $errorDirect = null);](#this-onservicename--null-methodname--null-successdirect--null-errordirect--null)
 - [API——ChigiApi](#apichigiapi)
@@ -56,15 +55,15 @@ Weibo: http://weibo.com/chigix
 	- [$this->errorDirectHeader();](#this-errordirectheader)
 	- [$this->setDirect( string $successAdd = null, string $errorAdd = null);](#this-setdirect-string-successadd--null-string-erroradd--null)
 	- [$this->under($method);](#this-undermethod)
-- [工具函数系列](#-12)
+- [工具函数系列](#-11)
 	- [string arrayImplode( string $glue, string $separator, array $array);](#string-arrayimplode-string-glue-string-separator-array-array)
 	- [void redirectHeader($addr, $params = array());](#void-redirectheaderaddr-params--array)
 	- [string redirect_link($addr, $params = array());](#string-redirect_linkaddr-params--array)
 - [ChigiCode](#chigicode)
-	- [第一位数说明](#-13)
-	- [第二位数说明](#-14)
-	- [第三位数说明](#-15)
-	- [具体代码说明](#-16)
+	- [第一位数说明](#-12)
+	- [第二位数说明](#-13)
+	- [第三位数说明](#-14)
+	- [具体代码说明](#-15)
 
 # Introduction
 
@@ -563,7 +562,7 @@ assign变量：`$this->assign("PackageName_ELeNameMODULE_Var");`
 * **书写注意**：$method首字母需大写。
 * 说明：执行链中项目均为可选，整个链必须做到 `under()` 开头到 `check()` 结尾才正确。
 * ching配合：pushAlert会通过AlertService将message写入到 `ching("chijiAlert")` 中。
-* under机制参见[环境保障规范](#-10)
+* under机制参见[环境保障规范](#under)
 
 [返回目录](#contents)
 
