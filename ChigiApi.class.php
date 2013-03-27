@@ -29,7 +29,7 @@ abstract class ChigiApi extends Action {
      * @param string $model
      * @return /Model
      */
-    protected function dm($model) {
+    public function dm($model) {
         $property = "dm" . $model;
         if (!property_exists($this, $property)) {
             //属性不存在
