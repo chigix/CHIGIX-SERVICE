@@ -14,7 +14,8 @@ Weibo: http://weibo.com/chigix
 # CONTENTS
 
 - [Introduction](#introduction)
-	- [关于2.0版本](#20)
+	- [About Version](#about-version)
+	- [License](#license)
 - [Overview](#overview)
 - [Getting Started](#getting-started)
 	- [Installation](#installation)
