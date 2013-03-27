@@ -56,7 +56,7 @@ function chigiErrorstate($param) {
             return false;
         }
     } elseif (is_object($param)) {
-        if (($param->code >= 500) && ($param->code < 600)) {
+        if (($param->getCode() >= 500) && ($param->getCode() < 600)) {
             return true;
         } else {
             return false;
@@ -99,7 +99,7 @@ function chigiValid($param) {
             return false;
         }
     } elseif (is_object($param)) {
-        if (($param->code >= 200) && ($param->code < 300)) {
+        if (($param->getCode() >= 200) && ($param->getCode() < 300)) {
             return true;
         } else {
             return false;

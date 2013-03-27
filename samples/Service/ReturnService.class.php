@@ -12,13 +12,11 @@
  */
 class ReturnService {
 
-    public $data;  //返回携带实体数据
-    public $info;  //官方返回信息
-    public $code; //操作码
-    public $isValid;
-    public $isError;
-    public $messageSuccess = "HELLO~~";
-    public $messageError = "你的操作好像有问题 →_→";
+    private $__data;  //返回携带实体数据
+    private $__info;  //官方返回信息
+    private $__code; //操作码
+    private $__messageSuccess = "HELLO~~";
+    private $__messageError = "你的操作好像有问题 →_→";
 
     /**
      * 初始化返回值服务类，导入各种包
@@ -28,35 +26,33 @@ class ReturnService {
             // 在控制器中初始化
         } else {
             // 处理包装返回值，来自$this->get()的实例化
-            $this->code = $returnValue['status'];
-            $this->info = $returnValue['info'];
-            $this->data = $returnValue['data'];
-            $this->isValid = chigiValid($this->code);
-            $this->isError = chigiErrorstate($this->code);
-            if ($this->isValid) {
-                $this->messageSuccess = $this->info;
-                switch (getNumOnes($this->code)) {
+            $this->__code = $returnValue['status'];
+            $this->__info = $returnValue['info'];
+            $this->__data = $returnValue['data'];
+            if ($this->isValid()) {
+                $this->__messageSuccess = $this->__info;
+                switch (getNumOnes($this->__code)) {
                     case 4:
-                        if (count($this->data) == 3) {
-                            cookie($this->data[0], $this->data[1], $this->data[2]);
+                        if (count($this->__data) == 3) {
+                            cookie($this->__data[0], $this->__data[1], $this->__data[2]);
                         } else {
-                            cookie($this->data[0], $this->data[1]);
+                            cookie($this->__data[0], $this->__data[1]);
                         }
                         break;
                     case 5:
-                        ching($this->data[0], $this->data[1]);
+                        ching($this->__data[0], $this->__data[1]);
                         break;
                     case 6:
-                        $this->messageSuccess = (String)($this->data);
+                        $this->__messageSuccess = (String) ($this->__data);
                         break;
                     default:
                         break;
                 }
             } else {
-                $this->messageError = $this->info;
-                switch (getNumOnes($this->code)) {
+                $this->__messageError = $this->__info;
+                switch (getNumOnes($this->__code)) {
                     case 6:
-                        $this->messageError = (String)$this->data;
+                        $this->__messageError = (String) $this->__data;
                         break;
 
                     default:
@@ -82,16 +78,72 @@ class ReturnService {
         }
     }
 
-    /**
-     * 返回值数据输出，用于模板中直接使用
-     * @return String
-     */
-    public function __toString() {
-        if ($this->isValid) {
-            return $this->messageSuccess;
+    //魔术方法系列
+    public function __get($name) {
+        if ($name == '__') {
+            return $this->__data;
         } else {
-            return $this->messageError;
+            return $this->__data[$name];
         }
+    }
+
+    public function __toString() {
+        if ($this->isValid()) {
+            return $this->__messageSuccess;
+        } else {
+            return $this->__messageError;
+        }
+    }
+
+    public function isValid() {
+        return chigiValid($this->__code);
+    }
+
+    public function isError() {
+        return chigiErrorstate($this->__code);
+    }
+
+    public function getCode() {
+        return $this->__code;
+    }
+
+    public function getInfo() {
+        return $this->__info;
+    }
+
+    /**
+     * 返回当前返回的总体概览
+     *
+     * @return array
+     */
+    public function getReturn() {
+        return array(
+            "status" => $this->__code,
+            "info" => $this->__info,
+            "data" => $this->__data
+        );
+    }
+
+    /**
+     * 获取成功/失败信息
+     *
+     * @param string $name 仅能填Success或Error
+     * @return string
+     */
+    public function getMsg($name) {
+        $name = "__message" . $name;
+        return $this->$name;
+    }
+
+    /**
+     * 设置message
+     *
+     * @param string $name 仅能填Success或Error
+     * @param string $str
+     */
+    public function setMsg($name , $str) {
+        $name = "__message" . $name;
+        $this->$name = $str;
     }
 
 }
