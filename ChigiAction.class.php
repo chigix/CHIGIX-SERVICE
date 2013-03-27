@@ -94,17 +94,6 @@ abstract class ChigiAction extends Action {
      * @return void
      */
     public function on($serviceName = null, $methodName = null, $successDirect = null, $errorDirect = null) {
-        //对于15分钟内简单表单，无需再单独定义表单接收操作
-        if (ching('CHIGI_TAG') === null) {
-            //操作超时
-            $serviceAlert = service("Alert");
-            $serviceAlert->push(array(
-                'status' => 401,
-                'info' => "对不起，操作超时"
-            ));
-            $serviceAlert->alert();
-            return(redirectHeader($_SERVER['HTTP_REFERER']));
-        }
         //对表单进行安全令牌验证：
         if (!M()->autoCheckToken($_POST)) {
             _404();
@@ -116,10 +105,22 @@ abstract class ChigiAction extends Action {
             }
             unset($_POST['verify']);
         }
+        //对于15分钟内简单表单，无需再单独定义表单接收操作
         if ($serviceName === null) {
-            //本操作暴露于HTTP下执行
-            $serviceName = ching("CHIGI_TAG.SERVICE");
-            $methodName = ching("CHIGI_TAG.METHOD");
+            if (ching('CHIGI_TAG') === null) {
+                //操作超时
+                $serviceAlert = service("Alert");
+                $serviceAlert->push(array(
+                    'status' => 401,
+                    'info' => "对不起，操作超时"
+                ));
+                $serviceAlert->alert();
+                return(redirectHeader($_SERVER['HTTP_REFERER']));
+            } else {
+                //本操作暴露于HTTP下执行
+                $serviceName = ching("CHIGI_TAG.SERVICE");
+                $methodName = ching("CHIGI_TAG.METHOD");
+            }
         }
         $serviceName .= 'Service';
         import('@.Service.' . $serviceName);
