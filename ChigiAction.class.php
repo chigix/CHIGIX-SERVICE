@@ -99,7 +99,7 @@ abstract class ChigiAction extends Action {
             _404();
         }
         unset($_POST[C("TOKEN_NAME")]);
-        if ($_SESSION['verify'] !== null) {
+        if ( isset($_SESSION['verify'])) {
             if ($_SESSION['verify'] != md5($_POST['verify'])) {
                 $this->error("验证码错误");
             }
@@ -125,13 +125,44 @@ abstract class ChigiAction extends Action {
         $serviceName .= 'Service';
         import('@.Service.' . $serviceName);
         $service = new $serviceName();
-        if ($successDirect) {
-            $service->setDirect($successDirect);
+        $service->setDirect($successDirect, $errorDirect);
+        $result = $service->$methodName();
+        // <editor-fold defaultstate="collapsed" desc="将非int型的$result根据返回值规范变换为-1,0,1">
+        if (is_object($result)) {
+            if ($result->isValid()) {
+                $result = 1;
+            } else {
+                $result = 0;
+            }
         }
-        if ($errorDirect) {
-            $service->setDirect(null, $errorDirect);
+        if (is_array($result)) {
+            if (getNumHundreds($result['status']) == 2) {
+                $result = 1;
+            } else {
+                $result = 0;
+            }
         }
-        return($service->$methodName());
+        // </editor-fold>
+        switch ($result) {
+            case -1:
+                //DEBUG，不跳转
+                dump($service);
+                B('ShowPageTrace');
+                return;
+                break;
+            case 0:
+                return($service->errorDirectHeader());
+                break;
+            case 1:
+                return($service->successDirectHeader());
+                break;
+            default:
+                //非DEBUG，不跳转，直接返回
+                //主用于兼容向下兼容旧版本的on接口写法
+                return;
+                break;
+        }
+        //return();
     }
 
     public function __destruct() {

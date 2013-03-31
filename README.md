@@ -221,6 +221,8 @@ App目录部署如下：
 		|
 		|
 
+[返回目录](#contents)
+
 # 开发规范
 
 ## 返回值统一规范
@@ -260,6 +262,8 @@ App目录部署如下：
 2. 自定义接收接口：在控制器中定义表单的接收方法，手动调用on操作来指定目标服务类。
 
 以上两种方法仅仅是on操作的调用方式不同，而on操作本身就是负责将数据送至服务类进行处理，数据存储和业务逻辑当然则是由Api基于数据模型完成，而数据处理完毕后的输出与跳转机制则是定义在服务类中。
+
+on操作与under操作的逻辑部分均由相应的服务类提供，而on操作应用层封装于控制器层，可通过在控制器中包装调用或直接接收外部表单HTTP提交；而under操作封装于Service类，通过在控制器中进行环境检测（undercheck）调用。
 
 从1.5.5开始，服务类不再允许暴露于HTTP下，而改由on操作包装调用，目标服务类的指定均通过给on操作传参完成，而两种不同的接收接口则对应两种不同的传参方式，提升开发体验。
 
@@ -316,6 +320,23 @@ App目录部署如下：
 			$errorDirect = '/login/';
 			//手动调用on方法
 			return($this->on($serviceName,$methodName,$successDirect,$errorDirect));
+		}
+
+服务类中定义：必须以on开头：
+
+		public function onTest(){
+			if(DEBUG) return -1;
+			if(FALSE) return 0;
+			if(TRUE) return 1;
+
+			//↓直接返回ReturnService对象
+			return service("Return")->get(...);
+
+			//↓支持返回Return规范数组
+			return array(
+					"status" => 201,
+					"info" => "BANKAI"
+				);
 		}
 
 由于这种手动传参调用的方式不依赖ching会话，所以服务器的资源开销会小一些，同时不存在表单提交的时效问题，可以应用在文章提交之类的表单页需要长时间停留的业务上。
@@ -388,6 +409,8 @@ under机制就是一种业务级的环境保障，即先手动检测当前环境
 				);
 			}
 		}
+
+on操作与under操作的逻辑部分均由相应的服务类提供，而on操作应用层封装于控制器层，可通过在控制器中包装调用或直接接收外部表单HTTP提交；而under操作封装于Service类，通过在控制器中进行环境检测（undercheck）调用。
 
 [返回目录](#contents)
 
