@@ -217,26 +217,27 @@ function service($serviceName) {
 function ching() {
     if (defined("CHING")) {
         $data = C("CHING");
-        $argNum = func_num_args();
+        $args = func_get_args();
+        $argNum = count($args);
         switch ($argNum) {
             case 0:
                 //返回当前所有ching会话
                 return $data;
                 break;
             case 1:
-                if (is_null(func_get_arg(0))) {  // 清空ching
+                if (is_null($args[0])) {  // 清空ching
                     return C("CHING", array());
                 }
                 //获取目标ching会话内容，支持数组元素筛选
-                return getNestedVar($data, func_get_arg(0));
+                return getNestedVar($data, $args[0]);
                 break;
             case 2:
                 //设置ching会话值，支持数组筛选
-                $temp = getNestedVar($data, func_get_arg(0));
-                set_value($data, func_get_arg(0), func_get_arg(1));
+                $temp = getNestedVar($data, $args[0]);
+                set_value($data, $args[0], $args[1]);
                 // <editor-fold defaultstate="collapsed" desc="过滤当前数据索引路径上的null数组">
-                if (func_get_arg(1) === null) {
-                    $pathString = func_get_arg(0);
+                if ($args[1] === null) {
+                    $pathString = $args[0];
                     $lastKey = "";
                     $valTmp = getNestedVar($data, $pathString);
                     while ($pathString != "") {
