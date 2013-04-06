@@ -125,6 +125,10 @@ abstract class ChigiAction extends Action {
         $serviceName .= 'Service';
         import('@.Service.' . $serviceName);
         $service = new $serviceName();
+        //优先捕获iframe
+        if ($_GET['iframe']) {
+            $successDirect = $_GET['iframe'];
+        }
         $service->setDirect($successDirect, $errorDirect);
         $result = $service->$methodName();
         // <editor-fold defaultstate="collapsed" desc="将非int型的$result根据返回值规范变换为-1,0,1">
@@ -144,17 +148,22 @@ abstract class ChigiAction extends Action {
         }
         // </editor-fold>
         switch ($result) {
-            case -1:
-                //DEBUG，不跳转
-                dump($service);
-                B('ShowPageTrace');
-                return;
-                break;
+            case false:
             case 0:
                 return($service->errorDirectHeader());
                 break;
+            case true:
             case 1:
                 return($service->successDirectHeader());
+                break;
+            case -1:
+                //DEBUG，不跳转
+                echo '<h1>ON操作调试模式</h1><br/><h2>Result返回结果：</h2><br/>';
+                dump($result);
+                echo '<h2>当前Service状态：</h2></br>';
+                dump($service);
+                B('ShowPageTrace');
+                return;
                 break;
             default:
                 //非DEBUG，不跳转，直接返回
