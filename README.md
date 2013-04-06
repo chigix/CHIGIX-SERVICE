@@ -3,7 +3,7 @@
 
 For ThinkPHP 3.1.0 +
 
-Version 1.6.5
+Version 1.6.6
 
 Author 千木郷（李颖豪） chigix@zoho.com
 
@@ -422,16 +422,21 @@ CHING会话机制提供开发者与SESSION几乎完全一样的使用方法，�
 
 现1.2版本中的CHING会话机制物理实现上仅处于物理文件读写方式，尚不支持内存加载与高速缓存，而这些缓存支持将在2.0+版本中提供支持。
 
-### CHING会话部署
+### CHING会话部署 与 参数配置
 
 		/WebRoot/Core/  ——放置MVC框架内核
 				/Ching/ ——放置CHING会话文件
 
 一般网站按上述部署即可，在config.php中加入下面的设置项
 
-		'SIDDOMAIN' => "five.com", //设置用户会话SID的作用域名
+		'CHINGSET' => array(
+				'TYPE' => 'File',     //底层缓存方式
+				'DIR' => dirname($_SERVER['SCRIPT_FILENAME']) . '/' . THINK_PATH . '../Ching/',  //缓存目录（仅针对File缓存方式有效）
+				'EXPIRE' => 60,      //缓存时效，超时该缓存中的内容将不可读，并且尝试读取的操作将返回false
+				'DOMAIN' => "five.com", //设置ching会话SID的作用域名
+		);
 
-SID的CHING会话的暴露标识，用以让浏览器在页面切换之间可以继续上一页面的访问情况，关于SID则比session_id更加灵活与安全，SID可以通过COOKIE、GET、POST三种方式传递给服务器，为了安全起见，可以直接将CHING会话与用户挂钩。
+SID是CHING会话的暴露标识，用以让浏览器在页面切换之间可以继续上一页面的访问情况，关于SID则比session_id更加灵活与安全，SID可以通过COOKIE、GET、POST三种方式传递给服务器，为了安全起见，可以直接将CHING会话与用户挂钩。
 
 从1.2.1版本开始，本框架会自动为所有访问者创建SID，包括游客，开发者则无需考虑SID的任何有关实现，只需直接操作用户会话即可。同时游客SID与SugarService下的用户加密SID完全兼容配合，不同类型的SID可以在SugarService下直接进行检测识别。
 
@@ -458,15 +463,6 @@ ching会话在使用上与session完全一样，仅是普通的键值型数据�
 `cache_ching()` 函数使用时无参数需求，所有可配置参数均来自项目配置文件中的CHINGSET配置项。
 
 缓存机制上，目前ching会话配置仅支持 Apc、Xcache和File（文件存储）三种底层缓存实现，对于一般的非分布式架构网站则足矣，而对于分布式大规模网站的ching会话则更需求于Memcache之类的缓存机制，此类支持将在后续版本中提供实现。
-
-### CHING会话配置参数
-
-		'CHINGSET' => array(
-				'TYPE' => 'File',     //底层缓存方式
-				'DIR' => dirname($_SERVER['SCRIPT_FILENAME']) . '/' . THINK_PATH . '../Ching/',  //缓存目录（仅针对File缓存方式有效）
-				'EXPIRE' => 60,      //缓存时效，超时该缓存中的内容将不可读，并且尝试读取的操作将返回false
-				'DOMAIN' => "five.com", //设置ching会话SID的作用域名
-		);
 
 ### CHING会话服务注册
 
