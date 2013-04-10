@@ -11,7 +11,6 @@ abstract class ChigiAction extends Action {
     private $cacheChing;
 
     public function __construct() {
-        require_once("functions.php");
         // <editor-fold defaultstate="collapsed" desc="地址栏参数处理">
         foreach ($_GET as $key => $value) {
             if (in_array($key, array('_URL_', C('TOKEN_NAME')))) {
