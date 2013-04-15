@@ -4,6 +4,7 @@
  * @author 千木郷 chigix@zoho.com
  */
 defined('CHIGI_PATH') or define('CHIGI_PATH', dirname(__FILE__) . '/');
+require 'QueryPath/qp.php';
 require 'functions.php';
 
 function chigi_alias($configarr = array()) {
@@ -21,6 +22,7 @@ function chigi_alias($configarr = array()) {
         'ChigiApi' => CHIGI_PATH . 'ChigiApi.class.php',
         'ChigiService' => CHIGI_PATH . 'ChigiService.class.php',
         'ChigiData' => CHIGI_PATH . 'ChigiData.class.php',
+        'ChigiReturn' => CHIGI_PATH . 'ChigiReturn.class.php',
     );
     return array_merge($orig, $configarr);
 }

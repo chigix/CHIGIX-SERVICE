@@ -70,7 +70,7 @@ class ChigiReturn {
      * @param mixed $returnValue
      * @return /ReturnService
      */
-    public function get($returnValue) {
+    public static function get($returnValue) {
         if ($returnValue['status'] !== null) {
             return new self($returnValue);
         } else {

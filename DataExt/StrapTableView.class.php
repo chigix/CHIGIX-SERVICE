@@ -10,8 +10,14 @@
  *
  * @author Administrator
  */
-class StrapView {
-    //put your code here
+class StrapTableView {
+    public function theadTop(){
+        //
+    }
+
+    public function theadLeft($ChigiData) {
+        //
+    }
 }
 
 ?>

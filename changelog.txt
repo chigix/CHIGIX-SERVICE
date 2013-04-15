@@ -1,32 +1,32 @@
 //=========================================
-// ǧľ�����ܸ����ĵ�
+// 千木服务框架更新文档
 //=========================================
 ChigiX-Service 1.6.0 Realease 20130321
-1.����Service�౩¶��HTTP�·��ʵ�����
-2.���ӱ���ͳһ�ύ����on
-3.����ҵ�񻷾���⼰���ϻ���under
-4.����ReturnService��AlertService������Դ��
-5.�޸���ת��ͷ��ching�Ự�Ĵ���Ӱ��
-6.����EmptyAction�Ĳ��𣬼��ٿ������
+1.增加Service类暴露在HTTP下访问的限制
+2.增加表单统一提交机制on
+3.增加业务环境检测及保障机制under
+4.集成ReturnService与AlertService并开放源码
+5.修复跳转报头对ching会话的存入影响
+6.撤销EmptyAction的部署，减少框架依赖
 
 ChigiX-Service 1.5.0 Realease 20130312
-1.����ȫ��URL��ת�����
-2.�޸�cut_string_using_first�ַ�����������BUG
+1.增加全局URL跳转池设计
+2.修复cut_string_using_first字符串处理函数BUG
 
 ChigiX-Service 1.4.5 Realease 20130310
-1.ChigiApi��������dm()����ģ�Ͱ�װ�����ṩ
-2.Ching�Ự�ṩ�����û���
-3.���ӵ�ַ����ʽ���ι淶֧��
-4.���Ching�Ự��ʱ�Զ��ؽ�����
+1.ChigiApi根类增加dm()数据模型包装函数提供
+2.Ching会话提供可配置机制
+3.增加地址栏显式传参规范支持
+4.解决Ching会话超时自动重建问题
 
 ChigiX-Service 1.3.0 Realease 20130307
-1.����ching�Ự����Ԫ�ػ�ȡ����
-2.ChigiApiAction���ΪChigiApi����
-3.����cut_string_using_last�ַ����������ߺ����ṩ
-4.���apiAction������ͻ����
+1.增加ching会话数组元素获取机制
+2.ChigiApiAction变更为ChigiApi根类
+3.增加cut_string_using_last字符串处理工具函数提供
+4.解决apiAction类名冲突问题
 
 ChigiX-Service 1.2.0 Realease 20130302
-1.����Service����
-2.�ṩCHING�Ự����
-3.���� 1.1 �汾�е�BUG
+1.增加Service根类
+2.提供CHING会话机制
+3.修正 1.1 版本中的BUG
 

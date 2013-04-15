@@ -130,19 +130,23 @@ MVC架构是在软件开发中已占据不可动摇的地位，其架构模式�
 
 直接在系统扩展目录（默认为webRoot/ThinkPHP/Extend/）下新建一个文件夹并命名为 `Chigi` ，直接将本仓库中的所有内容全部托入该文件夹中，即完成千木服务扩展的安装。
 
-若要使用千木服务架构来设计应用，仅需在项目的别名配置（alias.php）中加入如下几行即可（可直接拷贝，无需改动）：
+若要使用千木服务架构来设计应用，仅需在项目的别名配置（alias.php）中加入如下两行即可（可直接拷贝，无需改动）：
 
-		//加载千木调试模板引擎
-		//'ThinkTemplate' => EXTEND_PATH.'Chigi/ChigiTemplate.class.php',
-		'ChigiAction' => EXTEND_PATH . 'Chigi/ChigiAction.class.php',
-		'ChigiApi' => EXTEND_PATH . 'Chigi/ChigiApi.class.php',
-		'ChigiService' => EXTEND_PATH . 'Chigi/ChigiService.class.php',
+		require(EXTEND_PATH . 'Chigi/alias.php');
+		return chigi_alias();
 
 至此整个项目便可以完全使用千木服务架构来进行开发。
 
-千木调试模板引擎默认是不启用的，所有继承ChigiAction类的控制器均可以连接及调用千木服务类。
+千木架构在ThinkPHP上的安装基于alias别名控制文件，但是不影响开发者定义自己的别名文件，该函数中支持直接放入数组：
 
-关于千木调试模板引擎是千路服务项目中的一项内容，而千路前端服务现已作为一个独立的服务存在，脱离千木架构本体，所以详细的使用方法及资料请查看千路前端服务的相关文档。在这里只强调一点，若去掉上面的注释会启用千木调试模板引擎，而在该模板引擎下不允许使用display，必须通过连接千路前端服务来进行模板渲染和输出，否则会抛出异常。
+		return chigi_alias(
+			'Content' => EXTEND_PATH . 'Example/Content.class.php',
+			'Comment' => EXTEND_PATH . 'Example/Comment.class.php',
+			'User' => EXTEND_PATH . 'Example/User.class.php',
+			);
+		//↓上面的别名定义与原生架构完美兼容：
+		import('Content');
+		$obj = new Content();  //与ThinkPHP自身的用法无区别★
 
 ### 控制器部署
 
