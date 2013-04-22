@@ -98,7 +98,7 @@ abstract class ChigiAction extends Action {
             _404();
         }
         unset($_POST[C("TOKEN_NAME")]);
-        if ( isset($_SESSION['verify'])) {
+        if (isset($_SESSION['verify'])) {
             if ($_SESSION['verify'] != md5($_POST['verify'])) {
                 $this->error("验证码错误");
             }
@@ -186,23 +186,58 @@ abstract class ChigiAction extends Action {
         $this->show($content);
     }
 
-    public function __chigiDisplay() {
-        $this->display();
-    }
-
 //-----------------------------------------------------
-//---原生方法继承   --------------------------
+//---原生方法重写   --------------------------
 //-----------------------------------------------------
     protected function show($content, $charset = '', $contentType = '', $prefix = '') {
         parent::show($content, $charset, $contentType, $prefix);
     }
 
     protected function display($templateFile = '', $charset = '', $contentType = '', $content = '', $prefix = '') {
-        parent::display($templateFile, $charset, $contentType, $content, $prefix);
+        if ($templateFile == '') {
+            $templateFile = ACTION_NAME;
+        }
+        // <editor-fold defaultstate="collapsed" desc="初始化视图类，摘自Action类initView方法">
+        //实例化视图类
+        if (!$this->view)
+            $this->view = Think::instance('View');
+        // 模板变量传值
+        if ($this->tVar)
+            $this->view->assign($this->tVar);
+        // </editor-fold>
+
+        // <editor-fold defaultstate="collapsed" desc="摘自View类display方法">
+        G('viewStartTime');
+        tag('view_begin', $templateFile);
+        $output = $this->view->fetch($templateFile, $content, $prefix);
+        // </editor-fold>
+        //★输出前端页面HTML代码至浏览器
+        // <editor-fold defaultstate="collapsed" desc="摘自View类render方法，请视当前版本的render方法进行改动">
+        $charset = C('DEFAULT_CHARSET');
+        $contentType = C('TMPL_CONTENT_TYPE');
+        // 网页字符编码
+        header('Content-Type:' . $contentType . '; charset=' . $charset);
+        header('Cache-control: ' . C('HTTP_CACHE_CONTROL'));  // 页面缓存控制
+        header('X-Powered-By:CHIGIX.com');
+        echo $output;
+        // </editor-fold>
+        tag('view_end');
     }
 
     protected function fetch($templateFile = '', $content = '', $prefix = '') {
         parent::fetch($templateFile, $content, $prefix);
+    }
+
+    /**
+     * 针对类中非public方法的调用
+     *
+     * 使用示例：$obj->__chigiCaller("display",array("index"));
+     * @param string $method
+     * @param array $args
+     * @return type
+     */
+    public function __chigiCaller($method, $args) {
+        return call_user_func_array(array(&$this, $method), $args);
     }
 
 }

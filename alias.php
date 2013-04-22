@@ -1,4 +1,5 @@
 <?php
+
 /**
  * 别名定义
  * @author 千木郷 chigix@zoho.com
@@ -10,11 +11,9 @@ require 'functions.php';
 function chigi_alias($configarr = array()) {
     $chigiActionPath = CHIGI_PATH . 'ChigiAction.class.php';
     $chigiTempPath = CORE_PATH . 'Template/ThinkTemplate.class.php';
-    if (defined('APP_DEBUG')) {
-        if (APP_DEBUG === true) {
-            $chigiActionPath = CHIGI_PATH . 'ChigiActionDebug.class.php';
-            $chigiTempPath = CHIGI_PATH . 'ChigiTemplate.class.php';
-        }
+    if (APP_DEBUG) {
+        //$chigiActionPath = CHIGI_PATH . 'ChigiActionDebug.class.php';
+        $chigiTempPath = CHIGI_PATH . 'ChigiTemplate.class.php';
     }
     $orig = array(
         'ThinkTemplate' => $chigiTempPath,
