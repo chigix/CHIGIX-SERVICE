@@ -52,7 +52,7 @@ class ChigiData {
             //编译模式
             $this->__view = $type;
             if ($pageName === null) {
-                $pageName = ACTION_NAME;
+                $pageName = MODULE_NAME . 'MODULE';
             }
 
             // 数据格式转换
@@ -60,7 +60,7 @@ class ChigiData {
             $cols = array_merge(array("__key"), $cols);
 
             // 数据可视化渲染
-            $result = qp('<table id="' . ucfirst($name) . 'MODULE"><thead><tr></tr></thead><tbody></tbody></table>', '#' . ucfirst($name) . 'MODULE');
+            $result = qp('<table id="' . $pageName . '_' . $name . '"><thead><tr></tr></thead><tbody></tbody></table>', '#' . $pageName . '_' . $name . '');
             $table = $result->find('table');
             $table->addClass('table');
             $table->addClass('table-bordered');
@@ -83,10 +83,10 @@ class ChigiData {
             $newLine->appendTo($volist);
 
             // 输出渲染结果
-            if (file_put_contents(THEME_PATH . "/$pageName/" . ucfirst($name) . "MODULE.html", $result->html())) {
-                trace(THEME_PATH . "/$pageName/" . $name . "MODULE.html", $name . "MODULE模板文件渲染完毕");
+            if (file_put_contents(THEME_PATH . "$pageName/" . $name . ".html", $result->html())) {
+                trace(THEME_PATH . "$pageName/" . $name . ".html", $name . "MODULE模板文件渲染完毕");
             } else {
-                trace("页面CSS渲染失败");
+                trace($name . "MODULE模板文件渲染失败");
             }
         }
         //$this->__output = $result->html();
