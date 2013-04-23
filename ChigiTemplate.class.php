@@ -113,6 +113,9 @@ class ThinkTemplate {
             $enderData = file_get_contents(CHIGI_PATH . 'html/indexEnder.html');
             $enderData = $this->chijiKwordReplace($enderData, $pagePath);
             file_put_contents($pagePath, $pageData);
+            if (!file_exists($modulePath)) {
+                mkdir($modulePath);
+            }
             file_put_contents($modulePath . '/' . $pageName . 'Starter.html', $starterData);
             file_put_contents($modulePath . '/' . $pageName .'Ender.html', $enderData);
             return;
