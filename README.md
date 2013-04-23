@@ -490,17 +490,17 @@ CHING会话目前默认时效为15分钟，若需在项目配置文件中自定�
 
 ## 模板变量assign命名规范
 
-文件：`/Theme/AlertService/TopAlertMODULE.html`
+|assign                                                      | 模板引擎调用                            |
+|------------------------------------------------------------|-----------------------------------------|
+|`$this->assign("PackageName_ELeName_Var");`                 | `{$PackageName_EleNameMODULE_var}`      |
+|`$this->assign("Public_Header_" . ACTION_NAME, "active");`  | `{$Public_Header_index}`                |
 
-include标签：`<include file="AlertService:TopALertMODULE" />`
 
-assign变量：`$this->assign("PackageName_ELeNameMODULE_Var");`
+|文件                                        | include标签                                      |
+|--------------------------------------------|--------------------------------------------------|
+|`/Theme/AlertService/TopAlert.html`         | `<include file="AlertService:TopALert" />`       |
+|`/Theme/AppsMODULE/indexDisplayList.html`   | `<include file="AppsMODULE:indexDisplayList" />` |
 
-`$this->assign("Public_Header_" . ACTION_NAME, "active");`
-
-模板使用变量：`{$PackageName_EleNameMODULE_var}`
-
-`{$Public_Header_index}`
 
 # API——ChigiAction
 
