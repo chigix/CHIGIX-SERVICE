@@ -85,7 +85,7 @@ class ThinkTemplate {
         // 模板阵列变量分解成为独立变量
         extract($templateVar, EXTR_OVERWRITE);
         // 编译前端JS和LESS
-        $this->chijiJCGenerator($fileName);
+        $this->chijiJCGenerator($templateFile);
         //载入模版缓存文件
         include $templateCacheFile;
     }
@@ -127,7 +127,9 @@ class ThinkTemplate {
      * @return string
      */
     protected function chijiKwordReplace($data, $pagePath) {
+        // index
         $pageName = cut_string_using_first('.', cut_string_using_last('/', $pagePath, 'right', false), 'left',false);
+        // Apps
         $packageName = cut_string_using_last('/', cut_string_using_last('/', $pagePath, 'left' , false), 'right',false);
         $replace = array(
             '{PAGENAME}' => $pageName,
@@ -144,8 +146,9 @@ class ThinkTemplate {
      * 前端JS、CSS资源部署生成器
      *
      */
-    public function chijiJCGenerator($templateFile) {
-        $fileName = cut_string_using_last('/', $templateFile, 'right',FALSE);
+    public function chijiJCGenerator($pagePath) {
+        $pageName = cut_string_using_first('.', cut_string_using_last('/', $pagePath, 'right', false), 'left',false);
+        $packageName = cut_string_using_last('/', cut_string_using_last('/', $pagePath, 'left' , false), 'right',false);
         //开始模块前端动态编译
         $lessFile = ""; //用于存放生成的Less模块导入文件列表
         // <editor-fold defaultstate="collapsed" desc="Trace模板Module加载列表">
@@ -180,8 +183,8 @@ class ThinkTemplate {
         } else {
             $less->setFormatter("compressed");
         }
-        if (file_put_contents('./../Chiji/' . APP_NAME . '/css/page-' . $fileName . '.css', $less->compile($lessFile))) {
-            trace('Chiji/' . APP_NAME . '/css/page-' . $fileName . '.css', "页面CSS渲染完毕");
+        if (file_put_contents('./../Chiji/' . APP_NAME . '/css/' . $packageName . '-' . $pageName . '.css', $less->compile($lessFile))) {
+            trace('Chiji/' . APP_NAME . '/css/' . $packageName . '-' . $pageName . '.css', "页面CSS渲染完毕");
         } else {
             if ($less->compile($lessFile) == '') {
                 trace("页面CSS无内容");
@@ -212,7 +215,7 @@ class ThinkTemplate {
             import('ORG.Chiji.JsCompress');
             $jsCombinedString = chijiJsCompress($jsCombinedString);
         }
-        switch (file_put_contents('./../Chiji/' . APP_NAME . '/js/page-' . $fileName . '.js', $jsCombinedString)) {
+        switch (file_put_contents('./../Chiji/' . APP_NAME . '/js/' . $packageName . '-' . $pageName . '.js', $jsCombinedString)) {
             case 0:
                 trace("页面JS无内容");
                 break;
@@ -220,7 +223,7 @@ class ThinkTemplate {
                 trace("页面JS渲染失败");
                 break;
             default:
-                trace('Chiji/' . APP_NAME . '/css/page-' . $fileName . '.js', "页面JS渲染完毕");
+                trace('Chiji/' . APP_NAME . '/js/' . $packageName . '-' . $pageName . '.js', "页面JS渲染完毕");
                 break;
         }
         // </editor-fold>
