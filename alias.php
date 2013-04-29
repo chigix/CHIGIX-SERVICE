@@ -7,7 +7,7 @@
 defined('CHIGI_PATH') or define('CHIGI_PATH', dirname(__FILE__) . '/');
 require 'QueryPath/qp.php';
 require 'functions.php';
-require 'CHING.class.php';
+require 'Ching.class.php';
 CHING::getInstance();
 function chigi_alias($configarr = array()) {
     $chigiActionPath = CHIGI_PATH . 'ChigiAction.class.php';
