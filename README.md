@@ -3,7 +3,7 @@
 
 For ThinkPHP 3.1.0 +
 
-Version 1.6.9
+Version 1.7.0
 
 Author 千木郷（李颖豪） chigix@zoho.com
 
@@ -122,7 +122,7 @@ MVC架构是在软件开发中已占据不可动摇的地位，其架构模式�
 
 在控制器中需要连接服务才能使用目标服务提供的方法和业务逻辑，而开发者几乎什么都不用做就可以开发出一个具有规模的系统。
 
-连接服务亦非常简单，只需一句 `service("ServiceName")` 
+连接服务亦非常简单，只需一句 `service("ServiceName")` ，从1.7.0开始服务的连接单例化，故开发者可以随意调用service函数而无需担心服务类的内存开销。
 
 **所有的service只能在客户端应用及客户端service中使用，不能在服务端Api及Model中使用。**
 

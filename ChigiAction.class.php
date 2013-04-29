@@ -8,42 +8,7 @@
  */
 abstract class ChigiAction extends Action {
 
-    private $cacheChing;
-
     public function __construct() {
-        // <editor-fold defaultstate="collapsed" desc="地址栏参数处理">
-        foreach ($_GET as $key => $value) {
-            if (in_array($key, array('_URL_', C('TOKEN_NAME')))) {
-                continue;
-            }
-            $_GET[$key] = base64_decode($value);
-        }
-        // </editor-fold>
-        // <editor-fold defaultstate="collapsed" desc="客户端SID处理">
-        if (isset($_COOKIE['sid'])) {
-            define("CHING", $_COOKIE['sid']);
-        } elseif (isset($_GET['sid'])) {
-            define("CHING", $_GET['sid']);
-        } elseif (isset($_POST['sid'])) {
-            define("CHING", $_POST['sid']);
-        } else {
-            //当前浏览器上无sid记录
-            //↓则生成一条新的游客记录
-            $cid = md5(getClientIp() . microtime());
-            cookie("sid", $cid, array('domain' => C("CHINGSET.DOMAIN")));
-            define("CHING", $cid);
-        }
-        // </editor-fold>
-        // <editor-fold defaultstate="collapsed" desc="CHING会话初始化">
-        $this->cacheChing = cache_ching();
-        $content = $this->cacheChing->get(CHING);
-        //Ching会话初始化
-        if ($content === false) {
-            $this->cacheChing->set(CHING, array());
-            $content = array();
-        }
-        C("CHING", $content);
-        // </editor-fold>
         $this->__chigiEmptyRedirection();
         parent::__construct();
     }
@@ -59,14 +24,17 @@ abstract class ChigiAction extends Action {
         } else {
             // <editor-fold defaultstate="collapsed" desc="查询全局页面定义">
             $result = array();
-            $isInt = intval(ACTION_NAME);
-            $pageName = ACTION_NAME;
+            $isInt = intval(MODULE_NAME);
+            $pageName = MODULE_NAME;
             if ($isInt > 0) {
                 $result = M('ChigiPage')->field('pagename,domain,protocol')->find($isInt);
                 $pageName = $result['pagename'];
             } else {
-                $result = M('ChigiPage')->field('domain,protocol')->where(array('pagename' => ACTION_NAME, 'status' => 1))->find();
+                $result = M('ChigiPage')->field('domain,protocol,pagename')->where(array('pagename' => $pageName, 'status' => 1))->find();
             }
+            dump($result);
+            dump(M()->getLastSql());
+            exit;
             //查询结果处理，正确则进行跳转
             if ($result === null) {
                 return;
@@ -173,11 +141,6 @@ abstract class ChigiAction extends Action {
         //return();
     }
 
-    public function __destruct() {
-        $this->cacheChing->set(CHING, ching(), C("CHINGSET.EXPIRE")); //缓存仅存在15分钟
-        parent::__destruct();
-    }
-
     public function __chigiFetch() {
         $this->fetch();
     }
@@ -205,7 +168,6 @@ abstract class ChigiAction extends Action {
         if ($this->tVar)
             $this->view->assign($this->tVar);
         // </editor-fold>
-
         // <editor-fold defaultstate="collapsed" desc="摘自View类display方法">
         G('viewStartTime');
         tag('view_begin', $templateFile);
@@ -238,6 +200,17 @@ abstract class ChigiAction extends Action {
      */
     public function __chigiCaller($method, $args) {
         return call_user_func_array(array(&$this, $method), $args);
+    }
+
+    /**
+     * 模板变量赋值
+     * @access protected
+     * @param mixed $name 要显示的模板变量
+     * @param mixed $value 变量的值
+     * @return void
+     */
+    protected function assign($name, $value = '') {
+        parent::assign($name , $value);
     }
 
 }

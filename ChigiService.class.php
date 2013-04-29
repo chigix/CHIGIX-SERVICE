@@ -53,8 +53,13 @@ class ChigiService {
     }
 
     public function setDirect($successAdd = null, $errorAdd = null) {
-        if ($successAdd !== null) {
-            $this->successRedirect = $successAdd;
+        $this->setSuc($successAdd);
+        $this->setErr($errorAdd);
+    }
+
+    public function setSuc($addr = null) {
+        if ($addr !== null) {
+            $this->successRedirect = $addr;
         } elseif (ching("CHIGI_SUCCESSDIRECT") !== null) {
             $this->successRedirect = ching("CHIGI_SUCCESSDIRECT");
             ching("CHIGI_SUCCESSDIRECT", NULL);
@@ -63,8 +68,11 @@ class ChigiService {
         } else {
             $this->successRedirect = C("CHIGI_SUCCESSDIRECT");
         }
-        if ($errorAdd !== null) {
-            $this->errorRedirect = $errorAdd;
+    }
+
+    public function setErr($addr = null) {
+        if ($addr !== null) {
+            $this->errorRedirect = $addr;
         } elseif (ching("CHIGI_ERRORDIRECT") !== null) {
             $this->errorRedirect = ching("CHIGI_ERRORDIRECT");
             ching("CHIGI_ERRORDIRECT", NULL);
@@ -76,7 +84,7 @@ class ChigiService {
     }
 
     public function addAddrParams($key, $value) {
-        $this->addrParams[$key] = base64_encode($value);
+        $this->addrParams[$key] = in_array($key, array("iframe")) ? base64_encode($value) : $value;
     }
 
     /**
@@ -84,7 +92,7 @@ class ChigiService {
      */
     public function successDirectHeader() {
         if ($this->cookie_status == 0) {
-            $this->addAddrParams("sid", CHING);
+            $this->addAddrParams("sid", CHING::$CID);
         }
         if (startsWith($this->successRedirect, 'http://')) {
             if (endsWith($this->successRedirect, '/') === false) {
@@ -108,7 +116,7 @@ class ChigiService {
      */
     public function errorDirectHeader() {
         if ($this->cookie_status == 0) {
-            $this->addAddrParams('sid', CHING);
+            $this->addAddrParams('sid', CHING::$CID);
         }
         if (startsWith($this->errorRedirect, 'http://')) {
             if (endsWith($this->errorRedirect, '?') === false) {
@@ -184,9 +192,9 @@ class underCheck {
      */
     public function __construct($result) {
         if (isset($_GET['iframe'])) {
-            $this->addAddrParams('iframe' , $_GET['iframe']);
-        }  else {
-            $this->addAddrParams('iframe' , 'http://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']);
+            $this->addAddrParams('iframe', $_GET['iframe']);
+        } else {
+            $this->addAddrParams('iframe', 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']);
         }
         if (is_int($result)) {
             $result == 1 ? $this->under_status = true : $this->under_status = false;
@@ -194,10 +202,10 @@ class underCheck {
             $this->under_status = $result;
         } elseif (is_array($result)) {
             getNumHundreds($result['status']) == 2 ? $this->under_status = true : $this->under_status = false;
-             if (getNumTens($result['status']) == 2) {
-                 $this->pushAlert($result['data']);
-             }
-        }  else {
+            if (getNumTens($result['status']) == 2) {
+                $this->pushAlert($result['data']);
+            }
+        } else {
             throw_exception("underCheck传参错误");
         }
     }

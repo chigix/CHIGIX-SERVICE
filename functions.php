@@ -196,8 +196,12 @@ function keywordSpaceClip($targetString) {
  */
 function service($serviceName) {
     $service = $serviceName . 'Service';
-    if (import('@.Service.' . $service)) {
-        return (new $service());
+    static $services = array(); //静态，模拟单例模式
+    if (isset($services[$serviceName])) {
+        return $services[$serviceName];
+    } elseif (import('@.Service.' . $service)) {
+        $services[$serviceName] = new $service();
+        return $services[$serviceName];
     } else {
         $traceInfo = debug_backtrace();
         throw_exception('Service ' . $serviceName . ' not found ' . $traceInfo[0]['file'] . ' 第 ' . $traceInfo[0]['line'] . ' 行.');
@@ -322,13 +326,16 @@ function redirect_link($addr, $params = array()) {
     }
     $paramString = "";
     if ($params != array()) {
+        //$params非空数组时做如下遍历，若为空数组则直接跳过遍历，提升性能
         foreach ($params as $key => $val) {
             if ($val === NULL) {
                 continue;
             }
             if (is_array($val))
                 $val = implode(',', $val);
-            $val = base64_encode($val);
+            if (in_array($key, array('iframe'))) {
+                $val = base64_encode($val);
+            }
             $paramString .= '/' . $key . '/' . $val;
         }
     }
