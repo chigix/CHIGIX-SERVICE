@@ -2,12 +2,13 @@
 
 /**
  * 别名定义
- * @author 千木郷 chigix@zoho.com
+ * @author Richard Lea <chigix@zoho.com>
  */
 defined('CHIGI_PATH') or define('CHIGI_PATH', dirname(__FILE__) . '/');
 require 'QueryPath/qp.php';
 require 'functions.php';
-
+require 'CHING.class.php';
+CHING::getInstance();
 function chigi_alias($configarr = array()) {
     $chigiActionPath = CHIGI_PATH . 'ChigiAction.class.php';
     $chigiTempPath = CORE_PATH . 'Template/ThinkTemplate.class.php';

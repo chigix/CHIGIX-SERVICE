@@ -215,53 +215,28 @@ function service($serviceName) {
  * @return mixed
  */
 function ching() {
-    if (defined("CHING")) {
-        $data = C("CHING");
+     /* @var $chingObj CHING */
+    static $chingObj = NULL;
+    $chingObj = CHING::getInstance();
+    if (isset(CHING::$CID)) {
         $args = func_get_args();
         $argNum = count($args);
         switch ($argNum) {
             case 0:
                 //返回当前所有ching会话
-                return $data;
+                return $chingObj->getAll();
                 break;
             case 1:
                 if (is_null($args[0])) {  // 清空ching
-                    return C("CHING", array());
+                    $chingObj->delete();
+                    return null;
                 }
                 //获取目标ching会话内容，支持数组元素筛选
-                return getNestedVar($data, $args[0]);
+                return $chingObj->get($args[0]);
                 break;
             case 2:
                 //设置ching会话值，支持数组筛选
-                $temp = getNestedVar($data, $args[0]);
-                set_value($data, $args[0], $args[1]);
-                // <editor-fold defaultstate="collapsed" desc="过滤当前数据索引路径上的null数组">
-                if ($args[1] === null) {
-                    $pathString = $args[0];
-                    $lastKey = "";
-                    $valTmp = getNestedVar($data, $pathString);
-                    while ($pathString != "") {
-                        if (empty($valTmp)) {
-                            $lastKey = cut_string_using_last('.', $pathString, 'right', false);
-                            $pathString = cut_string_using_last('.', $pathString, 'left', false);
-                            if ($lastKey == $pathString) {
-                                unset($data[$lastKey]);
-                                break;
-                            } else {
-                                $valTmp = getNestedVar($data, $pathString);
-                                if ($lastKey != "") {
-                                    unset($valTmp[$lastKey]);
-                                    set_value($data, $pathString, $valTmp);
-                                }
-                            }
-                        } else {
-                            break;
-                        }
-                    }
-                }
-                // </editor-fold>
-                C("CHING", $data); //缓存仅存在15分钟
-                return $temp;
+                return $chingObj->set($args[0] , $args[1]);
                 break;
             default:
                 break;
@@ -343,7 +318,7 @@ function redirectHeader($addr, $params = array()) {
  */
 function redirect_link($addr, $params = array()) {
     if (!isset($_COOKIE['sid'])) {
-        $params['sid'] = CHING;
+        $params['sid'] = CHING::$CID;
     }
     $paramString = "";
     if ($params != array()) {
@@ -475,37 +450,6 @@ function cut_string_using_first($character, $string, $side, $keep_character = tr
             break;
     }
     return($piece);
-}
-
-/**
- * ching会话缓存初始化
- *
- * @return object
- */
-function cache_ching() {
-    $type = C('CHINGSET.TYPE');
-    $expire = C('CHINGSET.EXPIRE');
-    if ($expire === null) {
-        $expire = 900; //设定默认超时时间
-    }
-    switch ($type) {
-        case 'Apc':
-            //采用Apc缓存机制存储
-            return(Cache::getInstance('Apc', array("expire" => $expire)));
-            break;
-        case 'Xcache':
-            //采用Xcache缓存机制存储
-            return(Cache::getInstance('Xcache', array("expire" => $expire)));
-            break;
-        default:
-            //默认采用文件存储
-            $dir = C('CHINGSET.DIR');
-            if ($dir === null) {
-                $dir = dirname($_SERVER['SCRIPT_FILENAME']) . '/' . THINK_PATH . '../Ching/';
-            }
-            return(Cache::getInstance('File', array("temp" => $dir, "expire" => $expire)));
-            break;
-    }
 }
 
 ?>
