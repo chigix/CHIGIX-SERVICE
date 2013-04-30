@@ -156,6 +156,9 @@ class CHING {
                 if ($dir === null) {
                     $dir = dirname($_SERVER['SCRIPT_FILENAME']) . '/' . THINK_PATH . '../Ching/';
                 }
+                if (!file_exists($dir)) {
+                    throw_exception("对不起，Ching会话目录部署不可访问，请检查CHINGSET配置项");
+                }
                 return(Cache::getInstance('File', array("temp" => $dir, "expire" => $expire)));
                 break;
         }
