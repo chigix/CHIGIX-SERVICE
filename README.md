@@ -137,6 +137,8 @@ MVC架构是在软件开发中已占据不可动摇的地位，其架构模式�
 		require(EXTEND_PATH . 'Chigi/alias.php');
 		return chigi_alias();
 
+由于从1.7.0开始，架构内部完全集成前端渲染增强，故需要再安装前端渲染增强插件，可以在Samples/ORG/下找到Chiji目录，将该目录直接复制到ThinkPHP的扩展ORG目录下即可。该扩展包中集成了phpLess和JSxs，可与千木架构完美配合。
+
 至此整个项目便可以完全使用千木服务架构来进行开发。
 
 千木架构在ThinkPHP上的安装基于alias别名控制文件，但是不影响开发者定义自己的别名文件，该函数中支持直接放入数组：
