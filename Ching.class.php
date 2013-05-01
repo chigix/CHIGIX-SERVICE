@@ -20,34 +20,53 @@ class CHING {
     private $__cache;
     private $__data = array();
 
-    public static function getInstance($cid = null) {
+    /**
+     * CHING会话初始化构造器
+     *
+     * @param string $cid 用于手工指定sid，若为null则会系统自动生成一个32位sid
+     * @param int $expire 指定COOKIE的存储时间
+     * @param boolean $isContinue 指定新开启的会话是否还继续上一次会话的内容
+     * @return /CHING
+     */
+    public static function getInstance($cid = null, $expire = 0, $isContinue = false) {
         if ((!isset(self::$__instance)) || $cid != null) {
-            self::$__instance = new CHING($cid);
+            if ($isContinue) {
+                $tmp = self::$__instance->getAll();
+                self::$__instance = new CHING($cid, $expire);
+                //继续现已有会话的内容
+                self::$__instance->setAll($tmp);
+            }  else {
+                //开启全新的会话内容
+                self::$__instance = new CHING($cid, $expire);
+            }
         }
         return self::$__instance;
     }
 
-    private function __construct($cid) {
+    private function __construct($cid, $expire) {
         self::$COOKIE_STATUS = isset($_COOKIE['sid']) ? TRUE : FALSE;
         // <editor-fold defaultstate="collapsed" desc="客户端SID处理">
         if (!is_null($cid)) {
             //指定CID，不使用自动生成的新CID
             self::$CID = $cid;
+            cookie("sid", self::$CID, array("expire" => $expire, 'domain' => C("CHINGSET.DOMAIN")));
         } elseif (isset($_COOKIE['sid'])) {
             self::$CID = $_COOKIE['sid'];
         } elseif (isset($_GET['sid'])) {
             self::$CID = $_GET['sid'];
+            cookie("sid", self::$CID, array("expire" => $expire, 'domain' => C("CHINGSET.DOMAIN")));
         } elseif (isset($_POST['sid'])) {
             self::$CID = $_POST['sid'];
+            cookie("sid", self::$CID, array("expire" => $expire, 'domain' => C("CHINGSET.DOMAIN")));
         } else {
             //当前浏览器上无sid记录
             //↓则生成一条新的游客记录
             $cid = md5(getClientIp() . microtime());
             self::$CID = $cid;
+            cookie("sid", self::$CID, array("expire" => $expire, 'domain' => C("CHINGSET.DOMAIN")));
         }
-        cookie("sid", self::$CID, array('domain' => C("CHINGSET.DOMAIN")));
         // </editor-fold>
-        // <editor-fold defaultstate="collapsed" desc="CHING会话初始化">
+        // <editor-fold defaultstate="collapsed" desc="CHING会话缓存初始化">
         $this->__cache = $this->cache_ching();
         $content = $this->__cache->get(self::$CID);
         if ($content === false) {
@@ -57,15 +76,17 @@ class CHING {
         }
         $this->__data = $content;
         // </editor-fold>
+        // <editor-fold defaultstate="collapsed" desc="侦测客户端浏览器是否支持COOKIE">
         if ((!self::$COOKIE_STATUS) && (!isset($_REQUEST['sid']))) {
             //第一次访问本网站，或浏览器不支持COOKIE
             //即浏览器端没有COOKIE信息
             Dispatcher::dispatch();
             if (file_exists((LIB_PATH . '/Action/EmptyAction.class.php'))) {
                 //已定义 空模块，则跳转检测客户端是否支持COOKIE
-                redirectHeader('/On/', array('type' => 'checkcookie','sid'=>  self::$CID,'iframe'=>(is_ssl()?'https://':'http://') . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']),null);
+                redirectHeader('/On/', array('type' => 'checkcookie', 'sid' => self::$CID, 'iframe' => (is_ssl() ? 'https://' : 'http://') . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']), null);
             }
         }
+        // </editor-fold>
     }
 
     /**
@@ -105,6 +126,10 @@ class CHING {
         return $temp;
     }
 
+    public function setAll($data) {
+        $this->__data = $data;
+        return;
+    }
     /**
      * 删除指定的CHING 值
      *
