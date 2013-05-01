@@ -155,8 +155,6 @@ class underCheck {
         } else {
             $this->addAddrParams('iframe', (is_ssl()?'https://':'http://') . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']);
         }
-        if (!CHING::$COOKIE_STATUS)
-            $this->addAddrParams("sid", CHING::$CID);
         if (is_int($result)) {
             $result == 1 ? $this->under_status = true : $this->under_status = false;
         } elseif (is_bool($result)) {
