@@ -9,6 +9,7 @@
 abstract class ChigiAction extends Action {
 
     public function __construct() {
+        $this->__chigiCheckURL();
         $this->__chigiEmptyRedirection();
         parent::__construct();
     }
@@ -45,6 +46,7 @@ abstract class ChigiAction extends Action {
                         if (isset($_GET['_URL_'])) {
                             unset($_GET['_URL_']);
                         }
+                        header('HTTP/1.1 301 Moved Permanently'); //发出301头部
                         return(redirectHeader(MODULE_NAME . '/' . ACTION_NAME, $_GET, $result['protocol'] . '://' . $result['domain']));
                     }
                     // </editor-fold>
@@ -226,10 +228,29 @@ abstract class ChigiAction extends Action {
     private function checkcookie() {
         $addr = $_GET['iframe'];
         if (!CHING::$COOKIE_STATUS) {
-            $addr .= (strpos($addr, '?')>0)?'&sid=':'?sid=' . $_GET['sid'];
+            $addr .= (strpos($addr, '?') > 0) ? '&sid=' : '?sid=' . $_GET['sid'];
         }
         redirectHeader($addr);
     }
+
+    private function __chigiCheckURL() {
+        $the_host = $_SERVER['HTTP_HOST']; //取得当前域名
+        /* @var $the_url string 判断地址后面的部分，带斜杠开头 */
+        $the_url = isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '';
+        $the_url = strtolower($the_url); //将英文字母转成小写
+        if ($the_url == "/index.php") {//判断是不是首页
+            $the_url = ""; //如果是首页，赋值为空
+        }
+        if (
+                count(explode('.', $the_host)) < 3
+                || $_SERVER['REQUEST_URI'] != redirect_link(MODULE_NAME.'/'.ACTION_NAME, $_GET,'')
+        ) {
+            //如果域名不符合规范，则作如下跳转：
+            header('HTTP/1.1 301 Moved Permanently'); //发出301头部
+            redirectHeader(MODULE_NAME.'/'.ACTION_NAME, $_GET);
+        }
+    }
+
 }
 
 ?>
