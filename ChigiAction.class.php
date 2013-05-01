@@ -16,26 +16,40 @@ abstract class ChigiAction extends Action {
     //目标操作不在控制器中，进行自动跳转
     protected function __chigiEmptyRedirection() {
         if (get_class($this) == 'EmptyAction') {
-            // <editor-fold defaultstate="collapsed" desc="查询全局页面定义">
-            $result = array();
-            $isInt = intval(MODULE_NAME);
-            $pageName = MODULE_NAME;
-            if ($isInt > 0) {
-                $result = M('ChigiPage')->field('pagename,domain,protocol')->find($isInt);
-                $pageName = $result['pagename'];
-            } else {
-                $result = M('ChigiPage')->field('domain,protocol')->where(array('pagename' => $pageName, 'status' => 1))->find();
+            switch (substr(MODULE_NAME, 0, 2)) {
+                case 'On':
+                    if (isset($_GET['type'])) {
+                        // 进行除表单接收外的其他系统特定操作
+                        $type = $_GET['type'];
+                        return $this->$type();
+                    } else {
+                        // 进入表单接收操作on
+                        return($this->on());
+                    }
+                    break;
+                default:
+                    // <editor-fold defaultstate="collapsed" desc="查询全局页面定义">
+                    $result = array();
+                    $isInt = intval(MODULE_NAME);
+                    $pageName = MODULE_NAME;
+                    if ($isInt > 0) {
+                        $result = M('ChigiPage')->field('pagename,domain,protocol')->find($isInt);
+                        $pageName = $result['pagename'];
+                    } else {
+                        $result = M('ChigiPage')->field('domain,protocol')->where(array('pagename' => $pageName, 'status' => 1))->find();
+                    }
+                    //查询结果处理，正确则进行跳转
+                    if ($result === null) {
+                        return;
+                    } else {
+                        if (isset($_GET['_URL_'])) {
+                            unset($_GET['_URL_']);
+                        }
+                        return(redirectHeader(MODULE_NAME . '/' . ACTION_NAME, $_GET, $result['protocol'] . '://' . $result['domain']));
+                    }
+                    // </editor-fold>
+                    break;
             }
-            //查询结果处理，正确则进行跳转
-            if ($result === null) {
-                return;
-            } else {
-                if (isset($_GET['_URL_'])) {
-                    unset($_GET['_URL_']);
-                }
-                return(redirectHeader(MODULE_NAME . '/' . ACTION_NAME, $_GET, $result['protocol'] . '://' . $result['domain']));
-            }
-            // </editor-fold>
         } elseif (method_exists($this, ACTION_NAME)) {
             //如果目标操作直接在当前控制器中
             return;
@@ -209,6 +223,13 @@ abstract class ChigiAction extends Action {
         parent::assign($name, $value);
     }
 
+    private function checkcookie() {
+        $addr = $_GET['iframe'];
+        if (!CHING::$COOKIE_STATUS) {
+            $addr .= (strpos($addr, '?')>0)?'&sid=':'?sid=' . $_GET['sid'];
+        }
+        redirectHeader($addr);
+    }
 }
 
 ?>

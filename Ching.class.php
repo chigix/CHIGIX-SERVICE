@@ -28,7 +28,7 @@ class CHING {
     }
 
     private function __construct($cid) {
-        self::$COOKIE_STATUS = isset($_COOKIE['sid']) ? 1 : 0;
+        self::$COOKIE_STATUS = isset($_COOKIE['sid']) ? TRUE : FALSE;
         // <editor-fold defaultstate="collapsed" desc="客户端SID处理">
         if (!is_null($cid)) {
             //指定CID，不使用自动生成的新CID
@@ -57,6 +57,15 @@ class CHING {
         }
         $this->__data = $content;
         // </editor-fold>
+        if ((!self::$COOKIE_STATUS) && (!isset($_REQUEST['sid']))) {
+            //第一次访问本网站，或浏览器不支持COOKIE
+            //即浏览器端没有COOKIE信息
+            Dispatcher::dispatch();
+            if (file_exists((LIB_PATH . '/Action/EmptyAction.class.php'))) {
+                //已定义 空模块，则跳转检测客户端是否支持COOKIE
+                redirectHeader('/On/', array('type' => 'checkcookie','sid'=>  self::$CID,'iframe'=>(is_ssl()?'https://':'http://') . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']),null);
+            }
+        }
     }
 
     /**

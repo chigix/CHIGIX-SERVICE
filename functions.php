@@ -309,8 +309,9 @@ function getNestedVar(&$context, $name) {
  * @param string $params 地址参数，会自动根据当前COOKIE状态添加SID的显式传递
  * 地址参数写法："key"=>"value"  →  ?key=value
  * @param string $domain 指定域名，若为空则默认使用当前域名，所传入域名须包含完整的协议，且结尾没有斜杠
+ * @param boolean $sidShow 是否显示SID
  */
-function redirectHeader($addr, $params = array() , $domain = null) {
+function redirectHeader($addr, $params = array() , $domain = null,$sidShow = true) {
     redirect(redirect_link($addr, $params , $domain), 0); //redirect函数中已封装了exit
 }
 
@@ -321,9 +322,15 @@ function redirectHeader($addr, $params = array() , $domain = null) {
  * @param string $params 地址参数，会自动根据当前COOKIE状态添加SID的显式传递
  * 地址参数写法："key"=>"value"  →  ?key=value
  * @param string $domain 指定域名，若为空则默认使用当前域名，所传入域名须包含完整的协议，且结尾没有斜杠
+ * @param boolean $sidShow 是否显示SID
  */
-function redirect_link($addr, $params = array(), $domain = null) {
-    if (!CHING::$COOKIE_STATUS) {
+function redirect_link($addr, $params = array(), $domain = null,$sidShow = true) {
+    if (strpos($addr, '://')>0) {
+        //若传入参数为完整的URL地址
+        return $addr;
+    }
+    if ((!CHING::$COOKIE_STATUS)&&$sidShow) {
+        //当前未检测到客户端中COOKIE支持，且允许显示SID
         $params['sid'] = CHING::$CID;
     }
     $paramString = http_build_query($params);
