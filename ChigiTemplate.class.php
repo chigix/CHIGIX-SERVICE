@@ -150,6 +150,10 @@ class ThinkTemplate {
      *
      */
     public function chijiJCGenerator($pagePath) {
+        if (!C('CHIJI.RC_DIR')) {
+            throw_exception("对不起，当前项目尚未配置前端资源部署目录");
+        }
+        $resourceDir = C('CHIJI.RC_DIR');
         $pageName = cut_string_using_first('.', cut_string_using_last('/', $pagePath, 'right', false), 'left',false);
         $packageName = cut_string_using_last('/', cut_string_using_last('/', $pagePath, 'left' , false), 'right',false);
         //开始模块前端动态编译
@@ -186,7 +190,7 @@ class ThinkTemplate {
         } else {
             $less->setFormatter("compressed");
         }
-        if (file_put_contents('./../Chiji/' . APP_NAME . '/css/' . $packageName . '-' . $pageName . '.css', $less->compile($lessFile))) {
+        if (file_put_contents($resourceDir . '/css/' . $packageName . '-' . $pageName . '.css', $less->compile($lessFile))) {
             trace('Chiji/' . APP_NAME . '/css/' . $packageName . '-' . $pageName . '.css', "页面CSS渲染完毕");
         } else {
             if ($less->compile($lessFile) == '') {
@@ -218,7 +222,7 @@ class ThinkTemplate {
             import('ORG.Chiji.JsCompress');
             $jsCombinedString = chijiJsCompress($jsCombinedString);
         }
-        switch (file_put_contents('./../Chiji/' . APP_NAME . '/js/' . $packageName . '-' . $pageName . '.js', $jsCombinedString)) {
+        switch (file_put_contents($resourceDir . '/js/' . $packageName . '-' . $pageName . '.js', $jsCombinedString)) {
             case 0:
                 trace("页面JS无内容");
                 break;
