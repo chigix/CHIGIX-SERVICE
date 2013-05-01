@@ -3,7 +3,7 @@
 
 For ThinkPHP 3.1.0 +
 
-Version 1.7.0
+Version 1.7.1
 
 Author 千木郷（李颖豪） chigix@zoho.com
 
@@ -23,7 +23,9 @@ Weibo: http://weibo.com/chigix
 		- [模型部署](#-2)
 		- [模板部署](#-3)
 		- [Widget部署](#widget)
-		- [URL部署](#url)
+	- [URL部署](#url)
+		- [URL版本规范](#url-1)
+		- [URL跳转池部署](#url-2)
 	- [上线部署](#-4)
 - [开发规范](#-5)
 	- [返回值统一规范](#-6)
@@ -37,7 +39,7 @@ Weibo: http://weibo.com/chigix
 		- [CHING会话部署 与 参数配置](#ching--)
 		- [ching()函数使用](#ching)
 		- [CHING会话初始化](#ching-1)
-		- [CHING会话服务注册](#ching-2)
+		- [CHING会话服务注册规范](#ching-2)
 		- [关于操作时效](#-10)
 	- [模板变量assign命名规范](#assign)
 - [API——ChigiAction](#apichigiaction)
@@ -56,8 +58,8 @@ Weibo: http://weibo.com/chigix
 	- [$this->under($method);](#this-undermethod)
 - [工具函数系列](#-11)
 	- [string arrayImplode( string $glue, string $separator, array $array);](#string-arrayimplode-string-glue-string-separator-array-array)
-	- [void redirectHeader($addr, $params = array());](#void-redirectheaderaddr-params--array)
-	- [string redirect_link($addr, $params = array());](#string-redirect_linkaddr-params--array)
+	- [void redirectHeader($addr, $params = array() , $domain = null);](#void-redirectheaderaddr-params--array--domain--null)
+	- [string redirect_link($addr, $params = array() , $domain = null);](#string-redirect_linkaddr-params--array--domain--null)
 - [ChigiCode](#chigicode)
 	- [第一位数说明](#-12)
 	- [第二位数说明](#-13)
@@ -124,6 +126,11 @@ MVC架构是在软件开发中已占据不可动摇的地位，其架构模式�
 连接服务亦非常简单，只需一句 `service("ServiceName")` ，从1.7.0开始服务的连接单例化，故开发者可以随意调用service函数而无需担心服务类的内存开销。
 
 **所有的service只能在客户端应用及客户端service中使用，不能在服务端Api及Model中使用。**
+
+## Dependency
+
+1. Lessc 编译库，已在Samples中附带，请移到ORG扩展目录下即可
+2. JSxs 编译库，已在Samples中附带，请移到ORG扩展目录下即可
 
 ## Installation
 
@@ -202,9 +209,10 @@ MVC架构是在软件开发中已占据不可动摇的地位，其架构模式�
 
 ### URL版本规范
 
-一般性地址，除总域名结尾不带斜杠外，其他非html结尾的URL均带斜杠，且所有index操作均隐藏并以斜杠结尾的URL作为该页面的指定URL格式：
+一般性地址，非html结尾的URL均带斜杠，且所有index操作均隐藏 并以斜杠结尾的URL 作为该页面的指定URL格式：
 
-		http://www.chigix.com
+		http://www.chigix.com/
+		http://www.chigix.com/on.html
 		http://www.chigix.com/login/
 		http://www.chigix.com/login/secpage.html
 		http://www.chigix.com/profile/request.html?arg1=var1&arg2=var2
@@ -669,10 +677,13 @@ CHING会话目前默认时效为15分钟，开发者亦可通过CHINGSET配置�
 
 	iframe采用rawurlencode/rawurldecode进行编解码。
 
-	使用时与 `U()` 函数、 `$_GET['iframe']` 配合示例：
+	典型示例：
 
 		redirect_link($addr,array("iframe"=>U('Action/Module')));  //用U函数时直接在里面使用
 		redirect_link($addr,array("iframe"=>$_GET['iframe']));     //从iframe中获取地址参数再传入时无需再使用U函数
+		redirect_link('/on/');   //生成：http://www.chigix.com/on.html
+		redirect_link('Login/index');   //生成：http://www.chigix.com/login/
+		redirect_link('Index/index');   //生成：http://www.chigix.com
 
 [返回目录](#contents)
 

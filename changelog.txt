@@ -1,7 +1,7 @@
 //=========================================
 // 千木服务框架更新文档
 //=========================================
-ChigiX-Service 1.7.0 Realease 20130430
+ChigiX-Service 1.7.1 Realease 20130501
 1.加入CHING会话读写的点号数组索引支持
 2.underCheck机制下的自动获取iframe参数
 3.集成Return返回值规范机制
@@ -11,6 +11,8 @@ ChigiX-Service 1.7.0 Realease 20130430
 7.新增千木数据对象对象
 8.加入QueryPath类库集成
 9.重新设计更为简洁的安装方式
+10.新加入完善的URL版本控制机制
+11.支持301自动地址跳转，规范URL
 
 ChigiX-Service 1.6.0 Realease 20130321
 1.增加Service类暴露在HTTP下访问的限制
