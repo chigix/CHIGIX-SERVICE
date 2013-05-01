@@ -181,6 +181,16 @@ class underCheck {
     }
 
     /**
+     * 移除指定URL参数
+     *
+     * @param string $name
+     * @return \underCheck
+     */
+    public function rmAddrParam($name) {
+        $this->params[$name] = null;
+        return $this;
+    }
+    /**
      * 添加地址栏参数
      *
      * @param type $key
