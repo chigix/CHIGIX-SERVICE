@@ -234,6 +234,10 @@ abstract class ChigiAction extends Action {
     }
 
     private function __chigiCheckURL() {
+        if (MODULE_NAME == 'On') {
+            //ON万能操作不作为URL规范控制
+            return;
+        }
         $the_host = $_SERVER['HTTP_HOST']; //取得当前域名
         /* @var $the_url string 判断地址后面的部分，带斜杠开头 */
         $the_url = isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '';
