@@ -10,6 +10,13 @@ class CHING {
 
     private static $__instance;
     public static $CID;
+
+    /**
+     * 当前客户端中是否有cookie("sid")
+     *
+     * @var boolean
+     */
+    public static $COOKIE_STATUS = true;
     private $__cache;
     private $__data = array();
 
@@ -21,6 +28,7 @@ class CHING {
     }
 
     private function __construct($cid) {
+        self::$COOKIE_STATUS = isset($_COOKIE['sid']) ? 1 : 0;
         // <editor-fold defaultstate="collapsed" desc="客户端SID处理">
         if (!is_null($cid)) {
             //指定CID，不使用自动生成的新CID
@@ -68,7 +76,7 @@ class CHING {
      * @return array
      */
     public function getAll() {
-        return $this->___data;
+        return $this->__data;
     }
 
     /**
@@ -108,7 +116,7 @@ class CHING {
                         unset($this->__data[$lastKey]);
                         break;
                     } else {
-                        $valTmp = getNestedVar($data, $pathString);
+                        $valTmp = getNestedVar($this->__data, $pathString);
                         if ($lastKey != "") {
                             unset($valTmp[$lastKey]);
                             set_value($this->__data, $pathString, $valTmp);
