@@ -8,16 +8,8 @@ defined('CHIGI_PATH') or define('CHIGI_PATH', dirname(__FILE__) . '/');
 require 'QueryPath/qp.php';
 require 'functions.php';
 require 'Ching.class.php';
-CHING::getInstance();
+CHING::getInstance();//启动CHING会话
 
-// <editor-fold defaultstate="collapsed" desc="地址栏参数处理">
-if (isset($_GET['iframe'])) {
-    $_GET['iframe'] = base64_decode($value);
-} else {
-    $_GET['iframe'] = null;
-}
-
-// </editor-fold>
 function chigi_alias($configarr = array()) {
     $chigiActionPath = CHIGI_PATH . 'ChigiAction.class.php';
     $chigiTempPath = CORE_PATH . 'Template/ThinkTemplate.class.php';

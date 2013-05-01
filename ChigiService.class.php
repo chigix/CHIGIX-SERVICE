@@ -29,13 +29,6 @@ class ChigiService {
     protected $addrParams = array();
 
     /**
-     * 当前客户端中是否有cookie("sid")
-     *
-     * @var type
-     */
-    public $cookie_status = 1;
-
-    /**
      * api地址参数，实例化后会直接变成目标对象
      *
      * @var String
@@ -43,11 +36,12 @@ class ChigiService {
     public $apiAction = "";
 
     public function __construct() {
-        $this->cookie_status = isset($_COOKIE['sid']) ? 1 : 0;
         import($this->apiAction);
         $apiName = cut_string_using_last('.', $this->apiAction, 'right', false);
         $this->apiAction = new $apiName(C('CHIGI_AUTH'));
         isset($_GET['iframe']) ? $this->setDirect($_GET['iframe']) : $this->setDirect();
+        if (!CHING::$COOKIE_STATUS)
+            $this->addAddrParams("sid", CHING::$CID);
         if (method_exists($this, '_initialize'))
             $this->_initialize();
     }
@@ -84,56 +78,21 @@ class ChigiService {
     }
 
     public function addAddrParams($key, $value) {
-        $this->addrParams[$key] = in_array($key, array("iframe")) ? base64_encode($value) : $value;
+        $this->addrParams[$key] = $value;
     }
 
     /**
      * 跳转至执行成功页面
      */
     public function successDirectHeader() {
-        if ($this->cookie_status == 0) {
-            $this->addAddrParams("sid", CHING::$CID);
-        }
-        if (startsWith($this->successRedirect, 'http://')) {
-            if (endsWith($this->successRedirect, '/') === false) {
-                exit(header('location:' . $this->successRedirect . (($this->addrParams == array()) ? '' : '/' . arrayImplode('/', '/', $this->addrParams))));
-            } else {
-                exit(header('location:' . $this->successRedirect . (($this->addrParams == array()) ? '' : arrayImplode('/', '/', $this->addrParams))));
-            }
-        } elseif (startsWith($this->successRedirect, '/index.php/')) {
-            if (endsWith($this->successRedirect, '/') === false) {
-                exit(header('location:' . $this->successRedirect . (($this->addrParams == array()) ? '' : '/' . arrayImplode('/', '/', $this->addrParams))));
-            } else {
-                exit(header('location:' . $this->successRedirect . (($this->addrParams == array()) ? '' : arrayImplode('/', '/', $this->addrParams))));
-            }
-        } else {
-            exit(header('location:' . U($this->successRedirect) . (($this->addrParams == array()) ? '' : arrayImplode('/', '/', $this->addrParams))));
-        }
+        redirectHeader($this->successRedirect, $this->addrParams);
     }
 
     /**
      * 跳转至执行失败页面
      */
     public function errorDirectHeader() {
-        if ($this->cookie_status == 0) {
-            $this->addAddrParams('sid', CHING::$CID);
-        }
-        if (startsWith($this->errorRedirect, 'http://')) {
-            if (endsWith($this->errorRedirect, '?') === false) {
-                exit(header('location:' . $this->errorRedirect . (($this->addrParams == array()) ? '' : '/' . arrayImplode('/', '/', $this->addrParams))));
-            } else {
-                exit(header('location:' . $this->errorRedirect . (($this->addrParams == array()) ? '' : arrayImplode('/', '/', $this->addrParams))));
-            }
-        } elseif (startsWith($this->errorRedirect, '/index.php/')) {
-            if (endsWith($this->errorRedirect, '?') === false) {
-                exit(header('location:' . $this->errorRedirect . (($this->addrParams == array()) ? '' : '/' . arrayImplode('/', '/', $this->addrParams))));
-            } else {
-                header('location:' . $this->errorRedirect . (($this->addrParams == array()) ? '' : arrayImplode('/', '/', $this->addrParams)));
-                exit;
-            }
-        } else {
-            exit(header('location:' . U($this->errorRedirect) . (($this->addrParams == array()) ? '' : arrayImplode('/', '/', $this->addrParams))));
-        }
+        redirectHeader($this->errorRedirect, $this->addrParams);
     }
 
     /**
@@ -194,8 +153,10 @@ class underCheck {
         if (isset($_GET['iframe'])) {
             $this->addAddrParams('iframe', $_GET['iframe']);
         } else {
-            $this->addAddrParams('iframe', 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']);
+            $this->addAddrParams('iframe', (is_ssl()?'https://':'http://') . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']);
         }
+        if (!CHING::$COOKIE_STATUS)
+            $this->addAddrParams("sid", CHING::$CID);
         if (is_int($result)) {
             $result == 1 ? $this->under_status = true : $this->under_status = false;
         } elseif (is_bool($result)) {

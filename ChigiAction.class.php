@@ -15,13 +15,7 @@ abstract class ChigiAction extends Action {
 
     //目标操作不在控制器中，进行自动跳转
     protected function __chigiEmptyRedirection() {
-        if (method_exists($this, ACTION_NAME)) {
-            //如果目标操作直接在当前控制器中
-            return;
-        } elseif (startsWith(ACTION_NAME, 'on')) {
-            //on表单提交接收操作
-            return($this->on());
-        } else {
+        if (get_class($this) == 'EmptyAction') {
             // <editor-fold defaultstate="collapsed" desc="查询全局页面定义">
             $result = array();
             $isInt = intval(MODULE_NAME);
@@ -30,11 +24,8 @@ abstract class ChigiAction extends Action {
                 $result = M('ChigiPage')->field('pagename,domain,protocol')->find($isInt);
                 $pageName = $result['pagename'];
             } else {
-                $result = M('ChigiPage')->field('domain,protocol,pagename')->where(array('pagename' => $pageName, 'status' => 1))->find();
+                $result = M('ChigiPage')->field('domain,protocol')->where(array('pagename' => $pageName, 'status' => 1))->find();
             }
-            dump($result);
-            dump(M()->getLastSql());
-            exit;
             //查询结果处理，正确则进行跳转
             if ($result === null) {
                 return;
@@ -42,12 +33,17 @@ abstract class ChigiAction extends Action {
                 if (isset($_GET['_URL_'])) {
                     unset($_GET['_URL_']);
                 }
-                if (isset($_GET['method'])) {
-                    unset($_GET['method']);
-                }
-                return(redirectHeader($result['protocol'] . '://' . $result['domain'] . U('/' . $pageName . '/'), $_GET));
+                return(redirectHeader(MODULE_NAME . '/' . ACTION_NAME, $_GET, $result['protocol'] . '://' . $result['domain']));
             }
             // </editor-fold>
+        } elseif (method_exists($this, ACTION_NAME)) {
+            //如果目标操作直接在当前控制器中
+            return;
+        } elseif (startsWith(ACTION_NAME, 'on')) {
+            //on表单提交接收操作
+            return($this->on());
+        } else {
+            return;
         }
     }
 
@@ -210,7 +206,7 @@ abstract class ChigiAction extends Action {
      * @return void
      */
     protected function assign($name, $value = '') {
-        parent::assign($name , $value);
+        parent::assign($name, $value);
     }
 
 }

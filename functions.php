@@ -219,7 +219,7 @@ function service($serviceName) {
  * @return mixed
  */
 function ching() {
-     /* @var $chingObj CHING */
+    /* @var $chingObj CHING */
     static $chingObj = NULL;
     $chingObj = CHING::getInstance();
     if (isset(CHING::$CID)) {
@@ -240,7 +240,7 @@ function ching() {
                 break;
             case 2:
                 //设置ching会话值，支持数组筛选
-                return $chingObj->set($args[0] , $args[1]);
+                return $chingObj->set($args[0], $args[1]);
                 break;
             default:
                 break;
@@ -308,9 +308,10 @@ function getNestedVar(&$context, $name) {
  * @param string $addr 支持HTTP地址或U生成地址
  * @param string $params 地址参数，会自动根据当前COOKIE状态添加SID的显式传递
  * 地址参数写法："key"=>"value"  →  ?key=value
+ * @param string $domain 指定域名，若为空则默认使用当前域名，所传入域名须包含完整的协议，且结尾没有斜杠
  */
-function redirectHeader($addr, $params = array()) {
-    exit(header("location:" . redirect_link($addr, $params)));
+function redirectHeader($addr, $params = array() , $domain = null) {
+    redirect(redirect_link($addr, $params , $domain), 0); //redirect函数中已封装了exit
 }
 
 /**
@@ -319,38 +320,27 @@ function redirectHeader($addr, $params = array()) {
  * @param string $addr 支持HTTP地址或U生成地址
  * @param string $params 地址参数，会自动根据当前COOKIE状态添加SID的显式传递
  * 地址参数写法："key"=>"value"  →  ?key=value
+ * @param string $domain 指定域名，若为空则默认使用当前域名，所传入域名须包含完整的协议，且结尾没有斜杠
  */
-function redirect_link($addr, $params = array()) {
-    if (!isset($_COOKIE['sid'])) {
+function redirect_link($addr, $params = array(), $domain = null) {
+    if (!CHING::$COOKIE_STATUS) {
         $params['sid'] = CHING::$CID;
     }
-    $paramString = "";
-    if ($params != array()) {
-        //$params非空数组时做如下遍历，若为空数组则直接跳过遍历，提升性能
-        foreach ($params as $key => $val) {
-            if ($val === NULL) {
-                continue;
-            }
-            if (is_array($val))
-                $val = implode(',', $val);
-            if (in_array($key, array('iframe'))) {
-                $val = base64_encode($val);
-            }
-            $paramString .= '/' . $key . '/' . $val;
+    $paramString = http_build_query($params);
+    $addr = strtolower($addr);
+    if (substr($addr, -5) == 'index') {
+        if (substr($addr, 0, 5) == 'index') {
+            //定位为Index/index，即总域名（注：千木架构规范，Index控制器下仅能存在一个操作）
+            $addr = is_null($domain)?(is_ssl() ? 'https://' : 'http://') . $_SERVER['HTTP_HOST']:$domain;
+        }  else {
+            //定位地址中有可省略的index，故结尾不留.html
+            $addr = is_null($domain) ? substr(U($addr, '', false, false, true), 0, -5) : $domain . substr(U($addr, '', false, false, false), 0, -5);
         }
-    }
-    $paramString = cut_string_using_first('/', $paramString, 'right', false);
-    if (startsWith($addr, 'http%3A%2F%2F')) {
-        $addr = rawurldecode($addr);
-    } elseif (!startsWith($addr, 'http://')) {
-        $addr = U($addr);
-    }
-    if (endsWith($addr, '/') === false) {
-        //斜杠不存在
-        return($addr . '/' . $paramString);
     } else {
-        return($addr . $paramString);
+        //定位地址无任何可省略成分，最终需生成完整的.html格式URL
+        $addr = is_null($domain) ? U($addr, '', true, false, true) : $domain . U($addr, '', true, false, false);
     }
+    return($addr . (empty($paramString) ? '' : '?') . $paramString);
 }
 
 /**

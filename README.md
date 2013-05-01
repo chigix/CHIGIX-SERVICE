@@ -49,7 +49,6 @@ Weibo: http://weibo.com/chigix
 	- [$this->dm("TableName");](#this-dmtablename)
 - [API——ChigiService](#apichigiservice)
 	- [$this->apiAction;](#this-apiaction)
-	- [$this->cookie_status = 1;](#this-cookie_status--1)
 	- [$this->addAddrParams( string $key, mixed $value);](#this-addaddrparams-string-key-mixed-value)
 	- [$this->successDirectHeader();](#this-successdirectheader)
 	- [$this->errorDirectHeader();](#this-errordirectheader)
@@ -92,7 +91,7 @@ MVC架构是在软件开发中已占据不可动摇的地位，其架构模式�
 3. 在延伸的代码中（修改和有源代码衍生的代码中）需要带有原来代码中的协议、商标、专利声明和其他原来作者规定需要包含的说明
 4. 如果再发布的产品中包含一个 Notice 文件，则在 Notice 文件中需要带有 Apache License 。当然允许第三方在 Notice 中增加自己的许可，但不可以表现为对 Apache License 构成更改。
 
-具体的协议参考：http://www.apache.org/licenses/LICENSE-2.0 
+具体的协议参考：http://www.apache.org/licenses/LICENSE-2.0
 
 # Overview
 
@@ -154,13 +153,15 @@ MVC架构是在软件开发中已占据不可动摇的地位，其架构模式�
 
 ### 控制器部署
 
-1.	IndexAction	——首页
+1.	IndexAction	——首页，为保证URL的统一，请保证Index控制器下有且仅有一个index方法
 2.	.....Action ——其他页面，一个页面就一个控制器，且直接使用index方法，或可在控制器内跳转修改index。
 3.	AjaxAction	——ajax模块，主负责所有页面上异步交互的执行操作
 
 ### 模型部署
 
 由于一切业务逻辑均服务化，所以对于一些主要的业务逻辑均已封装于已有的服务中，而对于已有服务提供的模型则无需作任何部署，直接连接到对应的Service类即可，在千木服务化架构下会替开发者完成所有本服务下的业务逻辑。
+
+通过服务层的抽象与分离，可以更深层地降低应用本身与数据库之间的耦合性，让应用的开发从繁杂的数据模型交互中解放，变成简单易行的服务类的拼装与调用。
 
 ### 模板部署
 
@@ -191,17 +192,45 @@ MVC架构是在软件开发中已占据不可动摇的地位，其架构模式�
 		|     ├OtherServiceWidget.class.php   其他同样型的Widget类部署
 		|
 
-### URL部署
+[返回目录](#contents)
 
-从千木服务架构1.5.0起，提供全局URL跳转机制，方便连接多站以轻松组建站群。
+## URL部署
 
-只需将需要整合在一起的网站共同连接到同一URL跳转池中即可在。
+从1.7.0开始，提供更为自由与友好的URL识别与跳转机制，在继承1.5.0提供的URL跳转池基础上，新增URL版本统一机制，以提供更好的SEO地址优化。
 
-而现1.5.0中的URL跳转池是创建在数据库中的，ChigiAction会自动连接该数据库并进行跳转检测，从而实现全局统一页面跳转。
+通过URL的部署，让开发者在WEB编程中无需再思考URL的定位问题，所有的模块化控制均统一到以控制器为单位的解决方案上，开发者仅需明确跳转或调用的控制器即可，URL的格式及版本统一在架构的封装中一并提供解决与实现。
 
-而开发者使用该功能则必须保证已定义的全局页面仅能存在一个项目中，不能出现多个项目共有，否则会出现非全局跳转。
+### URL版本规范
 
-而对于已有项目的页面重名问题，例如index操作，则可以在操作名前加两个下划线，以避开重名。
+一般性地址，除总域名结尾不带斜杠外，其他非html结尾的URL均带斜杠，且所有index操作均隐藏并以斜杠结尾的URL作为该页面的指定URL格式：
+
+		http://www.chigix.com
+		http://www.chigix.com/login/
+		http://www.chigix.com/login/secpage.html
+		http://www.chigix.com/profile/request.html?arg1=var1&arg2=var2
+
+SEO专用地址建议：
+
+		【普通静态页地址】
+		http://www.chigix.com/news/933.html
+
+		【带分页】
+		http://www.chigix.com/article-668-1.html
+
+		【分类型】
+		http://www.chigix.com/houduan/php/qian-mu-fu-wu-jia-gou.html
+
+### URL跳转池部署
+
+从千木服务架构1.5.0起，提供全局URL跳转机制，可将某项目下的控制器注册为全局控制器，从而只需将需要整合在一起的网站项目共同连接到同一URL跳转池中，即可轻松组建站群。
+
+而现1.7.0中的URL跳转池是创建在数据库中的，ChigiAction会自动连接该数据库并进行跳转检测，从而实现全局统一页面跳转。
+
+而开发者使用该功能则必须保证所注册的全局控制器仅能存在一个项目中，不能出现多个项目共有，否则会出现局部不跳转。
+
+而对于已有项目的控制器重名问题，例如Index控制器，则可以在操作名前加两个下划线，以避开重名。
+
+由于ThinkPHP在刚开始运行首先检测是否存在对应的控制器，故如需使用控制器名的跳转，可在当前项目下放置一个EmptyAction空类即可，当然亦可在里面写入自定义的逻辑，通过放置一个空模块，便可让ThinkPHP跳转对应模块类的存在检查而直接进入千木架构的URL跳转。
 
 ## 上线部署
 
@@ -560,11 +589,6 @@ CHING会话目前默认时效为15分钟，开发者亦可通过CHINGSET配置�
 		$this->apiAction->onlineip = getClientIp(); //属性访问
 		$this->apiAction->requestCurrentUser($property); //操作访问调用
 
-## $this->cookie_status = 1;
-
-* 描述：当前客户端cookie中是否存有sid。
-* 使用：无需安装配置，由ChigiService根类自动进行调整，其值为布尔型。
-
 ## $this->addAddrParams( string $key, mixed $value);
 
 * 功能：为当前服务的跳转地址添加活动参数，即地址栏“?”后面的部分
@@ -596,7 +620,7 @@ CHING会话目前默认时效为15分钟，开发者亦可通过CHINGSET配置�
 ## $this->under($method);
 
 * 描述：环境保障操作，执行指定的$method操作以检测当前环境是否达标，若不达标则会跳转，达标则继续往下执行。
-* 使用：采用链式书写→ `$service->under('Login')->setDirect('/login/')->pushAlert("对不起，请先登录")->check();` 
+* 使用：采用链式书写→ `$service->under('Login')->setDirect('/login/')->pushAlert("对不起，请先登录")->check();`
 * **书写注意**：$method首字母需大写。
 * 说明：执行链中项目均为可选，整个链必须做到 `under()` 开头到 `check()` 结尾才正确。
 * ching配合：pushAlert会通过AlertService将message写入到 `ching("chijiAlert")` 中。
@@ -611,11 +635,11 @@ CHING会话目前默认时效为15分钟，开发者亦可通过CHINGSET配置�
 * 功能：将关联数组合并成一个字符串，弥补PHP原生的implode函数仅能处理数值数组的不足。
 * 参数：
 
-		$glue       键值之间的连接，形如 `{$key}{$glue}{$value}` 
+		$glue       键值之间的连接，形如 `{$key}{$glue}{$value}`
 		$separator  数组元素与元素之间的整体分隔符
 		$array      要进行合并的目标数组（关联数组）
 
-## void redirectHeader($addr, $params = array());
+## void redirectHeader($addr, $params = array() , $domain = null);
 
 * 功能：直接进行地址跳转
 * 参数：
@@ -623,6 +647,7 @@ CHING会话目前默认时效为15分钟，开发者亦可通过CHINGSET配置�
 		$addr    主地址，可以是http开头的独立地址，若调用项目内部操作页面，则需使用U();
 						 如果是http开头的独立地址，则允许自带有地址参数，$params中的参数本函数会自动处理添加
 		$params  地址参数，例如array("iframe"=>U('Action/Module'))则会生成 ?iframe=index.php/......这样的地址
+		$domain  指定域名，例如"http://www.chigix.com"，传入的域名必须完整包含协议名，且结尾没有斜杠，若为空则自动使用当前域名
 
 * 关于iframe：iframe参数是本架构特别定义的一个地址栏参数，用于显式指示目标跳转页面，主用于避免ching会话超时问题
 
@@ -630,7 +655,7 @@ CHING会话目前默认时效为15分钟，开发者亦可通过CHINGSET配置�
 
 	本函数仅用于生成地址并直接跳转，故在主地址和iframe参数中可以直接使用U函数生成地址，然后 `redirect_link()` 函数中可以继续使用 `$_GET` 来获取iframe参数。关于 `redirect_link()` 的参数转发中，详见相应的函数说明。
 
-## string redirect_link($addr, $params = array());
+## string redirect_link($addr, $params = array() , $domain = null);
 
 * 功能：生成带参复杂地址链接，并以字符串返回
 * 参数：
@@ -638,6 +663,7 @@ CHING会话目前默认时效为15分钟，开发者亦可通过CHINGSET配置�
 		$addr    主地址，可以是http开头的独立地址，若调用项目内部操作页面，则需使用U();
 						 如果是http开头的独立地址，则允许自带有地址参数，$params中的参数本函数会自动处理添加
 		$params  地址参数，例如array("iframe"=>U('Action/Module'))则会生成 ?iframe=index.php/......这样的地址
+		$domain  指定域名，例如"http://www.chigix.com"，传入的域名必须完整包含协议名，且结尾没有斜杠，若为空则自动使用当前域名
 
 * 关于iframe：iframe参数是本架构特别定义的一个地址栏参数，用于显式指示目标跳转页面，主用于避免ching会话超时问题
 
