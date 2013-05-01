@@ -16,13 +16,14 @@ return array(
     'TOKEN_RESET' => true,
     //千木服务配置
     "CHIGI_AUTH" => "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",  //应用连接密钥（32位）
-    "CHIGI_SUCCESSDIRECT" => "index",
-    "CHIGI_ERRORDIRECT" => "index",
+    "CHIGI_SUCCESSDIRECT" => "Login/index",
+    "CHIGI_ERRORDIRECT" => "Login/index",
     'COM_POST_ON' => true, //是否启用POST通信，不启用则无法接收来自POST的数据，并且API服务上接到POST会返回404
     //千路前端配置
     'CHIJI' => array(
-        'LESS_COMPRESS' => 'lessjs', //LESS是否压缩
+        'LESS_COMPRESS' => 'lessjs', //lessjs|compressed，LESS是否压缩
         'JS_DEBUG' => true, //FALSE则会JS压缩
+        'RC_DIR' => './../Chiji/' . APP_NAME . '/',
     ),
     //模板引擎编译配置
     "TMPL_PARSE_STRING" => array(
@@ -31,10 +32,8 @@ return array(
     'TMPL_VAR_IDENTIFY' => "obj",
     //URL模式配置
     'URL_MODEL' => 1,
-    "URL_ROUTER_ON" => true,
-    "URL_ROUTE_RULES" => array(
-        ':method^Ajax' => 'Index/:1',  //所有的操作均指向Index控制器
-    ),
+    'URL_HTML_SUFFIX' => 'html',
+    'URL_CASE_INSENSITIVE' => true,
     //CHING参数设置
     'CHINGSET' => array(
     	//↓ching会话所采用的底层缓存机制
