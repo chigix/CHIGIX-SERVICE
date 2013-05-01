@@ -18,6 +18,7 @@ Weibo: http://weibo.com/chigix
 	- [License](#license)
 - [Overview](#overview)
 - [Getting Started](#getting-started)
+	- [Dependency](#dependency)
 	- [Installation](#installation)
 		- [控制器部署](#-1)
 		- [模型部署](#-2)
