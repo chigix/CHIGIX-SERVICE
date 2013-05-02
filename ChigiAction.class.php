@@ -39,13 +39,14 @@ abstract class ChigiAction extends Action {
                     } else {
                         $result = M('ChigiPage')->field('domain,protocol')->where(array('pagename' => $pageName, 'status' => 1))->find();
                     }
-                    //查询结果处理，正确则进行跳转
+                    //查询结果处理
                     if ($result === null) {
+                        //没有定义的全局控制器，则执行空模块内的逻辑
                         return;
                     } else {
-                        if (isset($_GET['_URL_'])) {
+                        //已找到对应的全局控制器，准备进行跳转
+                        if (isset($_GET['_URL_']))
                             unset($_GET['_URL_']);
-                        }
                         header('HTTP/1.1 301 Moved Permanently'); //发出301头部
                         return(redirectHeader(MODULE_NAME . '/' . ACTION_NAME, $_GET, $result['protocol'] . '://' . $result['domain']));
                     }
