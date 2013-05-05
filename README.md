@@ -3,7 +3,7 @@
 
 For ThinkPHP 3.1.0 +
 
-Version 1.7.2
+Version 1.7.3
 
 Author 千木郷（李颖豪） chigix@zoho.com
 
@@ -150,11 +150,11 @@ MVC架构是在软件开发中已占据不可动摇的地位，其架构模式�
 
 千木架构在ThinkPHP上的安装基于alias别名控制文件，但是不影响开发者定义自己的别名文件，该函数中支持直接放入数组：
 
-		return chigi_alias(
+		return chigi_alias(array(
 			'Content' => EXTEND_PATH . 'Example/Content.class.php',
 			'Comment' => EXTEND_PATH . 'Example/Comment.class.php',
 			'User' => EXTEND_PATH . 'Example/User.class.php',
-			);
+			));
 		//↓上面的别名定义与原生架构完美兼容：
 		import('Content');
 		$obj = new Content();  //与ThinkPHP自身的用法无区别★
