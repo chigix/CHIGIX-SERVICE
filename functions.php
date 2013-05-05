@@ -338,9 +338,8 @@ function redirect_link($addr, $params = array(), $domain = null,$sidShow = true)
         unset($params[C('VAR_URL_PARAMS')]);
     }
     $paramString = http_build_query($params);
-    $addr = strtolower($addr);
     if (substr($addr, -5) == 'index') {
-        if (substr($addr, 0, 5) == 'index') {
+        if (substr($addr, 0, 5) == 'Index') {
             //定位为Index/index，即总域名（注：千木架构规范，Index控制器下仅能存在一个操作）
             $addr = is_null($domain)?((is_ssl() ? 'https://' : 'http://') . $_SERVER['HTTP_HOST']):$domain;
             $addr .= '/';
