@@ -3,7 +3,7 @@
 
 For ThinkPHP 3.1.0 +
 
-Version 1.7.1
+Version 1.7.2
 
 Author 千木郷（李颖豪） chigix@zoho.com
 
