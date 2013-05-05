@@ -213,9 +213,8 @@ class underCheck {
         if (empty($message) || $this->under_status == true) {
             return $this;
         }
-        $option = "alert-error";
-        $serviceAlert = service("Alert");
-        $serviceAlert->pushSet($message, $option)->alert();
+        $alert = new ChigiAlert($message , 'alert-error');
+        $alert->alert();
         return $this;
     }
 
