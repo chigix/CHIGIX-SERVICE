@@ -127,11 +127,11 @@ class ChigiReturn {
     /**
      * 获取成功/失败信息
      *
-     * @param string $name 仅能填Success或Error
+     * @param string $name 仅能填Success或Error（不区分大小写）
      * @return string
      */
     public function getMsg($name) {
-        $name = "__message" . $name;
+        $name = "__message" . ucfirst($name);
         return $this->$name;
     }
 
