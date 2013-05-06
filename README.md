@@ -155,7 +155,7 @@ https://github.com/chigix/CHIGIX-SERVICE
 RELEASES：
 
 [Version_1.7.1](https://github.com/chigix/CHIGIX-SERVICE/archive/V_1.7.1.zip)
-[Version_1.7.5 SPACIAL](https://github.com/chigix/CHIGIX-SERVICE/archive/V_1.7.5.zip)
+[Version_1.7.5 SPECIAL](https://github.com/chigix/CHIGIX-SERVICE/archive/V_1.7.5.zip)
 
 Put the sources downloaded into the ThinkPHP Extension Directory, default as `webRoot/ThinkPHP/Extend/` . And then, just feel free to enjoy it.
 
