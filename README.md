@@ -139,7 +139,7 @@ MVC架构是在软件开发中已占据不可动摇的地位，其架构模式�
 2. JSxs 编译库，已在Samples中附带，请移到ORG扩展目录下即可
 3. PHP 5.3
 
-Friendly, the Lessc Compiler[1] and the JSxs Compiler[2] have been provided in the sample files of this project. You can directly drag the /Chigi/samples/ORG/Chiji directory to the ORG originally in the ThinkPHP Extend Folder.
+Friendly, the Lessc Compiler[1] and the JSxs Compiler[2] have been provided in the sample files of this project. You can directly drag the /Chigi/samples/ORG/Chiji directory to the ORG originally in the ThinkPHP Extend Folder(/ThinkPHP/Extend/Library/ORG/).
 
 ## Installation
 
@@ -154,6 +154,7 @@ https://github.com/chigix/CHIGIX-SERVICE
 RELEASES：
 
 [Version_1.7.1](https://github.com/chigix/CHIGIX-SERVICE/archive/V_1.7.1.zip)
+[Version_1.7.5 SPACIAL](https://github.com/chigix/CHIGIX-SERVICE/archive/V_1.7.5.zip)
 
 Put the sources downloaded into the ThinkPHP Extension Directory, default as `webRoot/ThinkPHP/Extend/` . And then, just feel free to enjoy it.
 
@@ -200,7 +201,7 @@ Put the sources downloaded into the ThinkPHP Extension Directory, default as `we
 		'CHIJI' => array(
 		    'LESS_COMPRESS' => 'lessjs', //lessjs|compressed，LESS是否压缩
 		    'JS_DEBUG' => true, //FALSE则会JS压缩
-		    'RC_DIR' => '/var/Chiji/',//前端统一资源目录，请务必最后带上斜杠
+		    'RC_DIR' => '/var/Chiji/',//前端统一资源目录，请务必最后带上斜杠，建议使用绝对路径
 		),
 		
 		//模板引擎编译配置
@@ -226,7 +227,13 @@ Put the sources downloaded into the ThinkPHP Extension Directory, default as `we
 		    //↑【注意】：若像localhost之类的不带点的本地域名，请将此值填为null，否则将无法注入COOKIE
 		),
 
-## Directory for Components
+### Directory Specification
+
+1. Make a directory reference to `CHIJI.RC_DIR` and drag the resources from `samples\Chiji` into it.
+2. Make a directory reference to `CHINGSET.DIR` when the `CHINGSET.TYPE` was 'File';
+3. Make sure the folder `Extend/Library/ORG/Chiji/` is ready.
+
+## Deployment of Components
 
 ### Controller
 
