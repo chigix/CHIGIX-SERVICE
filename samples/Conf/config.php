@@ -28,7 +28,7 @@ return array(
     ),
     //模板引擎编译配置
     "TMPL_PARSE_STRING" => array(
-        '__CHIJI__' => 'http://xxxxxx',
+        '__CHIJI__' => 'http://xxxxxx',//最后不带斜杠
     ),
     'TMPL_VAR_IDENTIFY' => "obj",
     //URL模式配置

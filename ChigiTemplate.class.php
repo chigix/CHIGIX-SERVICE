@@ -78,6 +78,7 @@ class ThinkTemplate {
      * @return void
      */
     public function fetch($templateFile, $templateVar, $prefix = '') {
+        //此处$templateFile是完整的相对路径，可以进行多层解析
         $fileName = cut_string_using_last('/', $templateFile, 'right', FALSE);
         $this->chijiTempCheck($templateFile); //检测模板文件是否存在，若不存在则自动生成
         $this->tVar = $templateVar;
@@ -191,14 +192,15 @@ class ThinkTemplate {
         }
 
         $dataToWrite = $less->compile($lessFile);
-        if (empty($dataToWrite)) {
-            trace("页面CSS无内容");
-        } elseif (file_put_contents($resourceDir . 'css/' . $packageName . '-' . $pageName . '.css', $less->compile($lessFile))) {
-            trace('Chiji/' . APP_NAME . '/css/' . $packageName . '-' . $pageName . '.css', "页面CSS渲染完毕");
+        if (file_put_contents($resourceDir . 'css/' . $packageName . '-' . $pageName . '.css', $dataToWrite)) {
+            trace('Chiji/css/' . $packageName . '-' . $pageName . '.css', "页面CSS渲染完毕");
         } else {
-            trace("页面CSS渲染失败，请查看错误信息");
+            if (empty($dataToWrite)) {
+                trace("页面CSS无内容");
+            } else {
+                trace("页面CSS渲染失败，请查看错误信息");
+            }
         }
-
         // </editor-fold>
         //★JavaScript模块编译
         // <editor-fold defaultstate="collapsed" desc="JavaScript模块编译">
@@ -221,12 +223,14 @@ class ThinkTemplate {
             import('ORG.Chiji.JsCompress');
             $jsCombinedString = chijiJsCompress($jsCombinedString);
         }
-        if (empty($jsCombinedString)) {
-            trace("页面JS无内容");
-        } elseif (file_put_contents($resourceDir . '/js/' . $packageName . '-' . $pageName . '.js', $jsCombinedString)) {
-            trace('Chiji/' . APP_NAME . '/css/' . $packageName . '-' . $pageName . '.css', "页面JS渲染完毕");
+        if (file_put_contents($resourceDir . 'js/' . $packageName . '-' . $pageName . '.js', $jsCombinedString)) {
+            trace('Chiji/js/' . $packageName . '-' . $pageName . '.css', "页面JS渲染完毕");
         } else {
-            trace("页面JS渲染失败，请查看错误信息");
+            if (empty($jsCombinedString)) {
+                trace("页面JS无内容");
+            } else {
+                trace("页面JS渲染失败，请查看错误信息");
+            }
         }
         // </editor-fold>
     }

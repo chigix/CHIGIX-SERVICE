@@ -139,9 +139,11 @@ MVC架构是在软件开发中已占据不可动摇的地位，其架构模式�
 2. JSxs 编译库，已在Samples中附带，请移到ORG扩展目录下即可
 3. PHP 5.3
 
+Friendly, the Lessc Compiler[1] and the JSxs Compiler[2] have been provided in the sample files of this project. You can directly drag the /Chigi/samples/ORG/Chiji directory to the ORG originally in the ThinkPHP Extend Folder.
+
 ## Installation
 
-This is just an extension for ThinkPHP 3.1.0+. Hence all the code upon that version could use CHIGIX-SERVICE Infrastructure directly. It may be considered, with fail to meet the fundamental requirements , to do some altering following the updating instructions in the ThinkPHP Official Document ,  after witch it could migrate to this structure.
+This is just an extension for ThinkPHP 3.1.0+. Hence all the code upon that version could use CHIGIX-SERVICE Infrastructure directly. It may be considered, with the fail to meet the fundamental requirements , to do some altering following the updating instructions in the ThinkPHP Official Document ,  after witch it could migrate to this structure.
 
 ### GET ME
 
@@ -203,7 +205,8 @@ Put the sources downloaded into the ThinkPHP Extension Directory, default as `we
 		
 		//模板引擎编译配置
 		"TMPL_PARSE_STRING" => array(
-		    '__CHIJI__' => 'http://xxxxxx',
+			//前端资源获取统一URL路径，与后端的 `CHIJI.RC_DIR` 对应
+		    '__CHIJI__' => 'http://xxxxxx',  //最后不带斜杠
 		),
 		'TMPL_VAR_IDENTIFY' => "obj",
 		
@@ -220,6 +223,7 @@ Put the sources downloaded into the ThinkPHP Extension Directory, default as `we
 		    'DIR' => '/var/Chigi/Ching/',
 		    'EXPIRE' => 900,  //ching会话操作时效，默认为15分钟
 		    'DOMAIN' => "host.com", //设置ching会话SID的作用域名
+		    //↑【注意】：若像localhost之类的不带点的本地域名，请将此值填为null，否则将无法注入COOKIE
 		),
 
 ## Directory for Components
