@@ -78,7 +78,7 @@ class ThinkTemplate {
      * @return void
      */
     public function fetch($templateFile, $templateVar, $prefix = '') {
-        $fileName = cut_string_using_last('/', $templateFile, 'right',FALSE);
+        $fileName = cut_string_using_last('/', $templateFile, 'right', FALSE);
         $this->chijiTempCheck($templateFile); //检测模板文件是否存在，若不存在则自动生成
         $this->tVar = $templateVar;
         $templateCacheFile = $this->loadTemplate($templateFile, $prefix);
@@ -99,7 +99,7 @@ class ThinkTemplate {
     protected function chijiTempCheck($pagePath) {
         //例：/Default/Action/pageName.html  →$pagePath
         //例：/Default/Action  →用来存放主页面
-        $dirPath = cut_string_using_last('/', $pagePath, 'left',false);
+        $dirPath = cut_string_using_last('/', $pagePath, 'left', false);
         //例：/Default/ActionMODULE  →用来存放MODULE块页面
         $modulePath = $dirPath . 'MODULE';
         $pageName = cut_string_using_last('.html', cut_string_using_last('/', $pagePath, 'right', false), 'left', false);
@@ -117,7 +117,7 @@ class ThinkTemplate {
                 mkdir($modulePath);
             }
             file_put_contents($modulePath . '/' . $pageName . 'Starter.html', $starterData);
-            file_put_contents($modulePath . '/' . $pageName .'Ender.html', $enderData);
+            file_put_contents($modulePath . '/' . $pageName . 'Ender.html', $enderData);
             return;
         }
     }
@@ -131,9 +131,9 @@ class ThinkTemplate {
      */
     protected function chijiKwordReplace($data, $pagePath) {
         // index
-        $pageName = cut_string_using_first('.', cut_string_using_last('/', $pagePath, 'right', false), 'left',false);
+        $pageName = cut_string_using_first('.', cut_string_using_last('/', $pagePath, 'right', false), 'left', false);
         // Apps
-        $packageName = cut_string_using_last('/', cut_string_using_last('/', $pagePath, 'left' , false), 'right',false);
+        $packageName = cut_string_using_last('/', cut_string_using_last('/', $pagePath, 'left', false), 'right', false);
         $replace = array(
             '{PAGENAME}' => $pageName,
             '{APPNAME}' => APP_NAME,
@@ -154,8 +154,8 @@ class ThinkTemplate {
             throw_exception("对不起，当前项目尚未配置前端资源部署目录");
         }
         $resourceDir = C('CHIJI.RC_DIR');
-        $pageName = cut_string_using_first('.', cut_string_using_last('/', $pagePath, 'right', false), 'left',false);
-        $packageName = cut_string_using_last('/', cut_string_using_last('/', $pagePath, 'left' , false), 'right',false);
+        $pageName = cut_string_using_first('.', cut_string_using_last('/', $pagePath, 'right', false), 'left', false);
+        $packageName = cut_string_using_last('/', cut_string_using_last('/', $pagePath, 'left', false), 'right', false);
         //开始模块前端动态编译
         $lessFile = ""; //用于存放生成的Less模块导入文件列表
         // <editor-fold defaultstate="collapsed" desc="Trace模板Module加载列表">
@@ -165,7 +165,6 @@ class ThinkTemplate {
         }
         trace("[模板Module加载列表]================");
         // </editor-fold>
-
         //★Less编译
         // <editor-fold defaultstate="collapsed" desc="Less编译">
         import('ORG.Chiji.Lessc');
@@ -190,17 +189,17 @@ class ThinkTemplate {
         } else {
             $less->setFormatter("compressed");
         }
-        if (file_put_contents($resourceDir . '/css/' . $packageName . '-' . $pageName . '.css', $less->compile($lessFile))) {
+
+        $dataToWrite = $less->compile($lessFile);
+        if (empty($dataToWrite)) {
+            trace("页面CSS无内容");
+        } elseif (file_put_contents($resourceDir . 'css/' . $packageName . '-' . $pageName . '.css', $less->compile($lessFile))) {
             trace('Chiji/' . APP_NAME . '/css/' . $packageName . '-' . $pageName . '.css', "页面CSS渲染完毕");
         } else {
-            if ($less->compile($lessFile) == '') {
-                trace("页面CSS无内容");
-            } else {
-                trace("页面CSS渲染失败");
-            }
+            trace("页面CSS渲染失败，请查看错误信息");
         }
-        // </editor-fold>
 
+        // </editor-fold>
         //★JavaScript模块编译
         // <editor-fold defaultstate="collapsed" desc="JavaScript模块编译">
         //##处理module编译顺序列表并生成JS合并
@@ -222,16 +221,12 @@ class ThinkTemplate {
             import('ORG.Chiji.JsCompress');
             $jsCombinedString = chijiJsCompress($jsCombinedString);
         }
-        switch (file_put_contents($resourceDir . '/js/' . $packageName . '-' . $pageName . '.js', $jsCombinedString)) {
-            case 0:
-                trace("页面JS无内容");
-                break;
-            case false:
-                trace("页面JS渲染失败");
-                break;
-            default:
-                trace('Chiji/' . APP_NAME . '/js/' . $packageName . '-' . $pageName . '.js', "页面JS渲染完毕");
-                break;
+        if (empty($jsCombinedString)) {
+            trace("页面JS无内容");
+        } elseif (file_put_contents($resourceDir . '/js/' . $packageName . '-' . $pageName . '.js', $jsCombinedString)) {
+            trace('Chiji/' . APP_NAME . '/css/' . $packageName . '-' . $pageName . '.css', "页面JS渲染完毕");
+        } else {
+            trace("页面JS渲染失败，请查看错误信息");
         }
         // </editor-fold>
     }
