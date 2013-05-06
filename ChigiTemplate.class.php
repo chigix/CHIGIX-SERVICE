@@ -192,7 +192,7 @@ class ThinkTemplate {
         }
 
         $dataToWrite = $less->compile($lessFile);
-        if (file_put_contents($resourceDir . 'css/' . $packageName . '-' . $pageName . '.css', $dataToWrite)) {
+        if (file_put_contents($resourceDir . '/css/' . $packageName . '-' . $pageName . '.css', $dataToWrite)) {
             trace('Chiji/css/' . $packageName . '-' . $pageName . '.css', "页面CSS渲染完毕");
         } else {
             if (empty($dataToWrite)) {
@@ -223,7 +223,7 @@ class ThinkTemplate {
             import('ORG.Chiji.JsCompress');
             $jsCombinedString = chijiJsCompress($jsCombinedString);
         }
-        if (file_put_contents($resourceDir . 'js/' . $packageName . '-' . $pageName . '.js', $jsCombinedString)) {
+        if (file_put_contents($resourceDir . '/js/' . $packageName . '-' . $pageName . '.js', $jsCombinedString)) {
             trace('Chiji/js/' . $packageName . '-' . $pageName . '.css', "页面JS渲染完毕");
         } else {
             if (empty($jsCombinedString)) {
