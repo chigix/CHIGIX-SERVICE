@@ -15,6 +15,7 @@ return array(
     'TOKEN_TYPE' => 'md5',
     'TOKEN_RESET' => true,
     //千木服务配置
+    'CHIGI_HOST' => 'sugar.five.com',
     "CHIGI_AUTH" => "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",  //应用连接密钥（32位）
     "CHIGI_SUCCESSDIRECT" => "Login/index",
     "CHIGI_ERRORDIRECT" => "Login/index",
@@ -23,7 +24,7 @@ return array(
     'CHIJI' => array(
         'LESS_COMPRESS' => 'lessjs', //lessjs|compressed，LESS是否压缩
         'JS_DEBUG' => true, //FALSE则会JS压缩
-        'RC_DIR' => './../Chiji/' . APP_NAME . '/',
+        'RC_DIR' => '/var/Chiji/',//前端统一资源目录，以斜杠结尾
     ),
     //模板引擎编译配置
     "TMPL_PARSE_STRING" => array(
@@ -39,7 +40,7 @@ return array(
     	//↓ching会话所采用的底层缓存机制
         'TYPE' => 'File',
         //↓ching会话文件存储位置，可实现会话共享，仅对File有效
-        'DIR' => dirname($_SERVER['SCRIPT_FILENAME']) . '/' . THINK_PATH . '../Ching/',
+        'DIR' => '/var/Chigi/Ching/',
         'EXPIRE' => 900,  //ching会话操作时效，默认为15分钟
         'DOMAIN' => "host.com", //设置ching会话SID的作用域名
     ),

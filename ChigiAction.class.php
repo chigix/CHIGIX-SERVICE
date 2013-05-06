@@ -19,6 +19,7 @@ abstract class ChigiAction extends Action {
         if (get_class($this) == 'EmptyAction') {
             switch (substr(MODULE_NAME, 0, 2)) {
                 case 'On':
+                    //on当模块接收
                     if (isset($_GET['type'])) {
                         // 进行除表单接收外的其他系统特定操作
                         $type = $_GET['type'];
@@ -56,8 +57,8 @@ abstract class ChigiAction extends Action {
         } elseif (method_exists($this, ACTION_NAME)) {
             //如果目标操作直接在当前控制器中
             return;
-        } elseif (startsWith(ACTION_NAME, 'on')) {
-            //on表单提交接收操作
+        } elseif (substr(ACTION_NAME, 0,2) == 'on') {
+            //on当操作接收
             return($this->on());
         } else {
             return;
@@ -85,7 +86,7 @@ abstract class ChigiAction extends Action {
             }
             unset($_POST['verify']);
         }
-        //对于15分钟内简单表单，无需再单独定义表单接收操作
+        //对于15分钟内简单表单，进行CHING会话接收逻辑
         if ($serviceName === null) {
             if (ching('CHIGI_TAG') === null) {
                 //操作超时
@@ -102,9 +103,7 @@ abstract class ChigiAction extends Action {
                 $methodName = ching("CHIGI_TAG.METHOD");
             }
         }
-        $serviceName .= 'Service';
-        import('@.Service.' . $serviceName);
-        $service = new $serviceName();
+        $service = service($serviceName);
         //优先捕获iframe
         if ($_GET['iframe']) {
             $successDirect = $_GET['iframe'];
@@ -236,7 +235,7 @@ abstract class ChigiAction extends Action {
 
     private function __chigiCheckURL() {
         if (MODULE_NAME == 'On') {
-            //ON万能操作不作为URL规范控制
+            //ON万能操作不在URL规范控制内
             return;
         }
         $the_host = $_SERVER['HTTP_HOST']; //取得当前域名
@@ -247,7 +246,7 @@ abstract class ChigiAction extends Action {
             $the_url = ""; //如果是首页，赋值为空
         }
         if (
-                count(explode('.', $the_host)) < 3
+                $the_host != C('CHIGI_HOST')
                 || $_SERVER['REQUEST_URI'] != redirect_link(MODULE_NAME.'/'.ACTION_NAME, $_GET,'')
         ) {
             //如果域名不符合规范，则作如下跳转：
