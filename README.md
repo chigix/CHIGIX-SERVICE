@@ -3,7 +3,7 @@
 
 For ThinkPHP 3.1.0 +
 
-Version 1.7.4
+Version 1.7.5
 
 Author 千木郷（李颖豪） chigix@zoho.com
 
@@ -23,7 +23,8 @@ Weibo: http://weibo.com/chigix
 		- [GET ME](#get-me)
 		- [SETUP alias.php](#setup-aliasphp)
 		- [SETUP config.php](#setup-configphp)
-	- [Directory for Components](#directory-for-components)
+		- [Directory Specification](#directory-specification)
+	- [Deployment of Components](#deployment-of-components)
 		- [Controller](#controller)
 		- [Model](#model)
 		- [Template](#template)
