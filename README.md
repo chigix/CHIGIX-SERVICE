@@ -3,7 +3,7 @@
 
 For ThinkPHP 3.1.0 +
 
-Version 1.7.3
+Version 1.7.4
 
 Author 千木郷（李颖豪） chigix@zoho.com
 
@@ -128,16 +128,29 @@ MVC架构是在软件开发中已占据不可动摇的地位，其架构模式�
 
 **所有的service只能在客户端应用及客户端service中使用，不能在服务端Api及Model中使用。**
 
-## Dependency
+## Requirement
 
 1. Lessc 编译库，已在Samples中附带，请移到ORG扩展目录下即可
 2. JSxs 编译库，已在Samples中附带，请移到ORG扩展目录下即可
+3. PHP 5.3
 
 ## Installation
 
-本架构实为MVC框架的一个扩展机制，所以安装本架构就变得十分简单。本版本仅可用于ThinkPHP 3.1.0以上版本，对于符合版本要求的THinkPHP项目可以直接迁移到千木架构之上，而对于低于该版本要求的ThinkPHP 项目，请根据ThinkPHP自带的升级指南，将项目代码修改至兼容版本后，亦可平滑过渡到本架构之上。
+This is just an extension for ThinkPHP 3.1.0+. Hence all the code upon that version could use CHIGIX-SERVICE Infrastructure directly. It may be considered, with fail to meet the fundamental requirements , to do some altering following the updating instructions in the ThinkPHP Official Document ,  after witch it could migrate to this structure.
 
-直接在系统扩展目录（默认为webRoot/ThinkPHP/Extend/）下新建一个文件夹并命名为 `Chigi` ，直接将本仓库中的所有内容全部托入该文件夹中，即完成千木服务扩展的安装。
+### GET ME
+
+本项目托管于GITHUB仓库上，遵循APACHE 2 开源协议，欢迎加入。
+
+https://github.com/chigix/CHIGIX-SERVICE
+
+RELEASES：
+
+[Version_1.7.1](https://github.com/chigix/CHIGIX-SERVICE/archive/V_1.7.1.zip)
+
+Put the sources downloaded into the ThinkPHP Extension Directory, default as `webRoot/ThinkPHP/Extend/` . And then, just feel free to enjoy it.
+
+### SETUP alias.php
 
 若要使用千木服务架构来设计应用，仅需在项目的别名配置（alias.php）中加入如下两行即可（可直接拷贝，无需改动）：
 
@@ -159,19 +172,66 @@ MVC架构是在软件开发中已占据不可动摇的地位，其架构模式�
 		import('Content');
 		$obj = new Content();  //与ThinkPHP自身的用法无区别★
 
-### 控制器部署
+### SETUP config.php
+
+		//设置主题名（样式库名）
+		'DEFAULT_THEME' => 'Default',
+		'SHOW_PAGE_TRACE' => true,
+		'TOKEN_ON' => true,
+		'TOKEN_NAME' => '__hash__',
+		'TOKEN_TYPE' => 'md5',
+		'TOKEN_RESET' => true,
+
+		//千木服务配置
+		'CHIGI_HOST' => 'sugar.five.com', //需指明当前项目的标准域名形式
+		"CHIGI_AUTH" => "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",  //应用连接密钥（32位）
+		"CHIGI_SUCCESSDIRECT" => "Login/index",
+		"CHIGI_ERRORDIRECT" => "Login/index",
+		'COM_POST_ON' => true, //是否启用POST通信，不启用则无法接收来自POST的数据，并且API服务上接到POST会返回404
+		
+		//千路前端配置
+		'CHIJI' => array(
+		    'LESS_COMPRESS' => 'lessjs', //lessjs|compressed，LESS是否压缩
+		    'JS_DEBUG' => true, //FALSE则会JS压缩
+		    'RC_DIR' => '/var/Chiji/',//前端统一资源目录，请务必最后带上斜杠
+		),
+		
+		//模板引擎编译配置
+		"TMPL_PARSE_STRING" => array(
+		    '__CHIJI__' => 'http://xxxxxx',
+		),
+		'TMPL_VAR_IDENTIFY' => "obj",
+		
+		//URL模式配置
+		'URL_MODEL' => 1,
+		'URL_HTML_SUFFIX' => 'html',
+		'URL_CASE_INSENSITIVE' => true,
+		
+		//CHING参数设置
+		'CHINGSET' => array(
+		    //↓ching会话所采用的底层缓存机制
+		    'TYPE' => 'File',
+		    //↓ching会话文件存储位置，可实现会话共享，仅对File有效
+		    'DIR' => '/var/Chigi/Ching/',
+		    'EXPIRE' => 900,  //ching会话操作时效，默认为15分钟
+		    'DOMAIN' => "host.com", //设置ching会话SID的作用域名
+		),
+
+## Directory for Components
+
+### Controller
 
 1.	IndexAction	——首页，为保证URL的统一，请保证Index控制器下有且仅有一个index方法
 2.	.....Action ——其他页面，一个页面就一个控制器，且直接使用index方法，或可在控制器内跳转修改index。
 3.	AjaxAction	——ajax模块，主负责所有页面上异步交互的执行操作
 
-### 模型部署
+### Model
 
 由于一切业务逻辑均服务化，所以对于一些主要的业务逻辑均已封装于已有的服务中，而对于已有服务提供的模型则无需作任何部署，直接连接到对应的Service类即可，在千木服务化架构下会替开发者完成所有本服务下的业务逻辑。
 
 通过服务层的抽象与分离，可以更深层地降低应用本身与数据库之间的耦合性，让应用的开发从繁杂的数据模型交互中解放，变成简单易行的服务类的拼装与调用。
 
-### 模板部署
+### Template
 
 由于在千木架构下，所有的模板都是直接采用与当前控制器及操作一一对应，故在控制器中只需 `$this->display()` 即可完成前端的输出，而不用开发者再作其他的工作。当然，这需要一个非常严格的模板目录部署机制，以做到 `display` 方法输出时可以直接定位及渲染模板。
 
@@ -190,7 +250,7 @@ MVC架构是在软件开发中已占据不可动摇的地位，其架构模式�
 		|        ├Utils     可移植服务接口模板文件
 		|
 
-### Widget部署
+### Widget
 
 		|-Widget/				Widget扩展目录
 		|     ├DemoServiceWidget.class.php    DemoService对应Widget类
@@ -200,15 +260,15 @@ MVC架构是在软件开发中已占据不可动摇的地位，其架构模式�
 		|     ├OtherServiceWidget.class.php   其他同样型的Widget类部署
 		|
 
-[返回目录](#contents)
+[Return to the CONTENTS](#contents)
 
-## URL部署
+## URL
 
 从1.7.0开始，提供更为自由与友好的URL识别与跳转机制，在继承1.5.0提供的URL跳转池基础上，新增URL版本统一机制，以提供更好的SEO地址优化。
 
 通过URL的部署，让开发者在WEB编程中无需再思考URL的定位问题，所有的模块化控制均统一到以控制器为单位的解决方案上，开发者仅需明确跳转或调用的控制器即可，URL的格式及版本统一在架构的封装中一并提供解决与实现。
 
-### URL版本规范
+### URL General Standard
 
 一般性地址，非html结尾的URL均带斜杠，且所有index操作均隐藏 并以斜杠结尾的URL 作为该页面的指定URL格式：
 
@@ -229,7 +289,7 @@ SEO专用地址建议：
 		【分类型】
 		http://www.chigix.com/houduan/php/qian-mu-fu-wu-jia-gou.html
 
-### URL跳转池部署
+### URL Redirecting POOL
 
 从千木服务架构1.5.0起，提供全局URL跳转机制，可将某项目下的控制器注册为全局控制器，从而只需将需要整合在一起的网站项目共同连接到同一URL跳转池中，即可轻松组建站群。
 
@@ -241,7 +301,7 @@ SEO专用地址建议：
 
 由于ThinkPHP在刚开始运行首先检测是否存在对应的控制器，故如需使用控制器名的跳转，可在当前项目下放置一个EmptyAction空类即可，当然亦可在里面写入自定义的逻辑，通过放置一个空模块，便可让ThinkPHP跳转对应模块类的存在检查而直接进入千木架构的URL跳转。
 
-## 上线部署
+## Deployment for ONLINE
 
 App目录部署如下：
 
@@ -270,9 +330,9 @@ App目录部署如下：
 
 [返回目录](#contents)
 
-# 开发规范
+# Developing Specification
 
-## 返回值统一规范
+## Return Values Formatting
 
 在千木架构中，建议所有的方法或函数返回值均采用数组，示例格式如下：
 
@@ -297,7 +357,7 @@ App目录部署如下：
 
 [返回目录](#contents)
 
-## 表单提交规范
+## On: Form Both-sides Standard
 
 表单能让服务器接收来自客户端的大量复杂数据，为保证服务器的安全性，需要对表单提交进行多重安全检测过滤。
 
@@ -316,7 +376,7 @@ on操作与under操作的逻辑部分均由相应的服务类提供，而on操�
 
 从1.7.0开始，服务类不再允许通过HTTP访问。
 
-### 公共接收接口规范：
+### Public Interface
 
 表单直接提交至 `{:redirect_link('/on/',array('iframe'=>$_GET['iframe']))}` 即可，无需做任何变动。
 
@@ -324,17 +384,14 @@ on操作与under操作的逻辑部分均由相应的服务类提供，而on操�
 
 1. 控制器中
 
-		//设置成功跳转地址↓
-		ching("CHIGI_SUCCESSDIRECT", '/profile/');
-
-		//设置失败跳转地址↓
-        ching("CHIGI_ERRORDIRECT", '/login/');
-
-        //设置表单"CHIGI_TAG"目标数组
-        ching("CHIGI_TAG",array(
-			"SERVICE" => "Sugar",  //指定向Sugar服务
-			"METHOD" => "login"
-		));
+		// <editor-fold defaultstate="collapsed" desc="设置公共on接口操作">
+        ching("CHIGI_SUCCESSDIRECT", 'Profile/index');//设置成功跳转地址
+        ching("CHIGI_ERRORDIRECT", 'Profile/index');//设置失败跳转地址
+        ching("CHIGI_TAG", array(    //设置表单"CHIGI_TAG"目标数组
+            "SERVICE" => "Sugar", //指定向Sugar服务
+            "METHOD" => "login"
+        ));
+        // </editor-fold>
 
 2. 表单设计上
 
@@ -354,7 +411,7 @@ on操作与under操作的逻辑部分均由相应的服务类提供，而on操�
 
 [返回目录](#contents)
 
-### 自定义接收接口规范：
+### Override Interface
 
 表单提交地址为： `{:redirect_link('/onxxx/',array('iframe'=>$_GET['iframe']))}` ，对应在Index控制器中定义的 `onxxx` 操作。
 
@@ -388,7 +445,7 @@ on操作与under操作的逻辑部分均由相应的服务类提供，而on操�
 
 由于这种手动传参调用的方式不依赖ching会话，所以服务器的资源开销会小一些，同时不存在表单提交的时效问题，可以应用在文章提交之类的表单页需要长时间停留的业务上。
 
-## GET地址传参统一规范
+## URL Params Via GET
 
 所有参数均基于PATH-INFO，且均以标准的 `key/value` 型书写，其中key则直接可从 `$_GET` 中获取，而部分value需经过 `base64_encode` 函数加密写入，获取时由 `base64_decode` 函数解密使用。（仅有本架构占用的一些特殊的GET变量需要进行如上转换，不影响开发者的一般使用）
 
@@ -400,13 +457,13 @@ on操作与under操作的逻辑部分均由相应的服务类提供，而on操�
 
 而获取时ChigiAction根类已自动将所有的$_GET参数（除ThinkPHP的URL索引外）全部进行了 `base64_decode` 解码。
 
-## POST、REQUEST传参统一规范
+## Communication Standard via POST & REQUEST
 
 POST认为是来自表单的参数传递，故所有的POST请求中均需有表单令牌验证。
 
 REQUEST由于包含了GET的信息，但却不与GET一起统一进行BASE64的解密，所以不建议使用REQUEST。
 
-## under机制规范
+## Under: Method for Environment Check
 
 under机制就是一种业务级的环境保障，即先手动检测当前环境是否符合要求，若不符合则跳转到一个新的页面，若符合则往下执行。
 
@@ -455,7 +512,7 @@ under机制就是一种业务级的环境保障，即先手动检测当前环境
 
 on操作与under操作的逻辑部分均由相应的服务类提供，而on操作应用层封装于控制器层，可通过在控制器中包装调用或直接接收外部表单HTTP提交；而under操作封装于Service类，通过在控制器中进行环境检测（undercheck）调用。
 
-[返回目录](#contents)
+[Return to the Contents](#contents)
 
 ## CHING-SESSION会话机制
 
@@ -687,6 +744,51 @@ CHING会话目前默认时效为15分钟，开发者亦可通过CHINGSET配置�
 		redirect_link('Index/index');   //生成：http://www.chigix.com
 
 [返回目录](#contents)
+
+# Security
+
+Since 1.7.3, This infrastrucure supports the 'User Agent' Capability Determining. And the result could be accessible via `CHING::$BOT` , a static variable defined in the CHING session class.
+
+It will intialize the static value for the USER AGENT below, which contains the Spider Engine Name and Browser Engine start with `C_` and `B_` correspondingly. On the contrary, the Request beyond the list below will receive a 404 error. This design could decrease the pressure on the server.
+
+`CHING::$BOT`                   |Reference
+--------------------------------|---------------------
+C_BAIDU                         |百度中文搜索引擎
+C_GOOGLE                        |GOOGLE网页搜索引擎
+C_MSN                           |MSN网页搜索引擎
+C_YAHOO                         |YAHOO搜索引擎
+C_SOHU                          |搜狐中文搜索引擎
+C_LYCOS                         |西班牙语门户网络
+C_ROBOZILLA                     |ROBOZILLA
+C_TTBROWSER                     |腾讯TT网页搜索引擎
+C_BAIDUGAME                     |百度游戏搜索引擎
+C_SOSO                          |腾讯搜搜网页搜索引擎
+C_SOGOU                         |搜狗网页搜索引擎
+C_ALEXA                         |ALEXA排名搜索引擎
+C_YOUDAO                        |有道搜索引擎
+C_VOILA                         |VOILA
+C_YANDEX                        |俄罗斯门户搜索引擎
+C_JP-BSPIDER                    |日本BSPIDER搜索引擎
+C_TWICELER                      |TWICELER网页搜索引擎
+C_ENTEIREWEB.com                |Enteireweb.com网页搜索引擎
+C_GOOGLE-AD                     |Google Adsense 搜索引擎
+C_HERITRIX                      |Heritrix网页搜索引擎
+C_PYTHON-URLLIB                 |PYTHON原生URL抓取引擎
+C_ASK                           |ask网页搜索引擎
+C_EXALEAD                       |Exalead网页搜索引擎
+C_CUSTO                         |CUSTO网页搜索引擎
+C_YACY-PEER                     |YACY-PEER网页搜索引擎
+C_MYSPACE                       |MySpace搜索引擎
+C_80LEGS                        |80Legs 搜索引擎服务
+C_NUTCH                         |NUTCH
+C_PERL                          |Perl网页抓取引擎
+C_BING                          |BING网页搜索引擎
+C_YUNRANG                       |云壤网页搜索引擎
+C_JIKE                          |即刻网页搜索引擎
+B_IE                            |IE浏览器
+B_WEBKIT                        |Webkit内核浏览器
+B_PRESTO                        |Presto内核浏览器
+B_GECKO                         |Gecko内核浏览器
 
 # ChigiCode
 
