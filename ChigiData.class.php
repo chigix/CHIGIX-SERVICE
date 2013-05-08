@@ -44,8 +44,10 @@ class ChigiData {
      * 设定并返回数据视图内容
      *
      * @param string $type 设定数据视图要输出的目标类型
-     * @param String $dataExt 临时改变目标渲染驱动类
-     * @return string 数据视图层渲染结果
+     * @param string $name 设定assign时的名称设定，与assign对应
+     * @param bool $isLock 是否加锁，默认false即不加锁，加锁后可以开发者进行自行更改
+     * @param string $pageName 指定页面名称，若不指定则默认使用当前模块名
+     * @return string 数据视图层渲染结果HTML代码
      */
     public function view($type, $name, $isLock = false, $pageName = null) {
         if (APP_DEBUG && !$isLock) {
