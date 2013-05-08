@@ -34,7 +34,7 @@ Weibo: http://weibo.com/chigix
 		- [URL Redirecting POOL](#url-redirecting-pool)
 	- [Deployment for ONLINE](#deployment-for-online)
 - [Developing Specification](./docs/developing_specification.md)
-- [API——ChigiAction](./api_chigiaction.md)
+- [API——ChigiAction](./docs/api_chigiaction.md)
 - [API——ChigiApi](./docs/api_chigiapi.md)
 - [API——ChigiService](./docs/api_chigiservice.md)
 - [Functions](./docs/functions.md)
