@@ -24,6 +24,9 @@ The ChigiService Class
 		$this->apiAction->onlineip = getClientIp(); //属性访问
 		$this->apiAction->requestCurrentUser($property); //操作访问调用
 
+[INDEX](#index)		
+[CONTENTS](../README.md#contents)
+
 ## ChigiService::addAddrParams;
 
 * Description：
@@ -48,6 +51,9 @@ The ChigiService Class
 		//↓You can use it in chain-writing style
 		$this->addAddrParams('iframe','http://www.chigix.com')->addAddrParams('var','Test');
 
+[INDEX](#index)		
+[CONTENTS](../README.md#contents)
+
 ## ChigiService::successDirectHeader;
 
 * Description:
@@ -59,6 +65,9 @@ The ChigiService Class
 * Parameters: NONE
 * Return Values: NONE
 
+[INDEX](#index)		
+[CONTENTS](../README.md#contents)
+
 ## ChigiService::errorDirectHeader;
 
 * Description:
@@ -69,6 +78,9 @@ The ChigiService Class
 
 * Parameters: NONE
 * Return Values: NONE
+
+[INDEX](#index)		
+[CONTENTS](../README.md#contents)
 
 ## ChigiService::setDirect( string $successAdd = null, string $errorAdd = null);
 
@@ -105,6 +117,9 @@ The ChigiService Class
 
 		Parameter → Ching → Config-setting
 
+[INDEX](#index)		
+[CONTENTS](../README.md#contents)
+
 ## ChigiService::setErr($addr = null)
 
 * Description:
@@ -122,6 +137,9 @@ The ChigiService Class
 * Return Values:
 
 	`$this` handle.
+
+[INDEX](#index)		
+[CONTENTS](../README.md#contents)
 
 ## ChigiService::setSuc($addr = null)
 
@@ -141,6 +159,8 @@ The ChigiService Class
 
 	`$this` handle.
 
+[INDEX](#index)		
+[CONTENTS](../README.md#contents)
 
 ## ChigiService::under
 
@@ -174,4 +194,4 @@ The ChigiService Class
 * REFER: [Under: Method for Environment Check](./developing_specification.md#under-method-for-environment-check)
 
 [INDEX](#index)		
-[CONTENTS](./index.md#contents)
+[CONTENTS](../README.md#contents)
