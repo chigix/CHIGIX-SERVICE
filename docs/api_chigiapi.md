@@ -1,30 +1,45 @@
-API_ChigiApi
+The ChigiApi Class
 ===============================
 
-# $this->appHost;
+# ChigiApi::$appHost
 
 * 描述：当前运行的应用的注册32位密钥
 * 说明：此密钥由Service通过项目配置参数获取并传递给api类
 
-# $this->appHostIp;
+# ChigiApi::$appHostIp
 
-* 描述：当前运行的应用自身的服务器IP
-* 说明：此IP须与应用自身注册IP对应，否则将无法通过应用安全检测
+* Description:
 
-# $this->time;
+	The IP address of the current App server under link.
 
-* 描述：当前Api被实例化时的时间戳
+* Note:
 
-# $this->dm("TableName");
+	This is designed out of security that it won't make any link until this IP address is same to that registered.
 
-*	功能：返回目标数据模型，做到按需连接数据库查询，避免产生无用资源
-*	参数：String，例如 `SugarMembers` 则指向 `sugar_members` 表
-*	注意：使用dm函数获取的目标数据模型必须在当前Api子类中有对应的属性，且属性中写明要连接的数据模型地址，例如：
+# ChigiApi::$time
 
-		public $dmTableName = "Project://TableName";  //设置目标数据模型地址，必须为public，否则报错
-		public function test(){
-			$this->dm("TableName");  //获取目标数据模型
-		}
+* Description:
 
-*	版本：1.4.0+
+	The timestamp for the current instance of the related Api.
 
+# ChigiApi::dm
+
+* Description：
+
+		$this->dm("TableName");
+
+	Automatic make an accessable singleton data model object to avoid repeatedly model building.
+
+* Parameters：
+
+	Param                   |Desc
+	------------------------|-----------------------------
+	$tableName              |The name related target data table in hump naming.
+
+* Version: 1.4.0+
+* Example:
+
+	$this->dm('SugarMembers')->limit(2)->select();
+
+[INDEX](#index)		
+[CONTENTS](./index.md#contents)
