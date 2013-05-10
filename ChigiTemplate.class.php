@@ -133,12 +133,12 @@ class ThinkTemplate {
     protected function chijiKwordReplace($data, $pagePath) {
         // index
         $pageName = cut_string_using_first('.', cut_string_using_last('/', $pagePath, 'right', false), 'left', false);
-        // Apps
+        // AppsMODULE
         $packageName = cut_string_using_last('/', cut_string_using_last('/', $pagePath, 'left', false), 'right', false);
         $replace = array(
-            '{PAGENAME}' => $pageName,
+            '{PAGENAME}' => $pageName, //index
             '{APPNAME}' => APP_NAME,
-            '{PACKAGENAME}' => $packageName,
+            '{PACKAGENAME}' => $packageName, //IndexMODULE
         );
         foreach ($replace as $key => $value) {
             $data = str_replace($key, $value, $data);
@@ -151,6 +151,11 @@ class ThinkTemplate {
      *
      */
     public function chijiJCGenerator($pagePath) {
+        static $count = 0;
+        $count++;
+        if ($count > 1) {
+            return;
+        }
         if (!C('CHIJI.RC_DIR')) {
             throw_exception("对不起，当前项目尚未配置前端资源部署目录");
         }
@@ -206,13 +211,18 @@ class ThinkTemplate {
         // <editor-fold defaultstate="collapsed" desc="JavaScript模块编译">
         //##处理module编译顺序列表并生成JS合并
         $jsCombinedString = "";
-        foreach ($this->moduleList as $value) {
+        foreach ($this->moduleList as $key => $value) {
             $class = str_replace(array(':', '#'), array('/', '.'), $value);
             $class_strut = explode('/', $class);
             $jsFileItem = $class_strut[1];
             $importDirItem = THEME_PATH . $class_strut[0] . '/';
             if (file_exists($importDirItem . $jsFileItem . '.js')) {
-                $jsCombinedString .= file_get_contents($importDirItem . $jsFileItem . '.js') . PHP_EOL;
+                /* @var $newer string 新获取到的JS文件内容 */
+                $newer = file_get_contents($importDirItem . $jsFileItem . '.js');
+                //JS超级接口编译
+                $newer = str_replace('chigiThis', str_replace(':', '_', $value), $newer);
+                $newer = preg_replace_callback('/\{\:(.*)\}/', create_function('$matches', 'return(eval(\'return \' . $matches[1] . \';\'));'), $newer); //eval('return ' . $1 . ';')
+                $jsCombinedString .= $newer . PHP_EOL;
             }
             if (C('CHIJI.JS_DEBUG') && file_exists($importDirItem . $jsFileItem . '-test.js')) {
                 $jsCombinedString .= file_get_contents($importDirItem . $jsFileItem . '-test.js') . PHP_EOL;
@@ -853,7 +863,19 @@ class ThinkTemplate {
                 $templateName = $path . $module . C('TMPL_FILE_DEPR') . $action . $this->config['template_suffix'];
             }
             // 获取模板文件内容
-            $parseStr .= file_get_contents($templateName);
+            $temp .= file_get_contents($templateName);
+            if ($temp == '@module') {
+                //写入module模板的HTML
+                $pageData = file_get_contents(CHIGI_PATH . 'html/module.html');
+                $pageData = $this->chijiKwordReplace($pageData, $templateName);
+                file_put_contents($templateName, $pageData);
+                $temp = $pageData;
+            }
+            // index
+            $pageName = cut_string_using_first('.', cut_string_using_last('/', $templateName, 'right', false), 'left', false);
+            // AppsMODULE
+            $packageName = cut_string_using_last('/', cut_string_using_last('/', $templateName, 'left', false), 'right', false);
+            $parseStr .= $temp . '<script type="text/javascript">(function(){console.log(\'【' . $packageName . ':' . $pageName . '】\',' . $packageName . '_' . $pageName . ')})();</script>';
         }
         return $parseStr;
     }

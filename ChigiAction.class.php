@@ -169,9 +169,6 @@ abstract class ChigiAction extends Action {
     }
 
     protected function display($templateFile = '', $charset = '', $contentType = '', $content = '', $prefix = '') {
-        if ($templateFile == '') {
-            $templateFile = ACTION_NAME;
-        }
         // <editor-fold defaultstate="collapsed" desc="初始化视图类，摘自Action类initView方法">
         //实例化视图类
         if (!$this->view)

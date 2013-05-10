@@ -3,7 +3,7 @@
 
 For ThinkPHP 3.1.0 +
 
-Version 1.7.6
+Version 1.7.7
 
 Author 千木郷（李颖豪） chigix@zoho.com
 
@@ -22,4 +22,5 @@ Weibo: http://weibo.com/chigix
 - [API——ChigiService](./docs/api_chigiservice.md)
 - [Functions](./docs/functions.md)
 - [CHING-SESSION](./docs/CHING_SESSION.md)
+- [Chiji-Renderer](./docs/chiji_renderer.md)
 - [MISC](./docs/misc.md)
