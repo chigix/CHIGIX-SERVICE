@@ -49,6 +49,7 @@ class ChigiService {
     public function setDirect($successAdd = null, $errorAdd = null) {
         $this->setSuc($successAdd);
         $this->setErr($errorAdd);
+        return $this;
     }
 
     public function setSuc($addr = null) {
@@ -62,6 +63,7 @@ class ChigiService {
         } else {
             $this->successRedirect = C("CHIGI_SUCCESSDIRECT");
         }
+        return $this;
     }
 
     public function setErr($addr = null) {
@@ -75,10 +77,12 @@ class ChigiService {
         } else {
             $this->errorRedirect = C("CHIGI_ERRORDIRECT");
         }
+        return $this;
     }
 
     public function addAddrParams($key, $value) {
         $this->addrParams[$key] = $value;
+        return $this;
     }
 
     /**
