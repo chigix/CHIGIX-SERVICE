@@ -23,4 +23,4 @@ The public general interface for fetch the data from submited form.
 * **关于数据**：on方法会直接接收并包装POST数据，而后传入指定的服务与其中的操作，自动执行，而至于具体的操作中的逻辑流程则定义在服务类中对应的以 “on” 开头的方法中。
 
 [INDEX](#index)		
-[CONTENTS](./index.md#contents)
+[CONTENTS](../README.md#contents)

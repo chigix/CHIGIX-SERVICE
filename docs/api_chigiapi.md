@@ -42,4 +42,4 @@ The ChigiApi Class
 	$this->dm('SugarMembers')->limit(2)->select();
 
 [INDEX](#index)		
-[CONTENTS](./index.md#contents)
+[CONTENTS](../README.md#contents)

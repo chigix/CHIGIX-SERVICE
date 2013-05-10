@@ -24,7 +24,8 @@ Developing Specification
 
 关于status操作码，可参考最后所附的ChigiCode。
 
-[返回目录](#contents)
+[INDEX](#index)		
+[CONTENTS](../README.md#contents)
 
 # On: Form Both-sides Standard
 
@@ -78,7 +79,8 @@ on操作与under操作的逻辑部分均由相应的服务类提供，而on操�
 
 根据千木架构的底层定义，一旦操作超时，系统会自动跳回上一页面，并提示“操作超时”。该时效即ching会话配置 `CHINGSET.EXPIRE` 中定义的时间。
 
-[返回目录](#contents)
+[INDEX](#index)		
+[CONTENTS](../README.md#contents)
 
 ## Override Interface
 
@@ -126,11 +128,17 @@ on操作与under操作的逻辑部分均由相应的服务类提供，而on操�
 
 而获取时ChigiAction根类已自动将所有的$_GET参数（除ThinkPHP的URL索引外）全部进行了 `base64_decode` 解码。
 
+[INDEX](#index)		
+[CONTENTS](../README.md#contents)
+
 # Communication Standard via POST & REQUEST
 
 POST认为是来自表单的参数传递，故所有的POST请求中均需有表单令牌验证。
 
 REQUEST由于包含了GET的信息，但却不与GET一起统一进行BASE64的解密，所以不建议使用REQUEST。
+
+[INDEX](#index)		
+[CONTENTS](../README.md#contents)
 
 # Under: Method for Environment Check
 
@@ -181,7 +189,8 @@ under机制就是一种业务级的环境保障，即先手动检测当前环境
 
 on操作与under操作的逻辑部分均由相应的服务类提供，而on操作应用层封装于控制器层，可通过在控制器中包装调用或直接接收外部表单HTTP提交；而under操作封装于Service类，通过在控制器中进行环境检测（undercheck）调用。
 
-[Return to the Contents](#contents)
+[INDEX](#index)		
+[CONTENTS](../README.md#contents)
 
 # CHING-SESSION会话机制
 
@@ -250,6 +259,9 @@ CHING会话目前默认时效为15分钟，开发者亦可通过CHINGSET配置�
 
 **注意** 任何会话机制在底层都是有缓存方式在支持，所以规定会话的时效性十分重要，可以为服务器避免不必要的开销，另外可以直接根据文件的最后修改时间删除超过15分钟的文件，进行会话垃圾清理。
 
+[INDEX](#index)		
+[CONTENTS](../README.md#contents)
+
 # 模板变量assign命名规范
 
 |assign                                                      | 模板引擎调用                            |
@@ -263,3 +275,5 @@ CHING会话目前默认时效为15分钟，开发者亦可通过CHINGSET配置�
 |`/Theme/AlertService/TopAlert.html`         | `<include file="AlertService:TopALert" />`       |
 |`/Theme/AppsMODULE/indexDisplayList.html`   | `<include file="AppsMODULE:indexDisplayList" />` |
 
+[INDEX](#index)		
+[CONTENTS](../README.md#contents)

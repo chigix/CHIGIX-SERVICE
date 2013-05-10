@@ -1,6 +1,16 @@
 The ChigiService Class
 ===============================
 
+# INDEX
+	- [ChigiService::$apiAction;](#chigiserviceapiaction)
+	- [ChigiService::addAddrParams;](#chigiserviceaddaddrparams)
+	- [ChigiService::successDirectHeader;](#chigiservicesuccessdirectheader)
+	- [ChigiService::errorDirectHeader;](#chigiserviceerrordirectheader)
+	- [ChigiService::setDirect( string $successAdd = null, string $errorAdd = null);](#chigiservicesetdirect-string-successadd--null-string-erroradd--null)
+	- [ChigiService::setErr($addr = null)](#chigiserviceseterraddr--null)
+	- [ChigiService::setSuc($addr = null)](#chigiservicesetsucaddr--null)
+	- [ChigiService::under](#chigiserviceunder)
+
 ## ChigiService::$apiAction;
 
 * 描述：指向当前Service服务类所对应的api接口对象
