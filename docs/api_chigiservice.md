@@ -82,7 +82,7 @@ The ChigiService Class
 [INDEX](#index)		
 [CONTENTS](../README.md#contents)
 
-## ChigiService::setDirect( string $successAdd = null, string $errorAdd = null);
+## ChigiService::setDirect
 
 * Description:
 
@@ -120,7 +120,7 @@ The ChigiService Class
 [INDEX](#index)		
 [CONTENTS](../README.md#contents)
 
-## ChigiService::setErr($addr = null)
+## ChigiService::setErr
 
 * Description:
 
@@ -141,7 +141,7 @@ The ChigiService Class
 [INDEX](#index)		
 [CONTENTS](../README.md#contents)
 
-## ChigiService::setSuc($addr = null)
+## ChigiService::setSuc
 
 * Description:
 

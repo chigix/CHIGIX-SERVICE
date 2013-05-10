@@ -21,4 +21,5 @@ Weibo: http://weibo.com/chigix
 - [API——ChigiApi](./docs/api_chigiapi.md)
 - [API——ChigiService](./docs/api_chigiservice.md)
 - [Functions](./docs/functions.md)
+- [CHING-SESSION](./docs/CHING_SESSION.md)
 - [MISC](./docs/misc.md)
