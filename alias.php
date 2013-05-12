@@ -8,6 +8,7 @@ defined('CHIGI_PATH') or define('CHIGI_PATH', dirname(__FILE__) . '/');
 require 'QueryPath/qp.php';
 require 'functions.php';
 require 'Ching.class.php';
+$_GET['iframe'] = isset($_GET['iframe']) ? $_GET['iframe'] : null;
 CHING::getInstance();//启动CHING会话
 
 function chigi_alias($configarr = array()) {
