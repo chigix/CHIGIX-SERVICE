@@ -875,7 +875,10 @@ class ThinkTemplate {
             $pageName = cut_string_using_first('.', cut_string_using_last('/', $templateName, 'right', false), 'left', false);
             // AppsMODULE
             $packageName = cut_string_using_last('/', cut_string_using_last('/', $templateName, 'left', false), 'right', false);
-            $parseStr .= $temp . '<script type="text/javascript">(function(){console.log(\'【' . $packageName . ':' . $pageName . '】\',' . $packageName . '_' . $pageName . ')})();</script>';
+            $parseStr .= $temp;
+            if (substr($pageName, -7) != 'Starter' && substr($pageName, -5) != 'Ender') {
+                $parseStr .= '<script type="text/javascript">(function(){if("undefined" == typeof ' . $packageName . '_' . $pageName . '|| ' . $packageName . '_' . $pageName . ' instanceof HTMLElement){console.log(\'【' . $packageName . ':' . $pageName . '】\',\'未定义\');}else{console.log(\'【' . $packageName . ':' . $pageName . '】\',' . $packageName . '_' . $pageName . ');}})();</script>';
+            }
         }
         return $parseStr;
     }
