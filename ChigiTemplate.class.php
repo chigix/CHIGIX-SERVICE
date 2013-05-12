@@ -877,7 +877,7 @@ class ThinkTemplate {
             $packageName = cut_string_using_last('/', cut_string_using_last('/', $templateName, 'left', false), 'right', false);
             $parseStr .= $temp;
             if (substr($pageName, -7) != 'Starter' && substr($pageName, -5) != 'Ender') {
-                $parseStr .= '<script type="text/javascript">(function(){if("undefined" == typeof ' . $packageName . '_' . $pageName . '|| ' . $packageName . '_' . $pageName . ' instanceof HTMLElement){console.log(\'【' . $packageName . ':' . $pageName . '】\',\'未定义\');}else{console.log(\'【' . $packageName . ':' . $pageName . '】\',' . $packageName . '_' . $pageName . ');}})();</script>';
+                $parseStr .= '<script type="text/javascript">(function(){if("undefined" == typeof ' . $packageName . '_' . $pageName . '|| ' . $packageName . '_' . $pageName . ' instanceof HTMLElement){console.log(\'【var ' . $packageName . '_' . $pageName . '】\',\'未定义\');}else{console.log(\'【var ' . $packageName . '_' . $pageName . '】\',' . $packageName . '_' . $pageName . ');}})();</script>';
             }
         }
         return $parseStr;
