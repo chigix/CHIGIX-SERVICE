@@ -129,6 +129,12 @@ CHIJI Engine goals for the basic deployment to simplify the arrangement in the v
 
 ## Accellerate the JS developing
 
+## DEBUG assigning via console
+
+Since 1.7.8, developers could debug the viariables assigned from the controller straitforwardly under DEBUG MODE.
+
+![debug via console](./img/debug_via_console.jpg)
+
 ## LESS Support
 
 [INDEX](#index)		
