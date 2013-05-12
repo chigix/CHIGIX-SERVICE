@@ -863,7 +863,7 @@ class ThinkTemplate {
                 $templateName = $path . $module . C('TMPL_FILE_DEPR') . $action . $this->config['template_suffix'];
             }
             // 获取模板文件内容
-            $temp .= file_get_contents($templateName);
+            $temp = file_get_contents($templateName);
             if ($temp == '@module') {
                 //写入module模板的HTML
                 $pageData = file_get_contents(CHIGI_PATH . 'html/module.html');
