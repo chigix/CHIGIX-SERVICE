@@ -59,7 +59,7 @@
 			"file": "chiji_renderer.md",
 			"settings":
 			{
-				"buffer_size": 122,
+				"buffer_size": 1179,
 				"line_ending": "Windows"
 			}
 		},
@@ -297,8 +297,8 @@
 						"selection":
 						[
 							[
-								780,
-								780
+								957,
+								905
 							]
 						],
 						"settings":
@@ -642,15 +642,15 @@
 					"file": "chiji_renderer.md",
 					"settings":
 					{
-						"buffer_size": 122,
+						"buffer_size": 1179,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								122,
-								122
+								1179,
+								1179
 							]
 						],
 						"settings":
@@ -773,7 +773,7 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 1393.0,
+						"translation.y": 478.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
