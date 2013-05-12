@@ -5,7 +5,7 @@
 [
 { "trigger": "emp", "contents": "<empty name=\"${1:name}\">${2:name为空}<else /> ${3:name不为空}</empty>$0" },
 { "trigger": "eq", "contents": "<eq name=\"${1:name}\" value=\"${2:value}\">$0</eq>" },
-{ "trigger": "inc", "contents": "<include file=\"${1:Public}:${2:Header}MODULE\" />$0" },
+{ "trigger": "inc", "contents": "<include file=\"${1:Public}MODULE:${2:Header}\" c=\"${3:Position}\" />$0" },
 { "trigger": "layout", "contents": "<include file=\"${1:Public:header}\"/>\n{__CONTENT__}\n<include file=\"${2:Public:footer}\"/>$0" },
 { "trigger": "lit", "contents": "<literal>\n ${1:content}\n</literal>$0" },
 { "trigger": "nolayout", "contents": "{__NOLAYOUT__}\n$0" },
