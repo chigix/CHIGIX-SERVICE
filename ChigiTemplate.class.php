@@ -234,7 +234,7 @@ class ThinkTemplate {
             $jsCombinedString = chijiJsCompress($jsCombinedString);
         }
         if (file_put_contents($resourceDir . '/js/' . $packageName . '-' . $pageName . '.js', $jsCombinedString)) {
-            trace('Chiji/js/' . $packageName . '-' . $pageName . '.css', "页面JS渲染完毕");
+            trace('Chiji/js/' . $packageName . '-' . $pageName . '.js', "页面JS渲染完毕");
         } else {
             if (empty($jsCombinedString)) {
                 trace("页面JS无内容");
