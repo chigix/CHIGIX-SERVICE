@@ -58,37 +58,14 @@ class ChigiData {
             }
 
             // 数据格式转换
-            $cols = array_keys($this->__data[0]);
-            $cols = array_merge(array("__key"), $cols);
-
-            // 数据可视化渲染
-            $result = qp('<table id="' . $pageName . '_' . $name . '"><thead><tr></tr></thead><tbody></tbody></table>', '#' . $pageName . '_' . $name . '');
-            $table = $result->find('table');
-            $table->addClass('table');
-            $table->addClass('table-bordered');
-            $table->addClass('table-hover');
-            $table->addClass('table-striped');
-            foreach ($cols as $value) {
-                $result->find('thead tr')->append("<th>$value</th>");
-            }
-            $tbody = $table->find('tbody');
-            $tbody->append('<volist name="' . $name . '" id="vo" key="__key"></volist>');
-            $volist = $tbody->find('volist');
-            $newLine = qp('<tr></tr>', 'tr');
-            foreach ($cols as $value) {
-                if ($value == "__key") {
-                    $newLine->append('<td>{$__key}</td>');
-                } else {
-                    $newLine->append('<td>{$vo["' . $value . '"]}</td>');
-                }
-            }
-            $newLine->appendTo($volist);
-
+            $class = $type . 'View';
+            require_once  'DataExt/' . $class . '.class.php';
+            $result = new $class($this->__data , $name,$pageName);
             // 输出渲染结果
-            if (file_put_contents(THEME_PATH . "$pageName/" . $name . ".html", $result->html())) {
+            if (file_put_contents(THEME_PATH . "$pageName/" . $name . ".html", $result->html)) {
                 trace(THEME_PATH . "$pageName/" . $name . ".html", $name . "MODULE模板文件渲染完毕");
             } else {
-                trace($name . "MODULE模板文件渲染失败");
+                throw_exception($name . "MODULE模板文件渲染失败");
             }
         }
         //$this->__output = $result->html();
