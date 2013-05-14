@@ -3,8 +3,8 @@
 return array(
     //配置数据库
     'DB_HOST' => 'localhost',
-    'DB_NAME' => 'root',
-    'DB_USER' => '',
+    'DB_NAME' => 'chigixdb',
+    'DB_USER' => 'root',
     'DB_PWD' => '',
     'DB_PREFIX' => '',
     //设置主题名（样式库名）
