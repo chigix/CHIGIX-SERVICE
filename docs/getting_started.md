@@ -3,6 +3,15 @@ Getting Started
 
 # Getting Started
 
+- [Getting Started](#getting-started)
+- [Getting Started](#getting-started-1)
+	- [Requirement](#requirement)
+	- [Installation](#installation)
+		- [GET ME](#get-me)
+		- [SETUP alias.php](#setup-aliasphp)
+		- [SETUP config.php](#setup-configphp)
+		- [Directory Specification](#directory-specification)
+
 ![CHIGIX-SERVICE INFRASTRUCTURE](./img/infrastructure.jpg)
 
 所有的源代码资源可参考sample目录下的文件，可以直接复制，参照里面的注释和格式进行修改即可。

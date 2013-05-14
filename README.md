@@ -22,5 +22,8 @@ Weibo: http://weibo.com/chigix
 - [API——ChigiService](./docs/api_chigiservice.md)
 - [Functions](./docs/functions.md)
 - [CHING-SESSION](./docs/CHING_SESSION.md)
-- [Chiji-Renderer](./docs/chiji_renderer.md)
+- Utils
+	- [Chiji-Renderer](./docs/chiji_renderer.md)
+	- [Return Values Equalization](./docs/util_chigireturn.md)
+	- [ChigiAlert](./docs/util_chigialert.md)
 - [MISC](./docs/misc.md)
