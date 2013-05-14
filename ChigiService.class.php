@@ -31,12 +31,12 @@ class ChigiService {
     /**
      * api地址参数，实例化后会直接变成目标对象
      *
-     * @var String
+     * @var String API地址，示例："Article.Action.ArticleApi"
      */
     public $apiAction = "";
 
     public function __construct() {
-        import($this->apiAction);
+        $this->request();
         $apiName = cut_string_using_last('.', $this->apiAction, 'right', false);
         $this->apiAction = new $apiName(C('CHIGI_AUTH'));
         isset($_GET['iframe']) ? $this->setDirect($_GET['iframe']) : $this->setDirect();
@@ -103,7 +103,7 @@ class ChigiService {
      * 环境保障操作【链写】
      *
      * 使用示例：
-     * $service->under('Login')->setDirect('/login/')->pushAlert("对不起，请先登录")->check();
+     * $service->under('Login')->setDirect('Login/index')->pushAlert("对不起，请先登录")->check();
      *
      * @param string $method
      * @return \underCheck
@@ -131,6 +131,28 @@ class ChigiService {
         return $this;
     }
 
+    /**
+     * API请求
+     *
+     * @param array|string|int $data
+     * @param string $method
+     * @return \ChigiReturn
+     */
+    public function request($data = array(),$method = '') {
+        static $api = null;
+        if (!empty($data) && !empty($method)) {
+            $method = 'request' . ucfirst($method);
+            $result = new ChigiReturn($api->$method($data));
+            return $result;
+        }  elseif (is_null($api)) {
+            //初始化API
+            import($this->apiAction);
+            $apiName = cut_string_using_last('.', $this->apiAction, 'right', false);
+            $api = new $apiName(C('CHIGI_AUTH'));
+        }  else {
+            throw_exception(get_class($this) . "API不正确，请检查地址");
+        }
+    }
 }
 
 /**
@@ -147,6 +169,7 @@ class underCheck {
     private $under_status = false;
     private $addr = '';
     private $params = array();
+    private $alert = null;
 
     /**
      * 构造传入返回标准结果数组
@@ -217,8 +240,7 @@ class underCheck {
         if (empty($message) || $this->under_status == true) {
             return $this;
         }
-        $alert = new ChigiAlert($message , 'alert-error');
-        $alert->alert();
+        $this->alert = $message;
         return $this;
     }
 
@@ -227,6 +249,10 @@ class underCheck {
      */
     public function check() {
         if ($this->under_status == false) {
+            if (!empty($this->alert) && !$this->under_status == true) {
+                $alert = new ChigiAlert($this->alert , 'alert-error');
+                $alert->alert();
+            }
             redirectHeader($this->addr, $this->params);
         }
     }
