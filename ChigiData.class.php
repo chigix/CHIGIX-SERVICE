@@ -15,7 +15,7 @@ class ChigiData {
     public function __construct($dataSource, $dataExt = 'Strap') {
         if (is_object($dataSource) && get_class($dataSource) == "ChigiReturn") {
             //按千木返回标准对象处理
-            $this->__data = $dataSource;
+            $this->__data = $dataSource->__;
             $this->__ext = $dataExt;
         } elseif (is_array($dataSource)) {
             if (array_key_exists("status", $dataSource) && array_key_exists("info", $dataSource)) {
@@ -26,7 +26,7 @@ class ChigiData {
                 $this->__data = $dataSource;
             }
         } else {
-            //非数组非对象的处理方式
+            //非数组 非对象的处理方式
             $this->__data = $dataSource;
         }
     }
