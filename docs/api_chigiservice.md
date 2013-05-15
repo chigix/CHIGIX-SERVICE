@@ -3,16 +3,16 @@ The ChigiService Class
 
 # INDEX
 
-- [ChigiService::$apiAction;](#chigiserviceapiaction)
-- [ChigiService::addAddrParams;](#chigiserviceaddaddrparams)
+- [ChigiService::$apiAction](#chigiserviceapiaction)
+- [ChigiService::addAddrParams](#chigiserviceaddaddrparams)
+- [ChigiService::errorDirectHeader](#chigiserviceerrordirectheader)
+- [ChigiService::setDirect](#chigiservicesetdirect)
+- [ChigiService::setErr](#chigiserviceseterr)
+- [ChigiService::setSuc](#chigiservicesetsuc)
 - [ChigiService::successDirectHeader;](#chigiservicesuccessdirectheader)
-- [ChigiService::errorDirectHeader;](#chigiserviceerrordirectheader)
-- [ChigiService::setDirect( string $successAdd = null, string $errorAdd = null);](#chigiservicesetdirect-string-successadd--null-string-erroradd--null)
-- [ChigiService::setErr($addr = null)](#chigiserviceseterraddr--null)
-- [ChigiService::setSuc($addr = null)](#chigiservicesetsucaddr--null)
 - [ChigiService::under](#chigiserviceunder)
 
-## ChigiService::$apiAction;
+## ChigiService::$apiAction
 
 * 描述：指向当前Service服务类所对应的api接口对象
 * 使用：
@@ -27,7 +27,7 @@ The ChigiService Class
 [INDEX](#index)		
 [CONTENTS](../README.md#contents)
 
-## ChigiService::addAddrParams;
+## ChigiService::addAddrParams
 
 * Description：
 
@@ -40,7 +40,7 @@ The ChigiService Class
 	Param                   |Desc
 	------------------------|-----------------------------
 	$key                    |The param's variable name
-	$value                  |The param's value
+	$value                  |The value of the corresponding param
 
 * Return Values:
 
@@ -54,21 +54,7 @@ The ChigiService Class
 [INDEX](#index)		
 [CONTENTS](../README.md#contents)
 
-## ChigiService::successDirectHeader;
-
-* Description:
-
-		$this->successDirectHeader();
-
-	Make a redirection to the address marked as the success target in this service.
-
-* Parameters: NONE
-* Return Values: NONE
-
-[INDEX](#index)		
-[CONTENTS](../README.md#contents)
-
-## ChigiService::errorDirectHeader;
+## ChigiService::errorDirectHeader
 
 * Description:
 
@@ -78,6 +64,37 @@ The ChigiService Class
 
 * Parameters: NONE
 * Return Values: NONE
+
+[INDEX](#index)		
+[CONTENTS](../README.md#contents)
+
+## ChigiService::request
+
+* Description:
+
+		$this->request($dataArr,'methodName');
+
+* Parameters：
+
+	Param                   |Desc
+	------------------------|-----------------------------
+	$dataArr                |The data to be sent off in the request.
+	$methodName             |The accessible destiny provided by the API.
+
+* Return Values:
+
+	Going well, it will return a general ChigiReturn object.		
+	Otherwise, it will throw exception , for example, without methodName given.		
+	Besides, it could be used as a initializer for the API connection when calling without parameters.
+
+* Example:
+
+		//Return the meta data as the result of the request for 'currentUser'
+		return $this->request(null, 'currentUser')->__;
+
+* NOTE:
+
+	For the further developer on the services, the method with the same name prepending 'request' defined in the API is right for this request matching.
 
 [INDEX](#index)		
 [CONTENTS](../README.md#contents)
@@ -158,6 +175,20 @@ The ChigiService Class
 * Return Values:
 
 	`$this` handle.
+
+[INDEX](#index)		
+[CONTENTS](../README.md#contents)
+
+## ChigiService::successDirectHeader
+
+* Description:
+
+		$this->successDirectHeader();
+
+	Make a redirection to the address marked as the success target in this service.
+
+* Parameters: NONE
+* Return Values: NONE
 
 [INDEX](#index)		
 [CONTENTS](../README.md#contents)

@@ -1,12 +1,12 @@
 The ChigiApi Class
 ===============================
 
-# ChigiApi::$appHost
+## ChigiApi::$appHost
 
 * 描述：当前运行的应用的注册32位密钥
 * 说明：此密钥由Service通过项目配置参数获取并传递给api类
 
-# ChigiApi::$appHostIp
+## ChigiApi::$appHostIp
 
 * Description:
 
@@ -16,13 +16,24 @@ The ChigiApi Class
 
 	This is designed out of security that it won't make any link until this IP address is same to that registered.
 
-# ChigiApi::$time
+## ChigiApi::$user_agent
+
+* Description:
+
+	The User_Agent information from service.
+
+	It is an associative array consists:
+
+	* `ip`
+	* `bot`
+
+## ChigiApi::$time
 
 * Description:
 
 	The timestamp for the current instance of the related Api.
 
-# ChigiApi::dm
+## ChigiApi::dm
 
 * Description：
 

@@ -3,7 +3,7 @@
 
 For ThinkPHP 3.1.0 +
 
-Version 1.7.8
+Version 1.7.9
 
 Author 千木郷（李颖豪） chigix@zoho.com
 
@@ -27,3 +27,5 @@ Weibo: http://weibo.com/chigix
 	- [Return Values Equalization](./docs/util_chigireturn.md)
 	- [ChigiAlert](./docs/util_chigialert.md)
 - [MISC](./docs/misc.md)
+	- [Security](#security)
+	- [ChigiCode](#chigicode)

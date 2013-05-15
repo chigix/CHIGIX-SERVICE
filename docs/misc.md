@@ -1,6 +1,14 @@
 MISC
 ===============================
 
+- [MISC](#misc)
+- [Security](#security)
+- [ChigiCode](#chigicode)
+	- [第一位数说明](#)
+	- [第二位数说明](#-1)
+	- [第三位数说明](#-2)
+	- [具体代码说明](#-3)
+
 # Security
 
 Since 1.7.3, This infrastrucure supports the 'User Agent' Capability Determining. And the result could be accessible via `CHING::$BOT` , a static variable defined in the CHING session class.
