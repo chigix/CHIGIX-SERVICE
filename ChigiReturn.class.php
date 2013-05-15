@@ -1,12 +1,8 @@
 <?php
 
-/*
+/**
  * 返回值工具类
  * 用于智能化处理各种函数的返回值问题
- */
-
-/**
- * 返回值服务类
  *
  * @author Richard Lea <chigix@zoho.com>
  */
@@ -128,9 +124,13 @@ class ChigiReturn {
      * 获取成功/失败信息
      *
      * @param string $name 仅能填Success或Error（不区分大小写）
+     * 若不填，则根据ChigiCode，自动判断获取Success或Error的信息
      * @return string
      */
-    public function getMsg($name) {
+    public function getMsg($name = "") {
+        if (empty($name)) {
+            $name = $this->isValid()? 'Success':'Error';
+        }
         $name = "__message" . ucfirst($name);
         return $this->$name;
     }
