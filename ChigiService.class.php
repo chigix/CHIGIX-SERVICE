@@ -35,6 +35,12 @@ class ChigiService {
      */
     public $apiAction = "";
 
+    /**
+     * 数据抽象绑定
+     *
+     * @var array
+     */
+    protected $__bindings = array();
     public function __construct() {
         $this->request();
         $apiName = cut_string_using_last('.', $this->apiAction, 'right', false);
@@ -140,9 +146,19 @@ class ChigiService {
      */
     public function request($data = array(),$method = '') {
         static $api = null;
-        if (!empty($data) && !empty($method)) {
-            $method = 'request' . ucfirst($method);
-            $result = new ChigiReturn($api->$method($data));
+        if (!empty($method)) {
+            $toSend = array(
+                'data' => $data,
+                'user_agent' => array(
+                    'ip' => getClientIp(),
+                    'bot' => CHING::$BOT,
+                    '__' => $_SERVER['HTTP_USER_AGENT']
+                ),
+                'bindings' => $this->__bindings
+            );
+            $response = $api->response($toSend,$method);
+            $this->__bindings = array_merge($this->__bindings , $response['bindings']);
+            $result = new ChigiReturn($response['data']);
             return $result;
         }  elseif (is_null($api)) {
             //初始化API
@@ -151,6 +167,29 @@ class ChigiService {
             $api = new $apiName(C('CHIGI_AUTH'));
         }  else {
             throw_exception(get_class($this) . "API不正确，请检查地址");
+        }
+    }
+
+    /**
+     * 原型key-value数据绑定
+     *
+     * @return mixed 上次的目标key值
+     */
+    protected function bind() {
+        $argNum = func_num_args();
+        $arg = func_get_args();
+        switch ($argNum) {
+            case 1:
+                return isset($this->__bindings[$arg[0]])? $this->__bindings[$arg[0]]:null;
+                break;
+            case 2:
+                $temp = isset($this->__bindings[$arg[0]])? $this->__bindings[$arg[0]]:null;
+                $this->__bindings[$arg[0]] = $arg[1];
+                return $temp;
+                break;
+            default:
+                return;
+                break;
         }
     }
 }

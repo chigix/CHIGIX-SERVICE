@@ -9,6 +9,32 @@ abstract class ChigiApi extends Action {
     protected $appHost;
     public $appHostIp; //连接本API的应用所在服务器IP
     protected $time;
+    protected $user_agent = array(); //客户端信息
+    protected $__bindings = array(); //数据抽象绑定
+
+    /**
+     * 原型key-value数据绑定
+     *
+     * @return mixed
+     */
+
+    protected function bind() {
+        $argNum = func_num_args();
+        $arg = func_get_args();
+        switch ($argNum) {
+            case 1:
+                return isset($this->__bindings[$arg[0]]) ? $this->__bindings[$arg[0]] : null;
+                break;
+            case 2:
+                $temp = isset($this->__bindings[$arg[0]]) ? $this->__bindings[$arg[0]] : null;
+                $this->__bindings[$arg[0]] = $arg[1];
+                return $temp;
+                break;
+            default:
+                return;
+                break;
+        }
+    }
 
     public function __construct($appHost = null) {
         if ($appHost === null) {
@@ -41,6 +67,28 @@ abstract class ChigiApi extends Action {
         }
         return $this->$property;
     }
+
+    /**
+     * 响应来自Service的request，并返回请求结果数据
+     *
+     * @param array $data
+     * @param string $method
+     * @return array 返回数组信息，包含 data数组 和 bindings同步信息
+     */
+    public function response($data, $method) {
+        $method = 'request' . ucfirst($method);
+        if (!method_exists($this, $method)) {
+            throw_exception(get_class() . '中方法' . $method . '不存在，请检查');
+        }
+        $this->user_agent = $data['user_agent'];
+        if (method_exists($this, '_initResponse'))
+            $this->_initResponse();
+        $result = array();
+        $result['data'] = $this->$method($data['data']);//请求所返回的真正可操作数据
+        $result['bindings'] = $this->__bindings;//请求函数会自动将绑定数据进行更新，Service中无需手动操作
+        return $result;
+    }
+
 }
 
 ?>
