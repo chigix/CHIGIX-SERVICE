@@ -59,6 +59,7 @@ abstract class ChigiAction extends Action {
             return;
         } elseif (substr(ACTION_NAME, 0,2) == 'on') {
             //on当操作接收
+            //目标方法在当前控制器中没有重写，且以on开头
             return($this->on());
         } else {
             return;
@@ -90,12 +91,11 @@ abstract class ChigiAction extends Action {
         if ($serviceName === null) {
             if (ching('CHIGI_TAG') === null) {
                 //操作超时
-                $serviceAlert = service("Alert");
-                $serviceAlert->push(array(
+                $alert = new ChigiAlert(array(
                     'status' => 401,
-                    'info' => "对不起，操作超时"
+                    'info' => '对不起，操作超时'
                 ));
-                $serviceAlert->alert();
+                $alert->alert();
                 return(redirectHeader($_SERVER['HTTP_REFERER']));
             } else {
                 //本操作暴露于HTTP下执行
@@ -105,9 +105,8 @@ abstract class ChigiAction extends Action {
         }
         $service = service($serviceName);
         //优先捕获iframe
-        if ($_GET['iframe']) {
+        if ($_GET['iframe'])
             $successDirect = $_GET['iframe'];
-        }
         $service->setDirect($successDirect, $errorDirect);
         $result = $service->$methodName();
         // <editor-fold defaultstate="collapsed" desc="将非int型的$result根据返回值规范变换为-1,0,1">
