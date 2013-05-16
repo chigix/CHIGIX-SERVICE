@@ -1,7 +1,25 @@
 Developing Specification
 ===============================
 
-# Return Values Formatting
+# Developing Specification
+
+- [Developing Specification](#developing-specification)
+- [Return Values Formatting](#return-values-formatting)
+- [On: Form Both-sides Standard](#on-form-both-sides-standard)
+	- [Public Interface](#public-interface)
+	- [Override Interface](#override-interface)
+- [URL Params Via GET](#url-params-via-get)
+- [Communication Standard via POST & REQUEST](#communication-standard-via-post--request)
+- [Under: Method for Environment Check](#under-method-for-environment-check)
+- [CHING-SESSION会话机制](#ching-session)
+	- [CHING会话部署 与 参数配置](#ching--)
+	- [ching()函数使用](#ching)
+	- [CHING会话初始化](#ching-1)
+	- [CHING会话服务注册规范](#ching-2)
+	- [关于操作时效](#)
+- [模板变量assign命名规范](#assign)
+
+## Return Values Formatting
 
 在千木架构中，建议所有的方法或函数返回值均采用数组，示例格式如下：
 
@@ -27,7 +45,7 @@ Developing Specification
 [INDEX](#index)		
 [CONTENTS](../README.md#contents)
 
-# On: Form Both-sides Standard
+## On: Form Both-sides Standard
 
 表单能让服务器接收来自客户端的大量复杂数据，为保证服务器的安全性，需要对表单提交进行多重安全检测过滤。
 
@@ -46,7 +64,7 @@ on操作与under操作的逻辑部分均由相应的服务类提供，而on操�
 
 从1.7.0开始，服务类不再允许通过HTTP访问。
 
-## Public Interface
+### Public Interface
 
 表单直接提交至 `{:redirect_link('/on/',array('iframe'=>$_GET['iframe']))}` 即可，无需做任何变动。
 
@@ -82,7 +100,7 @@ on操作与under操作的逻辑部分均由相应的服务类提供，而on操�
 [INDEX](#index)		
 [CONTENTS](../README.md#contents)
 
-## Override Interface
+### Override Interface
 
 表单提交地址为： `{:redirect_link('/onxxx/',array('iframe'=>$_GET['iframe']))}` ，对应在Index控制器中定义的 `onxxx` 操作。
 
@@ -116,7 +134,7 @@ on操作与under操作的逻辑部分均由相应的服务类提供，而on操�
 
 由于这种手动传参调用的方式不依赖ching会话，所以服务器的资源开销会小一些，同时不存在表单提交的时效问题，可以应用在文章提交之类的表单页需要长时间停留的业务上。
 
-# URL Params Via GET
+## URL Params Via GET
 
 所有参数均基于PATH-INFO，且均以标准的 `key/value` 型书写，其中key则直接可从 `$_GET` 中获取，而部分value需经过 `base64_encode` 函数加密写入，获取时由 `base64_decode` 函数解密使用。（仅有本架构占用的一些特殊的GET变量需要进行如上转换，不影响开发者的一般使用）
 
@@ -131,7 +149,7 @@ on操作与under操作的逻辑部分均由相应的服务类提供，而on操�
 [INDEX](#index)		
 [CONTENTS](../README.md#contents)
 
-# Communication Standard via POST & REQUEST
+## Communication Standard via POST & REQUEST
 
 POST认为是来自表单的参数传递，故所有的POST请求中均需有表单令牌验证。
 
@@ -140,7 +158,7 @@ REQUEST由于包含了GET的信息，但却不与GET一起统一进行BASE64的�
 [INDEX](#index)		
 [CONTENTS](../README.md#contents)
 
-# Under: Method for Environment Check
+## Under: Method for Environment Check
 
 under机制就是一种业务级的环境保障，即先手动检测当前环境是否符合要求，若不符合则跳转到一个新的页面，若符合则往下执行。
 
@@ -192,7 +210,7 @@ on操作与under操作的逻辑部分均由相应的服务类提供，而on操�
 [INDEX](#index)		
 [CONTENTS](../README.md#contents)
 
-# CHING-SESSION会话机制
+## CHING-SESSION Mechanism
 
 从1.2版本开始，提供CHING会话机制，该会话机制旨在分布式的会话实现，并作为原生SESSION机制的增强替代方案。
 
@@ -200,7 +218,7 @@ CHING会话机制提供开发者与SESSION几乎完全一样的使用方法，�
 
 现1.7.0+版本中的CHING会话机制物理实现上仅处于物理文件读写、APC、Xcache，Memcache等其他缓存支持将在2.0+版本中提供支持。
 
-## CHING会话部署 与 参数配置
+### CHING会话部署 与 参数配置
 
 		/WebRoot/Core/  ——放置MVC框架内核
 				/Ching/ ——放置CHING会话文件
@@ -218,7 +236,7 @@ SID是CHING会话的暴露标识，用以让浏览器在页面切换之间可以
 
 从1.2.1版本开始，本框架会自动为所有访问者创建SID，包括游客，开发者则无需考虑SID的任何有关实现，只需直接操作用户会话即可。同时游客SID与SugarService下的用户加密SID完全兼容配合，不同类型的SID可以在SugarService下直接进行检测识别。
 
-## ching()函数使用
+### The Ching() Function
 
 ching会话在使用上与session完全一样，仅是普通的键值型数据的临时存储。
 
@@ -232,7 +250,7 @@ ching会话在使用上与session完全一样，仅是普通的键值型数据�
 6.	`ching("name",null);`                      删除指定ching
 7.	`ching(null);`                             清空当前ching（1.3.5+）
 
-## CHING会话初始化
+### Ching-session Initialization
 
 通过CHING实例化 `CHING::getInstance()` 即可返回一个初始化完毕的全新的CHING会话对象。
 
@@ -242,7 +260,7 @@ ching会话在使用上与session完全一样，仅是普通的键值型数据�
 
 缓存机制上，目前ching会话配置仅支持 Apc、Xcache和File（文件存储）三种底层缓存实现，对于一般的非分布式架构网站则足矣，而对于分布式大规模网站的ching会话则更需求于Memcache之类的缓存机制，此类支持将在 2.0+ 版本中提供实现。
 
-## CHING会话服务注册规范
+### Service registration on Ching
 
 所有的服务可以向ching会话进行存储，但为避免服务与服务之间的ching会话产生冲突，在此制定服务注册规范：
 
@@ -253,7 +271,7 @@ ching会话在使用上与session完全一样，仅是普通的键值型数据�
 		);
 		ching("ArticleService" , $content);
 
-## 关于操作时效
+### Ching-session Timeout
 
 CHING会话目前默认时效为15分钟，开发者亦可通过CHINGSET配置项，在配置文件中自定义时效( 1.4.0+ )。
 
@@ -262,7 +280,7 @@ CHING会话目前默认时效为15分钟，开发者亦可通过CHINGSET配置�
 [INDEX](#index)		
 [CONTENTS](../README.md#contents)
 
-# 模板变量assign命名规范
+## Naming rules for template assigning
 
 |assign                                                      | 模板引擎调用                            |
 |------------------------------------------------------------|-----------------------------------------|

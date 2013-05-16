@@ -3,7 +3,6 @@ Getting Started
 
 # Getting Started
 
-- [Getting Started](#getting-started)
 - [Getting Started](#getting-started-1)
 	- [Requirement](#requirement)
 	- [Installation](#installation)
@@ -129,3 +128,25 @@ Put the sources downloaded into the ThinkPHP Extension Directory, default as `we
 @todo-1.8:
 
 Develop an installation checking script by a lockfile in the conf folder. The script will walk through the entire configure array to check every item valid.
+
+## Double-side Mechanism between Service and API layers
+
+In the service layer, you must send datas via `$this->request()` method to have a communication with API layer.
+
+Physically, the keys within the associative array via `request()` are:
+
+	* `'data'`
+	* `'user_agent'`
+		* `'ip'`——The client IP address
+		* `'bot'`——The Browser Engine information or the Spider crawler name
+		* `'__'`——The whole string of the $_SERVER['USER_AGENT']
+	* `'bindings'`
+		An associative array loaded to the API automatically. So developers could use `$this->bind()` to have operations on it in API layer.
+
+
+The keys within the associative array via `response()` are:
+
+	* `'data'`
+		It would be returned to the Service Layer.
+	* `'bindings'`
+		An associative array loaded to the Service automatically. So developers could use `$this->bind()` to have operations on it in the Service layer.

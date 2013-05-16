@@ -24,8 +24,9 @@ The ChigiApi Class
 
 	It is an associative array consists:
 
-	* `ip`
-	* `bot`
+	* `'ip'`    客户端浏览器访问时的IP地址信息
+	* `'bot'`   客户端浏览器访问时的浏览器内核信息/蜘蛛引擎名称
+	* `'__'`    整个 `$_SERVER['USER_AGENT']` 字符串内容
 
 ## ChigiApi::$time
 

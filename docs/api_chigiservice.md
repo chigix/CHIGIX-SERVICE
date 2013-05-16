@@ -6,10 +6,11 @@ The ChigiService Class
 - [ChigiService::$apiAction](#chigiserviceapiaction)
 - [ChigiService::addAddrParams](#chigiserviceaddaddrparams)
 - [ChigiService::errorDirectHeader](#chigiserviceerrordirectheader)
+- [ChigiService::request](#chigiservicerequest)
 - [ChigiService::setDirect](#chigiservicesetdirect)
 - [ChigiService::setErr](#chigiserviceseterr)
 - [ChigiService::setSuc](#chigiservicesetsuc)
-- [ChigiService::successDirectHeader;](#chigiservicesuccessdirectheader)
+- [ChigiService::successDirectHeader](#chigiservicesuccessdirectheader)
 - [ChigiService::under](#chigiserviceunder)
 
 ## ChigiService::$apiAction
@@ -50,6 +51,34 @@ The ChigiService Class
 
 		//↓You can use it in chain-writing style
 		$this->addAddrParams('iframe','http://www.chigix.com')->addAddrParams('var','Test');
+
+[INDEX](#index)		
+[CONTENTS](../README.md#contents)
+
+## ChigiService::bind
+
+* Description：
+
+		$this->bind("Key" [,"Value"]);
+
+	Add a pair of key-value as a Query Param to the current redirect link in this service.		
+	Or get a value binded to the key associated.
+
+* Parameters：
+
+	Param                   |Desc
+	------------------------|-----------------------------
+	$key                    |The param's variable name
+	$value                  |Optional, the value of the corresponding param
+
+* Return Values:
+
+	The last value of the key given.
+
+* Example:
+
+		$this->bind('uid',2);
+		$this->bind('uid');
 
 [INDEX](#index)		
 [CONTENTS](../README.md#contents)
