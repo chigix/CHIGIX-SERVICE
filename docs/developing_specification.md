@@ -19,7 +19,7 @@ Developing Specification
 	- [关于操作时效](#)
 - [模板变量assign命名规范](#assign)
 
-## Return Values Formatting
+## RETA:Return Values Formatting
 
 在千木架构中，建议所有的方法或函数返回值均采用数组，示例格式如下：
 
@@ -38,7 +38,9 @@ Developing Specification
 2.	info：返回官方型的返回信息，供调用本函数的开发者看，可以写一些建议，也可以写操作状态，是一个字符串。
 3.	data：真正要返回的实体数据，即整个函数真正要返回的内容在这里
 
-采用建议的返回值规范格式可以很方便地通过返回值处理服务ReturnService来接收返回值并进行智能处理和包装，方便开发与模块间开发的规范统一。提升开发体验。
+关于以上数组格式是整个千木服务架构专门设计用来统一返回值问题的，因此针对如上格式的数组称为 RETA 数组。
+
+采用RETA数组可以很方便地通过返回值处理服务ReturnService来接收返回值并进行智能处理和包装，方便开发与模块间开发的规范统一。提升开发体验。
 
 关于status操作码，可参考最后所附的ChigiCode。
 

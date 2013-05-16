@@ -34,6 +34,34 @@ The ChigiApi Class
 
 	The timestamp for the current instance of the related Api.
 
+## ChigiApi::bind
+
+* Description：
+
+		$this->bind("Key" [,"Value"]);
+
+	Add a pair of key-value as a Query Param to the current redirect link in this service.		
+	Or get a value binded to the key associated.
+
+* Parameters：
+
+	Param                   |Desc
+	------------------------|-----------------------------
+	$key                    |The param's variable name
+	$value                  |Optional, the value of the corresponding param
+
+* Return Values:
+
+	The last value of the key given.
+
+* Example:
+
+		$this->bind('uid',2);
+		$this->bind('uid');
+
+[INDEX](#index)		
+[CONTENTS](../README.md#contents)
+
 ## ChigiApi::dm
 
 * Description：
