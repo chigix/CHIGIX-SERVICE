@@ -42,7 +42,7 @@ class ChigiAlert {
 
     /**
      * 推送一个alert，根据ReturnService实例
-     * @param mixed $param 仅接受ReturnService的实例、统一返回规范的数组、符合操作码规范的三位数整型
+     * @param ChigiReturn|RETA|int $param 仅接受ReturnService的实例、RETA数组、符合操作码规范的三位数整型
      * @return \ChigiAlert
      */
     public function push($param) {
