@@ -8,7 +8,7 @@
  */
 class ChigiReturn {
 
-    private $__data;  //返回携带实体数据
+    private $__data = null;  //返回携带实体数据
     private $__info;  //官方返回信息
     private $__code; //操作码
     private $__messageSuccess = "HELLO~~";
@@ -18,14 +18,24 @@ class ChigiReturn {
      * 初始化返回值服务类，导入各种包
      */
     public function __construct($returnValue = null) {
-        if ($returnValue == null) {
-            // 在控制器中初始化
-        } else {
-            // 处理包装返回值，来自$this->get()的实例化
+        if (is_int($returnValue)) {
+            //传入为ChigiCode
+            $this->__code = $returnValue;
+            if ($this->isValid())
+                $this->__code = 251;
+            if ($this->isError())
+                $this->__code = 501;
+            if ($this->__code != $returnValue) {
+                $this->__messageError = "$returnValue : There is no data within this return";
+                $this->__messageSuccess = "$returnValue : There is no data within this return";
+            }
+        } elseif (is_array($returnValue) && isset($returnValue['status'])) {
+            //传入为RETA数组
             $this->__code = $returnValue['status'];
-            $this->__info = $returnValue['info'];
-            $this->__data = $returnValue['data'];
+            $this->__info = isset($returnValue['info']) ? $returnValue['info'] : "$returnValue : There is no info within this return";
+            $this->__data = isset($returnValue['data']) ? $returnValue['data'] : null;
             if ($this->isValid()) {
+                // 2xx
                 $this->__messageSuccess = $this->__info;
                 switch (getNumOnes($this->__code)) {
                     case 4:
@@ -45,6 +55,7 @@ class ChigiReturn {
                         break;
                 }
             } else {
+                //4xx 或 5xx
                 $this->__messageError = $this->__info;
                 switch (getNumOnes($this->__code)) {
                     case 6:
@@ -55,6 +66,16 @@ class ChigiReturn {
                         break;
                 }
             }
+        } elseif (is_object($returnValue) && get_class($returnValue) == 'ChigiReturn') {
+            //传入为ChigiReturn
+            $this->__code = $returnValue->getCode();
+            $this->__data = $returnValue->__;
+            $this->__info = $returnValue->getInfo();
+            $this->__messageError = $returnValue->getMsg('Error');
+            $this->__messageSuccess = $returnValue->getMsg('Success');
+        } else {
+            // 其他类型传入，包含无参构造
+            $this->__data = $returnValue;
         }
     }
 
@@ -129,7 +150,7 @@ class ChigiReturn {
      */
     public function getMsg($name = "") {
         if (empty($name)) {
-            $name = $this->isValid()? 'Success':'Error';
+            $name = $this->isValid() ? 'Success' : 'Error';
         }
         $name = "__message" . ucfirst($name);
         return $this->$name;
@@ -141,7 +162,7 @@ class ChigiReturn {
      * @param string $name 仅能填Success或Error
      * @param string $str
      */
-    public function setMsg($name , $str) {
+    public function setMsg($name, $str) {
         $name = "__message" . $name;
         $this->$name = $str;
     }
