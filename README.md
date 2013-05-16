@@ -27,5 +27,11 @@ Weibo: http://weibo.com/chigix
 	- [Return Values Equalization](./docs/util_chigireturn.md)
 	- [ChigiAlert](./docs/util_chigialert.md)
 - [MISC](./docs/misc.md)
-	- [Security](#security)
-	- [ChigiCode](#chigicode)
+	- [Security](./docs/misc.md#security)
+	- [ChigiCode](./docs/misc.md#chigicode)
+
+# ULTRAMAN WANTED
+
+团队成员招募中~~
+
+Just BANKAI to contact [@千木郷](http://weibo.com/chigix) : chigix@zoho.com
