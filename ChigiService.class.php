@@ -157,7 +157,7 @@ class ChigiService {
                 'bindings' => $this->__bindings
             );
             $response = $api->response($toSend,$method);
-            $this->__bindings = array_merge($this->__bindings , $response['bindings']);
+            $this->__bindings = $response['bindings'];
             $result = new ChigiReturn($response['data']);
             return $result;
         }  elseif (is_null($api)) {
