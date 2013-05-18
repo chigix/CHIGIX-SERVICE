@@ -35,11 +35,11 @@ Physically, this machanism is providered by the ChigiReturn Class.
 
 The ChigiReturn Object is allowed to get data via some magic proterty:
 
-* $returnObj->__
+* `$returnObj->__`
 
 	Get the whole data in the $returnObj. Developers could get the original data by this.
 
-* $returnObj->key
+* `$returnObj->key`
 
 	If the original data in the returnObj is an array, this expression will return the value of the 'key'.		
 	It is equal to the expression: `$returnObj->__['key']` .		

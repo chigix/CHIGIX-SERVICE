@@ -139,7 +139,7 @@ Physically, the keys within the associative array via `request()` are:
 * `'user_agent'`
 	* `'ip'`——The client IP address
 	* `'bot'`——The Browser Engine information or the Spider crawler name
-	* `'__'`——The whole string of the $_SERVER['USER_AGENT']
+	* `'__'`——The whole string of the `$_SERVER['USER_AGENT']`
 * `'bindings'`
 	An associative array loaded to the API automatically. So developers could use `$this->bind()` to have operations on it in API layer.
 
@@ -157,3 +157,29 @@ Suggestions for the developing both side:
 * All the methods return an associative array as the return value specification in the API.
 * All the methods starting with 'request' must have only one parameter in the API.
 * Other methods without prefix should be deployed in the related model better.
+
+### PUSH POST Datas to API
+
+Because of the API layer was not allowed to get the POST datas, so it would be a little complicated although security is ensured.
+
+1. Get the data in the POST upon Service:
+
+		public function conApiPOST(){
+			$this->request($_POST,'postWrapper');
+		}
+
+2. Fetch the data in the correspond method in API:
+
+		public function requestPOST($data){
+			return array(
+				'status' => 231,
+				'info' => 'Return the POST datas successfully.',
+				'data' => $data,
+			);
+		}
+
+3. In the Service layer, Deal with the datas, that from the client originaly.
+
+		public function conApiPost(){
+			return $this->request($_POST,'postWrapper')->__;
+		}
