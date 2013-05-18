@@ -100,7 +100,7 @@ class ChigiReturn {
         if ($name == '__') {
             return $this->__data;
         } else {
-            return $this->__data[$name];
+            return isset($this->__data[$name])?$this->__data[$name]:null;
         }
     }
 

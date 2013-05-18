@@ -24,7 +24,7 @@ Weibo: http://weibo.com/chigix
 - [CHING-SESSION](./docs/CHING_SESSION.md)
 - Utils
 	- [Chiji-Renderer](./docs/chiji_renderer.md)
-	- [Return Values Equalization](./docs/util_chigireturn.md)
+	- [ChigiReturn:Return Values Equalization](./docs/util_chigireturn.md)
 	- [ChigiAlert](./docs/util_chigialert.md)
 - [MISC](./docs/misc.md)
 	- [Security](./docs/misc.md#security)

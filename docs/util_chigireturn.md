@@ -1,4 +1,4 @@
-Return Values Equalization
+ChigiReturn:Return Values Equalization
 ====================================
 
 ## The ChigiReturn Class
@@ -30,3 +30,17 @@ Physically, this machanism is providered by the ChigiReturn Class.
 * `new ChigiReturn(OTHERS);`
 
 	All other datas beyond the identification of the ChigiReturn Class would be setted as the Data totally. And developers could only get it using `$obj->__` .
+
+## Datas Getter
+
+The ChigiReturn Object is allowed to get data via some magic proterty:
+
+* $returnObj->__
+
+	Get the whole data in the $returnObj. Developers could get the original data by this.
+
+* $returnObj->key
+
+	If the original data in the returnObj is an array, this expression will return the value of the 'key'.		
+	It is equal to the expression: `$returnObj->__['key']` .		
+	**NOTE**:If the original data is not an array or an array without the target 'key', it will return null equally.
