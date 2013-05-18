@@ -170,7 +170,7 @@ Because of the API layer was not allowed to get the POST datas, so it would be a
 
 2. Fetch the data in the correspond method in API:
 
-		public function requestPOST($data){
+		public function requestPostWrapper($data){
 			return array(
 				'status' => 231,
 				'info' => 'Return the POST datas successfully.',
