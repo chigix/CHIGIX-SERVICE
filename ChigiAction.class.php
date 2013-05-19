@@ -57,7 +57,7 @@ abstract class ChigiAction extends Action {
         } elseif (method_exists($this, ACTION_NAME)) {
             //如果目标操作直接在当前控制器中
             return;
-        } elseif (substr(ACTION_NAME, 0,2) == 'on') {
+        } elseif (substr(ACTION_NAME, 0, 2) == 'on') {
             //on当操作接收
             //目标方法在当前控制器中没有重写，且以on开头
             return($this->on());
@@ -75,7 +75,9 @@ abstract class ChigiAction extends Action {
      * @param string $errorDirect
      * @return void
      */
-    public function on($serviceName = null, $methodName = null, $successDirect = null, $errorDirect = null) {
+    public function on(
+    $serviceName = null, $methodName = null, $successDirect = null, $errorDirect = null, $sucAlert = null, $errAlert = null
+    ) {
         //对表单进行安全令牌验证：
         if (!M()->autoCheckToken($_POST)) {
             _404();
@@ -92,9 +94,9 @@ abstract class ChigiAction extends Action {
             if (ching('CHIGI_TAG') === null) {
                 //操作超时
                 $alert = new ChigiAlert(array(
-                    'status' => 401,
-                    'info' => '对不起，操作超时'
-                ));
+                            'status' => 401,
+                            'info' => '对不起，操作超时'
+                        ));
                 $alert->alert();
                 return(redirectHeader($_SERVER['HTTP_REFERER']));
             } else {
@@ -110,29 +112,20 @@ abstract class ChigiAction extends Action {
         $service->setDirect($successDirect, $errorDirect);
         $result = $service->$methodName();
         // <editor-fold defaultstate="collapsed" desc="将非int型的$result根据返回值规范变换为-1,0,1">
-        if (is_object($result)) {
-            if ($result->isValid()) {
-                $result = 1;
-            } else {
-                $result = 0;
-            }
-        }
-        if (is_array($result)) {
-            if (getNumHundreds($result['status']) == 2) {
-                $result = 1;
-            } else {
-                $result = 0;
-            }
+        if (is_object($result) && 'ChigiReturn' == get_class($result)) {
+            $result = $result->isValid() ? 1 : 0;
+        } elseif (is_array($result) && isset($result['status'])) {
+            $result = $result['status'] < 300 ? 1 : 0;
         }
         // </editor-fold>
         switch ($result) {
             case false:
             case 0:
-                return($service->errorDirectHeader());
+                return($service->errorDirectHeader($errAlert));
                 break;
             case true:
             case 1:
-                return($service->successDirectHeader());
+                return($service->successDirectHeader($sucAlert));
                 break;
             case -1:
                 //DEBUG，不跳转
@@ -243,11 +236,11 @@ abstract class ChigiAction extends Action {
         }
         if (
                 $the_host != C('CHIGI_HOST')
-                || $_SERVER['REQUEST_URI'] != redirect_link(MODULE_NAME.'/'.ACTION_NAME, $_GET,'')
+                || $_SERVER['REQUEST_URI'] != redirect_link(MODULE_NAME . '/' . ACTION_NAME, $_GET, '')
         ) {
             //如果域名不符合规范，则作如下跳转：
             header('HTTP/1.1 301 Moved Permanently'); //发出301头部
-            redirectHeader(MODULE_NAME.'/'.ACTION_NAME, $_GET);
+            redirectHeader(MODULE_NAME . '/' . ACTION_NAME, $_GET);
         }
     }
 

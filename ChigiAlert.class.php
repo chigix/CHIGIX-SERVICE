@@ -52,7 +52,7 @@ class ChigiAlert {
             $this->message = isset($param['data']) ? $param['data'] : $param['info'];
             return $this;
         } elseif (is_object($param) && get_class($param) == 'ChigiReturn') {
-            $str = ($param->getCode() - 200) < 100 ? "success" : "error";
+            $str = $param->getCode()< 300 ? "success" : "error";
             $info = $param->getInfo();
             $this->option = "alert-$str";
             $this->message = $info === null ? $this->getMsg($str) : $info;

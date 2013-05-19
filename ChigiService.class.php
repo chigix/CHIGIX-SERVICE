@@ -22,6 +22,20 @@ class ChigiService {
     protected $errorRedirect = "";
 
     /**
+     * 成功跳转的提示信息
+     *
+     * @var string
+     */
+    protected $successAlert = "";
+
+    /**
+     * 失败跳转的提示信息
+     *
+     * @var string
+     */
+    protected $errorAlert = "";
+
+    /**
      * 地址栏传参
      *
      * @var Array
@@ -41,6 +55,7 @@ class ChigiService {
      * @var array
      */
     protected $__bindings = array();
+
     public function __construct() {
         $this->request();
         $apiName = cut_string_using_last('.', $this->apiAction, 'right', false);
@@ -86,6 +101,26 @@ class ChigiService {
         return $this;
     }
 
+    /**
+     * 设置跳转成功提示信息
+     *
+     * @param string $msg
+     */
+    protected function setSucAlert($msg = "") {
+        $this->successAlert = $msg;
+        return $this;
+    }
+
+    /**
+     * 设置跳转失败提示信息
+     *
+     * @param string $msg
+     */
+    protected function setErrAlert($msg = "") {
+        $this->errorAlert = $msg;
+        return $this;
+    }
+
     public function addAddrParams($key, $value) {
         $this->addrParams[$key] = $value;
         return $this;
@@ -94,14 +129,28 @@ class ChigiService {
     /**
      * 跳转至执行成功页面
      */
-    public function successDirectHeader() {
+    public function successDirectHeader($alertMsg = "") {
+        if (!empty($alertMsg)) {
+            $alert = new ChigiAlert($alertMsg, 'alert-success');
+            $alert->alert();
+        } elseif (!empty($this->successAlert)) {
+            $alert = new ChigiAlert($this->successAlert, 'alert-success');
+            $alert->alert();
+        }
         redirectHeader($this->successRedirect, $this->addrParams);
     }
 
     /**
      * 跳转至执行失败页面
      */
-    public function errorDirectHeader() {
+    public function errorDirectHeader($alertMsg = "") {
+        if (!empty($alertMsg)) {
+            $alert = new ChigiAlert($alertMsg, 'alert-error');
+            $alert->alert();
+        } elseif (!empty($this->errorAlert)) {
+            $alert = new ChigiAlert($this->errorAlert, 'alert-error');
+            $alert->alert();
+        }
         redirectHeader($this->errorRedirect, $this->addrParams);
     }
 
@@ -144,7 +193,7 @@ class ChigiService {
      * @param string $method
      * @return \ChigiReturn
      */
-    public function request($data = array(),$method = '') {
+    public function request($data = array(), $method = '') {
         static $api = null;
         if (!empty($method)) {
             $toSend = array(
@@ -156,16 +205,16 @@ class ChigiService {
                 ),
                 'bindings' => $this->__bindings
             );
-            $response = $api->response($toSend,$method);
+            $response = $api->response($toSend, $method);
             $this->__bindings = $response['bindings'];
             $result = new ChigiReturn($response['data']);
             return $result;
-        }  elseif (is_null($api)) {
+        } elseif (is_null($api)) {
             //初始化API
             import($this->apiAction);
             $apiName = cut_string_using_last('.', $this->apiAction, 'right', false);
             $api = new $apiName(C('CHIGI_AUTH'));
-        }  else {
+        } else {
             throw_exception(get_class($this) . "API不正确，请检查地址");
         }
     }
@@ -180,10 +229,10 @@ class ChigiService {
         $arg = func_get_args();
         switch ($argNum) {
             case 1:
-                return isset($this->__bindings[$arg[0]])? $this->__bindings[$arg[0]]:null;
+                return isset($this->__bindings[$arg[0]]) ? $this->__bindings[$arg[0]] : null;
                 break;
             case 2:
-                $temp = isset($this->__bindings[$arg[0]])? $this->__bindings[$arg[0]]:null;
+                $temp = isset($this->__bindings[$arg[0]]) ? $this->__bindings[$arg[0]] : null;
                 $this->__bindings[$arg[0]] = $arg[1];
                 return $temp;
                 break;
@@ -192,6 +241,7 @@ class ChigiService {
                 break;
         }
     }
+
 }
 
 /**
@@ -219,7 +269,7 @@ class underCheck {
         if (isset($_GET['iframe'])) {
             $this->addAddrParams('iframe', $_GET['iframe']);
         } else {
-            $this->addAddrParams('iframe', (is_ssl()?'https://':'http://') . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']);
+            $this->addAddrParams('iframe', (is_ssl() ? 'https://' : 'http://') . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']);
         }
         if (is_int($result)) {
             $result == 1 ? $this->under_status = true : $this->under_status = false;
@@ -256,6 +306,7 @@ class underCheck {
         $this->params[$name] = null;
         return $this;
     }
+
     /**
      * 添加地址栏参数
      *
@@ -289,7 +340,7 @@ class underCheck {
     public function check() {
         if ($this->under_status == false) {
             if (!empty($this->alert) && !$this->under_status == true) {
-                $alert = new ChigiAlert($this->alert , 'alert-error');
+                $alert = new ChigiAlert($this->alert, 'alert-error');
                 $alert->alert();
             }
             redirectHeader($this->addr, $this->params);
