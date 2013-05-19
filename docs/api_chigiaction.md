@@ -20,7 +20,15 @@ The public general interface for fetch the data from submited form.
 	$successDirect          |To modify the success direct address ( allowed for ActionName )
 	$errorDirect            |To modify the error direct address ( allowed for ActionName )
 
-* **关于数据**：on方法会直接接收并包装POST数据，而后传入指定的服务与其中的操作，自动执行，而至于具体的操作中的逻辑流程则定义在服务类中对应的以 “on” 开头的方法中。
+* **INVOKE**：
+
+on方法会直接调用定义在 `$serviceName` 服务类中的 `$methodName` 方法，而通过 service 层的方法可以获取到客户端送过来的 `$_POST` 数组数据，则在 service 层的对应方法中再发送 request 请求便可将POST数据传递给API进行数据处理与包装。在控制器与 service 中此类方法名须以 `on` 开头。
+
+* **AUTO REQUEST**:
+
+从1.8.0版本开始，on方法支持自动发送请求，即主要针对像简单地将POST数据转发给API的 service 操作则可以免定义，而直接由千木架构自身发送请求，以运行API中定义的相关业务逻辑。即面向一些纯粹转发POST数据的表单接收方法则可以在控制器与service中均免定义。
+
+当然，此功能不与on 私有接口设置冲突，若仍需设置on私有接口，则开发者可以继续将接口定义在控制器中，而service中如不定义对应的on开头方法，则架构仍旧可以自动向API发送数据请求。
 
 [INDEX](#index)		
 [CONTENTS](../README.md#contents)

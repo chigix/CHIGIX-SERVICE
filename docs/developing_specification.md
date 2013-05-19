@@ -61,9 +61,11 @@ Developing Specification
 
 on操作与under操作的逻辑部分均由相应的服务类提供，而on操作应用层封装于控制器层，可通过在控制器中包装调用或直接接收外部表单HTTP提交；而under操作封装于Service类，通过在控制器中进行环境检测（undercheck）调用。
 
-从1.5.5开始，服务类不再允许暴露于HTTP下，而改由on操作包装调用，目标服务类的指定均通过给on操作传参完成，而两种不同的接收接口则对应两种不同的传参方式，提升开发体验。
+从1.7.0开始，服务类不再允许通过HTTP访问，目标服务类的指定均通过给on操作传参完成，而两种不同的接收接口则对应两种不同的传参方式，提升开发体验。
 
-从1.7.0开始，服务类不再允许通过HTTP访问。
+开发上，以上两种接口的主要区别就是在于控制器中是否需要定义一个新的on操作，而service中仍旧是需要定义对应的on业务逻辑处理与请求发送。
+
+service 中可以不定义on业务逻辑处理的唯一允许条件就是仅针对简单POST数据请求，则可以交由架构自己进行 'AUTO REQUEST'.
 
 ### Public Interface
 
@@ -137,6 +139,62 @@ on操作与under操作的逻辑部分均由相应的服务类提供，而on操�
 
 [INDEX](#index)		
 [CONTENTS](../README.md#contents)
+
+### Defination Specification in the service developing
+
+Only business logic is in need, in the service layer, for the 'on' methods, and the return value would be catched in the infrasture so as to do some judgement on the result and redirecting then.
+
+The support returns value/type are:
+
+* **TRUE**: Success redirecting.
+* **FALSE**: Error redirecting.
+* **1**: Success redirecting.
+* **0**: Error redirecting.
+* **-1**: Debug mode without redirecting.
+* **RETA**: redirecting upon the ChigiCode in the 'status' element.
+* **ChigiReturn**: redirecting upon the ChigiCode in the object.
+
+And in the invoking, no matter public interface or private interface, the writing must be completed such as 'onAddArticle' rather than 'addArticle' or 'AddArticle'.
+
+### AUTO REQUEST
+
+Since 1.8.0, the auto-request has been supported in this infrastructure. 
+
+Orienting the simple business logic defined in the API mostly with only POST datas required, developers is allowed not to write the corresponding method starting with 'on' in the service layer.
+
+Of course, there is nothing required in both action and service when using the public interface of `on` .
+
+However, it would be automatically invoked in this infrasture so that a specification, in the API layer, was in need for this super 'on' dealing.
+
+For the easiest using, the only specification is the return value shoule be RETA in the API layer. That's all!
+
+For instance, I want to add an article just submitted, you could only define the business logic to process datas in the API:
+
+	public function requestAddArticle($data){
+		$id = $this->dm('Article')->add($data);
+		return array(
+				'status' => 211,
+				'info' => 'Article added succefully',
+				'data' => $id
+			);
+	}
+
+Then you could define the on routers in the action if it's sure that the form could be submitted in 15 mins.
+
+	public function add_article(){
+		ching("CHIGI_SUCCESSDIRECT", 'Profile/index');
+        ching("CHIGI_ERRORDIRECT", 'Login/index');
+        ching("CHIGI_TAG", array(
+            'SERVICE' => 'Article',
+            'METHOD' => 'onAddArticle'
+        ));
+	}
+
+Originally, it is same to define a method in the service manually:
+
+	public function onAddArticle(){
+		return $this->request($_POST, 'addApp');
+	}
 
 ## URL Params Via GET
 
