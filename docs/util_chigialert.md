@@ -33,5 +33,24 @@ The data to be sent set, the `alert()` method appended at the last could submit 
 
 	$alert->alert();
 
+### Suggestion Alert Type
+
+* alert-error
+* alert-success
+* alert-info
+* alert-block
+
 ## Usage on Front-end
 
+Because of the suggestion above is BootStrap Supporting, so it would be easily to throw an alert via the bootstrap.
+
+Here is the example upon the bootstrap:
+
+	<if condition="ching('chijiAlertOn',null)">
+		<div class="alert {:ching('chijiAlert.option',null)}">
+			<button type="button" class="close" data-dismiss="alert">&times;</button>
+			<strong>{:ching('chijiAlert.message',null)}</strong>
+			</div>
+	</if>
+
+And then, you can make this template file included into the main layout html.

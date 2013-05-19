@@ -5,6 +5,7 @@ The ChigiService Class
 
 - [ChigiService::$apiAction](#chigiserviceapiaction)
 - [ChigiService::addAddrParams](#chigiserviceaddaddrparams)
+- [ChigiService::bind](#chigiservicebind)
 - [ChigiService::errorDirectHeader](#chigiserviceerrordirectheader)
 - [ChigiService::request](#chigiservicerequest)
 - [ChigiService::setDirect](#chigiservicesetdirect)
@@ -87,12 +88,20 @@ The ChigiService Class
 
 * Description:
 
-		$this->errorDirectHeader();
+		$this->errorDirectHeader([string $alertMsg]);
 
 	Make a redirection to the address marked as the error target in this service.
 
-* Parameters: NONE
+* Parameters:
+
+	Param                   |Desc
+	------------------------|-----------------------------
+	$alertMsg               |The string of message would build an alert to push into the ching
+
 * Return Values: NONE
+* Example:
+
+		$service->errorDirectHeader("对不起，操作失败");
 
 [INDEX](#index)		
 [CONTENTS](../README.md#contents)
@@ -187,6 +196,29 @@ The ChigiService Class
 [INDEX](#index)		
 [CONTENTS](../README.md#contents)
 
+## ChigiService::setErrAlert
+
+* Description:
+
+		$this->setErrAlert(string $alertMsg);
+
+	Set an alert message being pushed to the alert ching automatically when redirect.
+
+* Parameters:
+
+	Param                   |Desc
+	------------------------|-----------------------------
+	$alertMsg               |The string of message would build an alert to push into the ching
+
+* Return Values:
+
+	`$this` handle.
+
+* **NOTE**:This method was accessible in protected, so it could be invoked only in the service layer.
+
+[INDEX](#index)		
+[CONTENTS](../README.md#contents)
+
 ## ChigiService::setSuc
 
 * Description:
@@ -208,16 +240,44 @@ The ChigiService Class
 [INDEX](#index)		
 [CONTENTS](../README.md#contents)
 
+## ChigiService::setSucAlert
+
+* Description:
+
+		$this->setSucAlert(string $alertMsg);
+
+	Set an alert message being pushed to the alert ching automatically when redirect.
+
+* Parameters:
+
+	Param                   |Desc
+	------------------------|-----------------------------
+	$alertMsg               |The string of message would build an alert to push into the ching
+
+* Return Values:
+
+	`$this` handle.
+
+* **NOTE**:This method was accessible in protected, so it could be invoked only in the service layer.
+
 ## ChigiService::successDirectHeader
 
 * Description:
 
-		$this->successDirectHeader();
+		$this->successDirectHeader([string $alertMsg]);
 
 	Make a redirection to the address marked as the success target in this service.
 
-* Parameters: NONE
+* Parameters:
+
+	Param                   |Desc
+	------------------------|-----------------------------
+	$alertMsg               |The string of message would build an alert to push into the ching
+
 * Return Values: NONE
+* Example:
+
+		$service->errorDirectHeader("登录成功");
 
 [INDEX](#index)		
 [CONTENTS](../README.md#contents)

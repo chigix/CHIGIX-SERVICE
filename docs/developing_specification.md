@@ -3,21 +3,20 @@ Developing Specification
 
 # Developing Specification
 
-- [Developing Specification](#developing-specification)
-- [Return Values Formatting](#return-values-formatting)
+- [RETA:Return Values Formatting](#retareturn-values-formatting)
 - [On: Form Both-sides Standard](#on-form-both-sides-standard)
 	- [Public Interface](#public-interface)
 	- [Override Interface](#override-interface)
 - [URL Params Via GET](#url-params-via-get)
 - [Communication Standard via POST & REQUEST](#communication-standard-via-post--request)
 - [Under: Method for Environment Check](#under-method-for-environment-check)
-- [CHING-SESSION会话机制](#ching-session)
+- [CHING-SESSION Mechanism](#ching-session-mechanism)
 	- [CHING会话部署 与 参数配置](#ching--)
-	- [ching()函数使用](#ching)
-	- [CHING会话初始化](#ching-1)
-	- [CHING会话服务注册规范](#ching-2)
-	- [关于操作时效](#)
-- [模板变量assign命名规范](#assign)
+	- [The Ching() Function](#the-ching-function)
+	- [Ching-session Initialization](#ching-session-initialization)
+	- [Service registration on Ching](#service-registration-on-ching)
+	- [Ching-session Timeout](#ching-session-timeout)
+- [Naming rules for template assigning](#naming-rules-for-template-assigning)
 
 ## RETA:Return Values Formatting
 
@@ -127,7 +126,7 @@ on操作与under操作的逻辑部分均由相应的服务类提供，而on操�
 			//↓直接返回ReturnService对象
 			return service("Return")->get(...);
 
-			//↓支持返回Return规范数组
+			//↓支持返回 RETA 数组
 			return array(
 					"status" => 201,
 					"info" => "BANKAI"
@@ -135,6 +134,9 @@ on操作与under操作的逻辑部分均由相应的服务类提供，而on操�
 		}
 
 由于这种手动传参调用的方式不依赖ching会话，所以服务器的资源开销会小一些，同时不存在表单提交的时效问题，可以应用在文章提交之类的表单页需要长时间停留的业务上。
+
+[INDEX](#index)		
+[CONTENTS](../README.md#contents)
 
 ## URL Params Via GET
 
