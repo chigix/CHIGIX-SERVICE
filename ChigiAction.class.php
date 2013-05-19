@@ -14,9 +14,10 @@ abstract class ChigiAction extends Action {
         parent::__construct();
     }
 
-    //目标操作不在控制器中，进行自动跳转
-    protected function __chigiEmptyRedirection() {
+    //多重空检测与高级跳转
+    private function __chigiEmptyRedirection() {
         if (get_class($this) == 'EmptyAction') {
+            //控制器不存在，则进行空控制器跳转
             switch (substr(MODULE_NAME, 0, 2)) {
                 case 'On':
                     //on当模块接收
@@ -110,7 +111,16 @@ abstract class ChigiAction extends Action {
         if ($_GET['iframe'])
             $successDirect = $_GET['iframe'];
         $service->setDirect($successDirect, $errorDirect);
-        $result = $service->$methodName();
+        if (method_exists($service, $methodName)) {
+            //调用开发者定义的service请求
+            $result = $service->$methodName();
+        }  else {
+            //支持直接请求，service中可免写请求定义
+            if ('on' == substr($methodName, 0, 2)) {
+                $methodName = substr($methodName, 2);
+            }
+            $result = $service->request($_POST, $methodName);
+        }
         // <editor-fold defaultstate="collapsed" desc="将非int型的$result根据返回值规范变换为-1,0,1">
         if (is_object($result) && 'ChigiReturn' == get_class($result)) {
             $result = $result->isValid() ? 1 : 0;
