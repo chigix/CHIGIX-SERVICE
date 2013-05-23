@@ -9,20 +9,15 @@ Author:
 
 * 千木郷（李颖豪）   
 
-email: chigix@zoho.com
-
-Facebook: http://facebook.com/chigix
-
-Weibo: http://weibo.com/chigix
+	email: chigix@zoho.com		
+	Facebook: http://facebook.com/chigix		
+	Weibo: http://weibo.com/chigix		
 
 * josephstalin117(林永泽)   
 
-email: lyz2356002@gmail.com  
-
-Facebook: http://www.facebook.com/josephstalin117  
-
-weibo: http://weibo.com/josephstalin177  
-
+	email: lyz2356002@gmail.com		
+	Facebook: http://www.facebook.com/josephstalin117		
+	weibo: http://weibo.com/josephstalin177		
 
 # CONTENTS
 
