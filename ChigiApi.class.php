@@ -82,6 +82,7 @@ abstract class ChigiApi extends Action {
             throw_exception(get_class($this) . '中方法' . $method . '不存在，请检查→_→' . $trace[1]['file'] . ':' . $trace[1]['line']);
         }
         $this->user_agent = $data['user_agent'];
+        $this->__bindings = $data['bindings'];
         if (method_exists($this, '_initResponse'))
             $this->_initResponse();
         $result = array();
