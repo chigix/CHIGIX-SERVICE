@@ -1,8 +1,9 @@
 <?php
 
 /**
- * 返回值工具类
- * 用于智能化处理各种函数的返回值问题
+ * 千木数据抽象类
+ * 用于智能化处理各种函数的返回值问题，
+ * 并提供数据均衡化解决方案
  *
  * @author Richard Lea <chigix@zoho.com>
  */
@@ -13,6 +14,8 @@ class ChigiReturn {
     private $__code; //操作码
     private $__messageSuccess = "HELLO~~";
     private $__messageError = "你的操作好像有问题 →_→";
+    private $__view = 'table';
+    private $__output = "";
 
     /**
      * 初始化返回值服务类，导入各种包
@@ -100,7 +103,7 @@ class ChigiReturn {
         if ($name == '__') {
             return $this->__data;
         } else {
-            return isset($this->__data[$name])?$this->__data[$name]:null;
+            return isset($this->__data[$name]) ? $this->__data[$name] : null;
         }
     }
 
@@ -165,6 +168,38 @@ class ChigiReturn {
     public function setMsg($name, $str) {
         $name = "__message" . $name;
         $this->$name = $str;
+    }
+
+    /**
+     * 设定并返回数据视图内容
+     *
+     * @param string $type 设定数据视图要输出的目标类型
+     * @param string $name 设定assign时的名称设定，与assign对应
+     * @param bool $isLock 是否加锁，默认false即不加锁，加锁后可以开发者进行自行更改
+     * @param string $pageName 指定页面名称，若不指定则默认使用当前模块名
+     * @return string 数据视图层渲染结果HTML代码
+     */
+    public function view($type, $name, $isLock = false, $pageName = null) {
+        if (APP_DEBUG && !$isLock) {
+            //编译模式
+            $this->__view = $type;
+            if ($pageName === null) {
+                $pageName = MODULE_NAME . 'MODULE';
+            }
+
+            // 数据格式转换
+            $class = $type . 'View';
+            require_once 'DataExt/' . $class . '.class.php';
+            $result = new $class($this->__data, $name, $pageName);
+            // 输出渲染结果
+            if (file_put_contents(THEME_PATH . "$pageName/" . $name . ".html", $result->html)) {
+                trace(THEME_PATH . "$pageName/" . $name . ".html", $name . "MODULE模板文件渲染完毕");
+            } else {
+                throw_exception($name . "MODULE模板文件渲染失败");
+            }
+        }
+        //$this->__output = $result->html();
+        return $this->__data;
     }
 
 }
