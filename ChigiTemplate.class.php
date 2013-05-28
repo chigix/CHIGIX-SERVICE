@@ -109,16 +109,13 @@ class ThinkTemplate {
             //写入主模板的HTML
             $pageData = file_get_contents(CHIGI_PATH . 'html/index.html');
             $pageData = $this->chijiKwordReplace($pageData, $pagePath);
-            $starterData = file_get_contents(CHIGI_PATH . 'html/indexStarter.html');
-            $starterData = $this->chijiKwordReplace($starterData, $pagePath);
-            $enderData = file_get_contents(CHIGI_PATH . 'html/indexEnder.html');
-            $enderData = $this->chijiKwordReplace($enderData, $pagePath);
+            $layout = file_get_contents(CHIGI_PATH . 'html/indexLayout.html');
+            $layout = $this->chijiKwordReplace($layout, $pagePath);
             file_put_contents($pagePath, $pageData);
             if (!file_exists($modulePath)) {
                 mkdir($modulePath);
             }
-            file_put_contents($modulePath . '/' . $pageName . 'Starter.html', $starterData);
-            file_put_contents($modulePath . '/' . $pageName . 'Ender.html', $enderData);
+            file_put_contents($modulePath . '/' . $pageName . 'Layout.html', $layout);
             return;
         }
     }
@@ -138,7 +135,8 @@ class ThinkTemplate {
         $replace = array(
             '{PAGENAME}' => $pageName, //index
             '{APPNAME}' => APP_NAME,
-            '{PACKAGENAME}' => $packageName, //IndexMODULE
+            '{PACKAGENAME}' => $packageName, //PasswdReset
+            '{IPACKAGENAME}' => parse_name($packageName), //passwd_reset
         );
         foreach ($replace as $key => $value) {
             $data = str_replace($key, $value, $data);
@@ -198,7 +196,7 @@ class ThinkTemplate {
 
         $dataToWrite = $less->compile($lessFile);
         if (file_put_contents($resourceDir . '/css/' . $packageName . '-' . $pageName . '.css', $dataToWrite)) {
-            trace('Chiji/css/' . $packageName . '-' . $pageName . '.css', "页面CSS渲染完毕");
+            trace('Chiji/css/' . parse_name($packageName) . '-' . $pageName . '.css', "页面CSS渲染完毕");
         } else {
             if (empty($dataToWrite)) {
                 trace("页面CSS无内容");
@@ -220,8 +218,32 @@ class ThinkTemplate {
                 /* @var $newer string 新获取到的JS文件内容 */
                 $newer = file_get_contents($importDirItem . $jsFileItem . '.js');
                 //JS超级接口编译
+                /* @var $detpos integer */
+                $detpos = strpos($newer, '@require:');
+                // <editor-fold defaultstate="collapsed" desc="针对 require 的模块化编译">
+                if ($detpos < 5 && is_int($detpos)) {
+                    $eol = strpos($newer, PHP_EOL);
+                    $detpos += 9;
+                    $arr = array(
+                        'jquery' => '$',
+                        'backbone' => 'Backbone',
+                        'underscore' => '_'
+                    );
+                    $arrk = explode(',', substr($newer, $detpos, $eol - $detpos));
+                    $arrv = array();
+                    foreach ($arrk as $subvalue) {
+                        if (isset($arr[$subvalue])) {
+                            array_push($arrv, $arr[$subvalue]);
+                        } else {
+                            array_push($arrv, ucfirst($subvalue));
+                        }
+                    }
+                    $newer = trim(substr($newer, $eol));
+                    $newer = 'define("chigiThis",["' . implode('","', $arrk) . '"],function(' . implode(',', $arrv) . '){' . PHP_EOL . $newer . PHP_EOL . '});' . PHP_EOL . 'require(["chigiThis"]);';
+                };
+                // </editor-fold>
                 $newer = str_replace('chigiThis', str_replace(':', '_', $value), $newer);
-                $newer = preg_replace_callback('/\{\:(.*)\}/', create_function('$matches', 'return(eval(\'return \' . $matches[1] . \';\'));'), $newer); //eval('return ' . $1 . ';')
+                $newer = preg_replace_callback('/\{\:(.+(["\'].*[\'"].*)*)\}/U', create_function('$matches', 'return(eval(\'return \' . $matches[1] . \';\'));'), $newer);
                 $jsCombinedString .= $newer . PHP_EOL;
             }
             if (C('CHIJI.JS_DEBUG') && file_exists($importDirItem . $jsFileItem . '-test.js')) {
@@ -234,7 +256,7 @@ class ThinkTemplate {
             $jsCombinedString = chijiJsCompress($jsCombinedString);
         }
         if (file_put_contents($resourceDir . '/js/' . $packageName . '-' . $pageName . '.js', $jsCombinedString)) {
-            trace('Chiji/js/' . $packageName . '-' . $pageName . '.js', "页面JS渲染完毕");
+            trace('Chiji/js/' . parse_name($packageName) . '-' . $pageName . '.js', "页面JS渲染完毕");
         } else {
             if (empty($jsCombinedString)) {
                 trace("页面JS无内容");
