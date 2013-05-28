@@ -139,3 +139,11 @@ Since 1.7.8, developers could debug the viariables assigned from the controller 
 
 [INDEX](#index)		
 [CONTENTS](../README.md#contents)
+
+## JS Support
+
+### @require
+
+RequireJS was embed and supported since 1.8.2, which means you are suggested to write javascript modularily and strengthen Chiji Modular Arrangement.
+
+**FORMAT**: `//@require:backbone,jquery,underscore`
