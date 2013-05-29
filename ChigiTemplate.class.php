@@ -232,6 +232,7 @@ class ThinkTemplate {
                     $arrk = explode(',', substr($newer, $detpos, $eol - $detpos));
                     $arrv = array();
                     foreach ($arrk as $subvalue) {
+                        $subvalue = trim($subvalue);
                         if (isset($arr[$subvalue])) {
                             array_push($arrv, $arr[$subvalue]);
                         } else {
