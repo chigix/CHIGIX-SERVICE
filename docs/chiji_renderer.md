@@ -147,3 +147,21 @@ Since 1.7.8, developers could debug the viariables assigned from the controller 
 RequireJS was embed and supported since 1.8.2, which means you are suggested to write javascript modularily and strengthen Chiji Modular Arrangement.
 
 **FORMAT**: `//@require:backbone,jquery,underscore`
+
+### The `chigiThis` Identifier
+
+	console.log(chigiThis);
+	$('#chigiThis');
+	chigiThis('Test/LeftMenu');//→TestMODULE_LeftMenu
+	chigiThis('Test/LeftMenu','CGData');//→TestMODULE_LeftMenuCGData
+
+	//It could also be used in the require statement, however only one param supported
+	@require:chigiThis('Test/LeftMenu'),
+
+### The CGA Inner-Module
+
+The `CGA` Module was created by Chiji Render automatically to simplify usage of the variable assigned corresponding to each module.
+
+	//The two bellow are the same
+	CGA.chigiThis('Todo/TodoList');
+	CGA.TodoMODULE_TodoList

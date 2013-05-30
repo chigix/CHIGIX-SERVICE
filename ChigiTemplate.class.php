@@ -147,6 +147,7 @@ class ThinkTemplate {
     /**
      * 前端JS、CSS资源部署生成器
      *
+     * @param string $pagePath 当前模板文件路径：./Tpl/Default/Todo/index.html
      */
     public function chijiJCGenerator($pagePath) {
         static $count = 0;
@@ -161,7 +162,8 @@ class ThinkTemplate {
         $pageName = cut_string_using_first('.', cut_string_using_last('/', $pagePath, 'right', false), 'left', false);
         $packageName = cut_string_using_last('/', cut_string_using_last('/', $pagePath, 'left', false), 'right', false);
         //开始模块前端动态编译
-        $lessFile = ""; //用于存放生成的Less模块导入文件列表
+        //↓用于存放生成的Less模块导入文件列表 并写入初始的index.less
+        $lessFile = file_exists(cut_string_using_last('.', $pagePath, 'left', true) . 'less') ? file_get_contents(cut_string_using_last('.', $pagePath, 'left', true) . 'less') : "";
         // <editor-fold defaultstate="collapsed" desc="Trace模板Module加载列表">
         trace("【模板Module加载列表】#############");
         foreach ($this->moduleList as $key => $value) {
@@ -208,49 +210,25 @@ class ThinkTemplate {
         //★JavaScript模块编译
         // <editor-fold defaultstate="collapsed" desc="JavaScript模块编译">
         //##处理module编译顺序列表并生成JS合并
-        $jsCombinedString = "";
+        $jsCombinedString = file_exists(cut_string_using_last('.', $pagePath, 'left', true) . 'js') ? file_get_contents(cut_string_using_last('.', $pagePath, 'left', true) . 'js') : "";
+        $jsCombinedString = $this->jsCompiler($jsCombinedString, 'index');
+        //用来存放每个模板模块推送的变量
+        $CGArray = array();
         foreach ($this->moduleList as $key => $value) {
             $class = str_replace(array(':', '#'), array('/', '.'), $value);
             $class_strut = explode('/', $class);
             $jsFileItem = $class_strut[1];
             $importDirItem = THEME_PATH . $class_strut[0] . '/';
+            $CGString = '"' . str_replace('/', '_', $class) . '":' . str_replace('/', '_', $class);
+            array_push($CGArray, $CGString);
             if (file_exists($importDirItem . $jsFileItem . '.js')) {
-                /* @var $newer string 新获取到的JS文件内容 */
-                $newer = file_get_contents($importDirItem . $jsFileItem . '.js');
-                //JS超级接口编译
-                /* @var $detpos integer */
-                $detpos = strpos($newer, '@require:');
-                // <editor-fold defaultstate="collapsed" desc="针对 require 的模块化编译">
-                if ($detpos < 5 && is_int($detpos)) {
-                    $eol = strpos($newer, PHP_EOL);
-                    $detpos += 9;
-                    $arr = array(
-                        'jquery' => '$',
-                        'backbone' => 'Backbone',
-                        'underscore' => '_'
-                    );
-                    $arrk = explode(',', substr($newer, $detpos, $eol - $detpos));
-                    $arrv = array();
-                    foreach ($arrk as $subvalue) {
-                        $subvalue = trim($subvalue);
-                        if (isset($arr[$subvalue])) {
-                            array_push($arrv, $arr[$subvalue]);
-                        } else {
-                            array_push($arrv, ucfirst($subvalue));
-                        }
-                    }
-                    $newer = trim(substr($newer, $eol));
-                    $newer = 'define("chigiThis",["' . implode('","', $arrk) . '"],function(' . implode(',', $arrv) . '){' . PHP_EOL . $newer . PHP_EOL . '});' . PHP_EOL . 'require(["chigiThis"]);';
-                };
-                // </editor-fold>
-                $newer = str_replace('chigiThis', str_replace(':', '_', $value), $newer);
-                $newer = preg_replace_callback('/\{\:(.+(["\'].*[\'"].*)*)\}/U', create_function('$matches', 'return(eval(\'return \' . $matches[1] . \';\'));'), $newer);
-                $jsCombinedString .= $newer . PHP_EOL;
+                $jsCombinedString .= $this->jsCompiler(file_get_contents($importDirItem . $jsFileItem . '.js'), $value) . PHP_EOL;
             }
             if (C('CHIJI.JS_DEBUG') && file_exists($importDirItem . $jsFileItem . '-test.js')) {
                 $jsCombinedString .= file_get_contents($importDirItem . $jsFileItem . '-test.js') . PHP_EOL;
             }
         }
+        $jsCombinedString .= 'define("CGA",[],function(){return {' . implode(',', $CGArray) . '};});';
         //##JS代码压缩
         if (!C("CHIJI.JS_DEBUG")) {
             import('ORG.Chiji.JsCompress');
@@ -266,6 +244,56 @@ class ThinkTemplate {
             }
         }
         // </editor-fold>
+    }
+
+    /**
+     * JS模板编译器
+     *
+     * @param string $newer 模板文件内容
+     * @param string $value 当前模块名：TestMODULE_TestView
+     * @return string 编译结果内容
+     */
+    public function jsCompiler($newer, $value) {
+        //JS超级接口编译
+        //初始化 chigiThis 指针
+        chigiThis($value);
+        /* @var $detpos integer */
+        $detpos = strpos($newer, '@require:');
+        // <editor-fold defaultstate="collapsed" desc="针对 require 的模块化编译">
+        if ($detpos < 5 && is_int($detpos)) {
+            $eol = strpos($newer, PHP_EOL);
+            $detpos += 9;
+            $arr = array(
+                'jquery' => '$',
+                'backbone' => 'Backbone',
+                'underscore' => '_'
+            );
+            /* @var $arrk array */
+            $arrk = explode(',', substr($newer, $detpos, $eol - $detpos));
+            $arrv = array();
+            foreach ($arrk as $subkey => $subvalue) {
+                $subvalue = trim($subvalue);
+                if (isset($arr[$subvalue])) {
+                    array_push($arrv, $arr[$subvalue]);
+                } elseif (substr($subvalue, 0, 10) == 'chigiThis(') {
+                    $param = array();
+                    $subvalue = preg_match('/chigiThis\(.*(["\'\(](.*)[\'"\)])*\)/U', $subvalue, $param);
+                    $subvalue = chigiThis($param[2]);
+                    $arrk[$subkey] = $subvalue;
+                    array_push($arrv, ucfirst($subvalue));
+                } else {
+                    array_push($arrv, ucfirst($subvalue));
+                }
+            }
+            $newer = trim(substr($newer, $eol));
+            $newer = 'define("chigiThis",["' . implode('","', $arrk) . '"],function(' . implode(',', $arrv) . '){' . PHP_EOL . $newer . PHP_EOL . '});' . PHP_EOL . 'require(["chigiThis"]);';
+        };
+        // </editor-fold>
+        $newer = preg_replace('/chigiThis\(.*(["\'\(].*[\'"\)])*\)/U', '{:$0}', $newer);
+        $newer = preg_replace_callback('/\{\:(.+(["\'].*[\'"].*)*)\}/U', create_function('$matches', 'return(eval(\'return \' . $matches[1] . \';\'));'), $newer);
+        //编译 chigiThis 关键字
+        $newer = str_replace('chigiThis', str_replace(':', '_', $value), $newer);
+        return $newer . PHP_EOL;
     }
 
     /**

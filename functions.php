@@ -86,6 +86,50 @@ function chigiTrace() {
 }
 
 /**
+ * 支持前端的 chigiThis 函数编译
+ *
+ * @param string $path 目标模块路径：Test/LeftMenu → TestMODULE_LeftMenu
+ * @param string $follow 尾随字符串参数
+ * @return string 编译结果字符串
+ */
+function chigiThis() {
+    static $currentThis = "";
+    $package_name = cut_string_using_first(':', $currentThis, 'left', false);
+    $arg_num = func_num_args();
+    $args = func_get_args();
+    switch ($arg_num) {
+        case 0:
+            return $currentThis;
+            break;
+        case 1:
+            if (empty($currentThis)) {
+                //当前第一次运行，初始化整个chigiThis 指针
+                $currentThis = $args[0];
+            } else {
+                if (!strpos($args[0], '/')) {
+                    //当前 MODULE 下的模块
+                    return $package_name . '_' . $args[0];
+                } elseif (strpos($args[0], 'MODULE/')) {
+                    //指定 MODULE 下的模块
+                    return str_replace('/', '_', $args[0]);
+                } else {
+                    //指定 MODULE 下的模块，但允许参数中不写全MODULE
+                    $package_name = cut_string_using_first('/', $args[0], 'left', false);
+                    $page_name = cut_string_using_first('/', $args[0], 'right', false);
+                    return $package_name . 'MODULE_' . $page_name;
+                }
+            }
+            break;
+        case 2:
+            //尾随参数
+            return chigiThis($args[0]) . ucfirst($args[1]);
+            break;
+        default:
+            break;
+    }
+}
+
+/**
  * 判断参数是否等效于true
  * 根据参数的操作码直接转换成布尔，方便在条件中使用
  * @param mixed $param
@@ -311,8 +355,8 @@ function getNestedVar(&$context, $name) {
  * @param string $domain 指定域名，若为空则默认使用当前域名，所传入域名须包含完整的协议，且结尾没有斜杠
  * @param boolean $sidShow 是否显示SID
  */
-function redirectHeader($addr, $params = array() , $domain = null,$sidShow = true) {
-    redirect(redirect_link($addr, $params , $domain), 0); //redirect函数中已封装了exit
+function redirectHeader($addr, $params = array(), $domain = null, $sidShow = true) {
+    redirect(redirect_link($addr, $params, $domain), 0); //redirect函数中已封装了exit
 }
 
 /**
@@ -324,12 +368,12 @@ function redirectHeader($addr, $params = array() , $domain = null,$sidShow = tru
  * @param string $domain 指定域名，若为空则默认使用当前域名，所传入域名须包含完整的协议，且结尾没有斜杠
  * @param boolean $sidShow 是否显示SID
  */
-function redirect_link($addr, $params = array(), $domain = null,$sidShow = true) {
-    if (strpos($addr, '://')>0) {
+function redirect_link($addr, $params = array(), $domain = null, $sidShow = true) {
+    if (strpos($addr, '://') > 0) {
         //若传入参数为完整的URL地址
         return $addr;
     }
-    if ((!CHING::$COOKIE_STATUS)&&$sidShow) {
+    if ((!CHING::$COOKIE_STATUS) && $sidShow) {
         //当前未检测到客户端中COOKIE支持，且允许显示SID
         $params['sid'] = CHING::$CID;
     }
@@ -341,9 +385,9 @@ function redirect_link($addr, $params = array(), $domain = null,$sidShow = true)
     if (substr($addr, -5) == 'index') {
         if (substr($addr, 0, 5) == 'Index') {
             //定位为Index/index，即总域名（注：千木架构规范，Index控制器下仅能存在一个操作）
-            $addr = is_null($domain)?((is_ssl() ? 'https://' : 'http://') . $_SERVER['HTTP_HOST'] . __APP__):($domain . __APP__);
+            $addr = is_null($domain) ? ((is_ssl() ? 'https://' : 'http://') . $_SERVER['HTTP_HOST'] . __APP__) : ($domain . __APP__);
             $addr .= '/';
-        }  else {
+        } else {
             //定位地址中有可省略的index，故结尾不留.html
             $addr = is_null($domain) ? substr(U($addr, '', false, false, true), 0, -5) : $domain . substr(U($addr, '', false, false, false), 0, -5);
         }
