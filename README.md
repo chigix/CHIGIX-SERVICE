@@ -3,7 +3,7 @@
 
 For ThinkPHP 3.1.0 +
 
-Version 1.8.2
+Version 1.8.3
 
 Author:   
 
