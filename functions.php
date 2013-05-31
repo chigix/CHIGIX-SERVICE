@@ -105,6 +105,8 @@ function chigiThis() {
             if (empty($currentThis)) {
                 //当前第一次运行，初始化整个chigiThis 指针
                 $currentThis = $args[0];
+            } elseif ($args[0] == null) {
+                $currentThis = "";
             } else {
                 if (!strpos($args[0], '/')) {
                     //当前 MODULE 下的模块

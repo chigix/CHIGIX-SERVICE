@@ -13,7 +13,12 @@ CHIJI Engine : Just Enjoy Front-end
 		- [功能模块](#-3)
 		- [状态](#-4)
 	- [Accellerate the JS developing](#accellerate-the-js-developing)
+	- [DEBUG assigning via console](#debug-assigning-via-console)
 	- [LESS Support](#less-support)
+	- [JS Support](#js-support)
+		- [@require](#require)
+		- [The chigiThis Identifier](#the-chigithis-identifier)
+		- [The CGA Inner-Module](#the-cga-inner-module)
 
 
 ## OVERVIEW

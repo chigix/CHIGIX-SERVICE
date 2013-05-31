@@ -26,6 +26,7 @@ function chigi_alias($configarr = array()) {
         'ChigiData' => CHIGI_PATH . 'ChigiData.class.php',
         'ChigiReturn' => CHIGI_PATH . 'ChigiReturn.class.php',
         'ChigiAlert' => CHIGI_PATH . 'ChigiAlert.class.php',
+        'Chiji' => CHIGI_PATH . 'Chiji.class.php',
     );
     return array_merge($orig, $configarr);
 }
