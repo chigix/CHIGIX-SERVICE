@@ -22,6 +22,7 @@ requirejs.config({
     	"bootstrap":"__CHIJI__/js/bootstrap.min",
         "mvc":"__CHIJI__/js/jquery.mvc",
         "backbone":"__CHIJI__/js/backbone-min",
+        "localstorage":"__CHIJI__/js/backbone.localStorage",
     	"underscore":"__CHIJI__/js/underscore-min",
     	"app": "__CHIJI__/js"
     },
@@ -32,6 +33,10 @@ requirejs.config({
         'backbone': {
             deps: ['underscore', 'jquery'],
             exports: 'Backbone'
+        },
+        'localstorage':{
+            deps:['backbone'],
+            exports:'Backbone.LocalStorage'
         },
         'bootstrap': {
 　　　　　　deps: ['jquery'],
