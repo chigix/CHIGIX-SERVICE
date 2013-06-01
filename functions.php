@@ -90,7 +90,7 @@ function chigiTrace() {
  *
  * @param string $path 目标模块路径：Test/LeftMenu → TestMODULE_LeftMenu
  * @param string $follow 尾随字符串参数
- * @return string 编译结果字符串
+ * @return string 产生统一模块名字符串
  */
 function chigiThis() {
     //例：Todo:index
@@ -119,6 +119,7 @@ function chigiThis() {
                     return str_replace('/', '_', $args[0]);
                 } else {
                     //指定 MODULE 下的模块，但允许参数中不写全MODULE
+                    //传入$args[0]→ 【Todo/TestApp】→编译成：【TodoMODULE_TestApp】
                     $package_name = cut_string_using_first('/', $args[0], 'left', false);
                     $page_name = cut_string_using_first('/', $args[0], 'right', false);
                     return $package_name . 'MODULE_' . $page_name;

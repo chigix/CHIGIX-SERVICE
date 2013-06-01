@@ -7,10 +7,17 @@
  */
 class Chiji {
 
-    //前端渲染模块记录
+    /**
+     * 前端渲染模块记录
+     * 0 => string 'TodoMODULE:TodoApp'
+     *
+     * @var array
+     */
     public $moduleList = array();
     //额外添加JS模块
     public $jsListAddition = array();
+    //已经编译过的JS模块
+    public $jsList = array();
 
     public function __construct() {
         define('CHIGITEMPLATE_OK', true);
@@ -167,7 +174,14 @@ class Chiji {
         $jsCombinedString = $this->jsCompiler($jsCombinedString, $page_strut);
         //用来存放每个模板模块推送的变量
         $CGArray = array();
+        //针对随HTML的JS模块进行编译
         foreach ($this->moduleList as $key => $value) {
+            if (in_array($value, $this->jsList)) {
+                //避免模块重复编译
+                $this->jsListPush($value);
+                $this->jsListPass($value);
+                continue;
+            }
             $class = str_replace(array(':', '#'), array('/', '.'), $value);
             $class_strut = explode('/', $class);
             $jsFileItem = $class_strut[1];
@@ -179,6 +193,25 @@ class Chiji {
             }
             if (C('CHIJI.JS_DEBUG') && file_exists($importDirItem . $jsFileItem . '-test.js')) {
                 $jsCombinedString .= file_get_contents($importDirItem . $jsFileItem . '-test.js') . PHP_EOL;
+            }
+        }
+        //针对已编译模块中发现的依赖模块，进行编译
+        while (count($this->jsListAddition) !== 0) {
+            foreach ($this->jsListAddition as $value) {
+                if (in_array($value, $this->jsList)) {
+                    //避免模块重复编译
+                    $this->jsListPass($value);
+                    $this->jsListPush($value);
+                    continue;
+                }
+                $module_path = str_replace('_', '/', $value);
+                $module_path = THEME_PATH . $module_path . '.js';
+                if (file_exists($module_path)) {
+                    $jsCombinedString .= $this->jsCompiler(file_get_contents($module_path), $value) . PHP_EOL;
+                } else {
+                    trace($module_path, 'JS模块地址不存在', 'NOTIC');
+                }
+                $this->jsListPass($value);
             }
         }
         $jsCombinedString .= 'define("CGA",[],function(){return {' . implode(',', $CGArray) . '};});';
@@ -203,7 +236,7 @@ class Chiji {
      * JS模板编译器
      *
      * @param string $newer JS模板文件内容
-     * @param string $value 当前模块名：TestMODULE_TestView
+     * @param string $value 当前模块名：TodoMODULE:TodoApp
      * @return string 编译结果内容
      */
     public function jsCompiler($newer, $value) {
@@ -230,14 +263,18 @@ class Chiji {
                     $subvalue = substr($subvalue, 6);
                 }
                 if (isset($arr[$subvalue])) {
+                    // 已定义的在$arr 中的特殊JS类库
                     array_push($arrv, $arr[$subvalue]);
                 } elseif (substr($subvalue, 0, 10) == 'chigiThis(') {
+                    //千路前端模块
                     $param = array();
                     $subvalue = preg_match('/chigiThis\(.*(["\'\(](.*)[\'"\)])*\)/U', $subvalue, $param);
                     $subvalue = chigiThis($param[2]);
                     $arrk[$subkey] = $subvalue;
                     array_push($arrv, ucfirst($subvalue));
+                    $this->jsListAdd($subvalue);
                 } else {
+                    //其他普通模块
                     array_push($arrv, ucfirst($subvalue));
                 }
             }
@@ -251,19 +288,57 @@ class Chiji {
         if ($count == 1) {
             //主入口
             $newer = str_replace('chigiThis', 'app/' . strtolower(str_replace(':', '-', $value)), $newer);
-        }  else {
+        } else {
             $newer = str_replace('chigiThis', str_replace(':', '_', $value), $newer);
         }
+        $this->jsListPush(str_replace(':', '_', $value));
+        $this->jsListPass(str_replace(':', '_', $value));
         return $newer . PHP_EOL;
     }
 
     /**
      * moduleList 堆入
      *
-     * @param string $file
+     * @param string $file 例：【TodoMODULE:TodoApp】
      */
     public function moduleListPush($file) {
         array_push($this->moduleList, $file);
+    }
+
+    /**
+     * 已编译JS模块 堆入
+     *
+     * @param string $moduleIdentifier 模块标识名：TestMODULE_TestView
+     */
+    public function jsListPush($moduleIdentifier) {
+        array_push($this->jsList, $moduleIdentifier);
+        $this->jsList = array_unique($this->jsList);
+    }
+
+    /**
+     * 新加入待编译的JS模块 堆入
+     *
+     * @param string $moduleIdentifier 模块标识名：TestMODULE_TestView
+     */
+    public function jsListAdd($moduleIdentifier) {
+        if (in_array($moduleIdentifier, $this->jsList)) {
+            //检查目标模块是否已编译过
+            return;
+        }
+        array_push($this->jsListAddition, $moduleIdentifier);
+        $this->jsListAddition = array_unique($this->jsListAddition);
+    }
+
+    /**
+     * 将指定模块从待编译区移动至已编译区
+     *
+     * @param string $moduleIdentifier 模块标识名：TestMODULE_TestView
+     */
+    public function jsListPass($moduleIdentifier) {
+        array_unshift($this->jsListAddition, $moduleIdentifier);
+        $this->jsListAddition = array_unique($this->jsListAddition);
+        array_shift($this->jsListAddition);
+        array_push($this->jsList, $moduleIdentifier);
     }
 
 }
