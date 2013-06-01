@@ -93,24 +93,27 @@ function chigiTrace() {
  * @return string 编译结果字符串
  */
 function chigiThis() {
+    //例：Todo:index
     static $currentThis = "";
     $package_name = cut_string_using_first(':', $currentThis, 'left', false);
     $arg_num = func_num_args();
     $args = func_get_args();
     switch ($arg_num) {
         case 0:
-            return $currentThis;
+            return str_replace(':', '_', $currentThis);
             break;
         case 1:
             if (empty($currentThis)) {
                 //当前第一次运行，初始化整个chigiThis 指针
                 $currentThis = $args[0];
             } elseif ($args[0] == null) {
+                //清空当前静态变量
                 $currentThis = "";
             } else {
                 if (!strpos($args[0], '/')) {
                     //当前 MODULE 下的模块
-                    return $package_name . '_' . $args[0];
+                    $package_name = cut_string_using_first(':', $currentThis, 'left', false);
+                    return $package_name . 'MODULE_' . $args[0];
                 } elseif (strpos($args[0], 'MODULE/')) {
                     //指定 MODULE 下的模块
                     return str_replace('/', '_', $args[0]);

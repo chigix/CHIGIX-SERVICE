@@ -9,6 +9,8 @@ class Chiji {
 
     //前端渲染模块记录
     public $moduleList = array();
+    //额外添加JS模块
+    public $jsListAddition = array();
 
     public function __construct() {
         define('CHIGITEMPLATE_OK', true);
@@ -157,7 +159,12 @@ class Chiji {
         // <editor-fold defaultstate="collapsed" desc="JavaScript模块编译">
         //##处理module编译顺序列表并生成JS合并
         $jsCombinedString = file_exists(cut_string_using_last('.', $pagePath, 'left', true) . 'js') ? file_get_contents(cut_string_using_last('.', $pagePath, 'left', true) . 'js') : "";
-        $jsCombinedString = $this->jsCompiler($jsCombinedString, 'index');
+        $page_strut = substr($pagePath, strpos($pagePath, THEME_PATH) + strlen(THEME_PATH));
+        $page_strut = cut_string_using_last('.', $page_strut, 'left', false);
+        $page_strut = str_replace('/', ':', $page_strut);
+        //例：Todo:index
+        chigiThis($page_strut);
+        $jsCombinedString = $this->jsCompiler($jsCombinedString, $page_strut);
         //用来存放每个模板模块推送的变量
         $CGArray = array();
         foreach ($this->moduleList as $key => $value) {
@@ -201,10 +208,10 @@ class Chiji {
      */
     public function jsCompiler($newer, $value) {
         //JS超级接口编译
-        //初始化 chigiThis 指针
-        chigiThis($value);
         /* @var $detpos integer */
         $detpos = strpos($newer, '@require:');
+        static $count = 0;
+        $count++;
         // <editor-fold defaultstate="collapsed" desc="针对 require 的模块化编译">
         if ($detpos < 5 && is_int($detpos)) {
             $eol = strpos($newer, PHP_EOL);
@@ -241,8 +248,12 @@ class Chiji {
         $newer = preg_replace('/chigiThis\(.*(["\'\(].*[\'"\)])*\)/U', '{:$0}', $newer);
         $newer = preg_replace_callback('/\{\:(.+(["\'].*[\'"].*)*)\}/U', create_function('$matches', 'return(eval(\'return \' . $matches[1] . \';\'));'), $newer);
         //编译 chigiThis 关键字
-        $newer = str_replace('chigiThis', str_replace(':', '_', $value), $newer);
-        chigiThis(null);
+        if ($count == 1) {
+            //主入口
+            $newer = str_replace('chigiThis', 'app/' . strtolower(str_replace(':', '-', $value)), $newer);
+        }  else {
+            $newer = str_replace('chigiThis', str_replace(':', '_', $value), $newer);
+        }
         return $newer . PHP_EOL;
     }
 
