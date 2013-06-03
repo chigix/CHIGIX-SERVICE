@@ -3,17 +3,17 @@
 
 For ThinkPHP 3.1.0 +
 
-Version 1.8.3
+Version 1.8.4
 
 Author:   
 
-* 千木郷（李颖豪）   
+* 千木郷（李颖豪）
 
 	email: chigix@zoho.com		
 	Facebook: http://facebook.com/chigix		
 	Weibo: http://weibo.com/chigix		
 
-* josephstalin117(林永泽)   
+* josephstalin117(林永泽)
 
 	email: lyz2356002@gmail.com		
 	Facebook: http://www.facebook.com/josephstalin117		

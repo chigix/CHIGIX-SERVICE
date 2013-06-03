@@ -36,14 +36,19 @@ CHIJI Engine goals for the basic deployment to simplify the arrangement in the v
 ### @todo
 
 1. Make an empty template file matching up with the action address `Module/Action` .
-2. Write down a string `@todo` in the file created just now without new lines.
+2. Write down an only string `@todo` in the file created just now.
 3. Try to display this template in the browser and you will see the motivating result on the screen:
 
 		欢迎使用千路前端
 
 4. Return to the todo file just created, you will see all.
 
-### @module
+### @view
+
+1. Make an empty subtemplate file stated in the `include` tag from the main template.
+2. Write down an only string `@view` in the file created just now.
+3. Refresh the page to include the compilation of the target page. The words about the target view module would be showed.
+4. Return to the view file just created, you will see all.
 
 ## General Naming Specification
 
