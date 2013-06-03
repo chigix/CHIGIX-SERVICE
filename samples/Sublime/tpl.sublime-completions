@@ -5,7 +5,7 @@
 [
 { "trigger": "emp", "contents": "<empty name=\"${1:name}\">${2:name为空}<else /> ${3:name不为空}</empty>$0" },
 { "trigger": "eq", "contents": "<eq name=\"${1:name}\" value=\"${2:value}\">$0</eq>" },
-{ "trigger": "inc", "contents": "<include file=\"${1:Public}MODULE:${2:Header}\" c=\"${3:Position}\" />$0" },
+{ "trigger": "inc", "contents": "<include file=\"${1:Public}View:${2:Header}\" c=\"${3:Position}\" />$0" },
 { "trigger": "layout", "contents": "<include file=\"${1:Public:header}\"/>\n{__CONTENT__}\n<include file=\"${2:Public:footer}\"/>$0" },
 { "trigger": "lit", "contents": "<literal>\n ${1:content}\n</literal>$0" },
 { "trigger": "nolayout", "contents": "{__NOLAYOUT__}\n$0" },
@@ -15,11 +15,9 @@
 { "trigger": "vo", "contents": "<volist name=\"${1:list}\" id=\"${2:vo}\">\n ${3:{\\$vo\\}}\n</volist>$0" },
 { "trigger": "|fun", "contents": "{\\$${1:name}|${2:fun}=${3:arg1,###}}$0" },
 { "trigger": "|def", "contents": "{\\$${1:Package}_${2:Var}_${3:Name}|default=\"${4:***}\"}$0" },
-{ "trigger": "ender", "contents": "<!-- 加载JavaScript\n================================================== -->\n<!-- 置于文档最后以优先加载内容 -->\n<script src=\"__CHIJI__/${1:ProjectName}/js/jquery.js\" type=\"text/javascript\" charset=\"utf-8\"></script>\n<script src=\"__CHIJI__/${1:ProjectName}/js/bootstrap.min.js\" type=\"text/javascript\" charset=\"utf-8\"></script>\n<script src=\"__CHIJI__/${1:ProjectName}/js/jquery.mvc.js\" type=\"text/javascript\" charset=\"utf-8\"></script>\n<script src=\"__CHIJI__/${1:ProjectName}/js/page-${2:PageName}.js\" type=\"text/javascript\" charset=\"utf-8\"></script></body></html>$0" },
 { "trigger": "tva", "contents": "{\\$${var}}$0" },
 { "trigger": "bcmt", "contents": "{/*<literal>=========================================================\n$0\n====================================================================</literal>*/}" },
 { "trigger": "lcmt", "contents": "{//--${1:简短注释内容}--}$0" },
 { "trigger": "baq", "contents": "{\\$${1:Package}_${2:Var}}$0" },
-{ "trigger": "starter", "contents": "<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"utf-8\">\n<title>${1:PageTitle}</title><meta name=\"viewport\" content=\"width=device-width,initial-scale=1.0\">\n<meta name=\"description\" content=\"${2:PageDescription}\">\n<!-- 加载CSS样式表 -->\n<link href=\"__CHIJI__/${3:ProjectName}/css/bootstrap.min.css\" rel=\"stylesheet\">\n<link href=\"__CHIJI__/${3:ProjectName}/css/bootstrap-responsive.min.css\" rel=\"stylesheet\">\n<link href=\"__CHIJI__/${3:ProjectName}/css/page-${4:PageName}.css\" rel=\"stylesheet\">\n<!-- HTML5 shim, for IE6-8 support of HTML5 elements --><!--[if lt IE 9]><script src=\"__CHIJI__/js/html5.js\"></script><![endif]--></head><body>$0" }
 ]
 }
