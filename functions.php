@@ -88,13 +88,14 @@ function chigiTrace() {
 /**
  * 支持前端的 chigiThis 函数编译
  *
- * @param string $path 目标模块路径：Test/LeftMenu → TestMODULE_LeftMenu
+ * @param string $path 目标模块路径：Test/LeftMenu → TestView_LeftMenu
  * @param string $follow 尾随字符串参数
  * @return string 产生统一模块名字符串
  */
 function chigiThis() {
     //例：Todo:index
     static $currentThis = "";
+    //例：Todo
     $package_name = cut_string_using_first(':', $currentThis, 'left', false);
     $arg_num = func_num_args();
     $args = func_get_args();
@@ -111,18 +112,14 @@ function chigiThis() {
                 $currentThis = "";
             } else {
                 if (!strpos($args[0], '/')) {
-                    //当前 MODULE 下的模块
+                    //当前 View 下的模块
                     $package_name = cut_string_using_first(':', $currentThis, 'left', false);
-                    return $package_name . 'MODULE_' . $args[0];
-                } elseif (strpos($args[0], 'MODULE/')) {
-                    //指定 MODULE 下的模块
-                    return str_replace('/', '_', $args[0]);
+                    return $package_name . 'View_' . $args[0];
                 } else {
-                    //指定 MODULE 下的模块，但允许参数中不写全MODULE
-                    //传入$args[0]→ 【Todo/TestApp】→编译成：【TodoMODULE_TestApp】
+                    //传入$args[0]→ 【TodoView/TestApp】→编译成：【TodoView_TestApp】
                     $package_name = cut_string_using_first('/', $args[0], 'left', false);
                     $page_name = cut_string_using_first('/', $args[0], 'right', false);
-                    return $package_name . 'MODULE_' . $page_name;
+                    return $package_name . '_' . $page_name;
                 }
             }
             break;

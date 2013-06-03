@@ -9,7 +9,7 @@ class Chiji {
 
     /**
      * 前端渲染模块记录
-     * 0 => string 'TodoMODULE:TodoApp'
+     * 0 => string 'TodoView:TodoApp'
      *
      * @var array
      */
@@ -27,51 +27,58 @@ class Chiji {
      * 检测模板文件是否存在，并返回模板文件内容
      * 针对不存在的模板会根据@指令来生成，并返回模板文件内容
      *
-     * @param string $pagePath 例：./Tpl/Default/Todo/index.html
+     * @param string $page_path 例：./Tpl/Default/Todo/index.html
      * @return string
      */
-    public function chijiTempCheck($pagePath) {
+    public function chijiTempCheck($page_path) {
         static $count = 0;
         $count++;
-        //例：/Default/Action/pageName.html  →$pagePath
         //例：/Default/Action  →用来存放主页面
-        $dirPath = cut_string_using_last('/', $pagePath, 'left', false);
-        //例：/Default/ActionMODULE  →用来存放MODULE块页面
-        $modulePath = $dirPath . 'MODULE';
-        if ($count > 1 && !file_exists($modulePath)) {
-            //第二次检查，主针对被 include 的页面模块
-            //若MODULEMODULE结尾的目录不存在，则去掉最后的一个'MODULE'
-            $modulePath = substr($modulePath, 0, -6);
+        // <editor-fold defaultstate="collapsed" desc="$dir_path 确定逻辑，以兼容 include 子视图模块">
+        $dir_path = cut_string_using_last('/', $page_path, 'left', false);
+        if ($count > 1) {
+            //针对被 include 的页面检查，精准定位dirPath
+            //例：/Default/TodoView  →$dirPath 当前的值
+            $dir_path_arr = preg_split("/(?=[A-Z])/", $dir_path);
+            array_pop($dir_path_arr);
+            $dir_path = implode('', $dir_path_arr);
         }
+        // </editor-fold>
+        //存放子模板视图的目录：例：/Default/TodoView
+        $view_path = $dir_path . 'View';
+        //存放Require 集合的目录：例：/Default/TodoCollection
+        $collection_path = $dir_path . 'Collection';
+        //存放Require 模型的目录：例：/Default/TodoModel
+        $model_path = $dir_path . 'Model';
         //例：LeftMenu
-        $pageName = cut_string_using_last('.', cut_string_using_last('/', $pagePath, 'right', false), 'left', false);
-        // 例：AppsMODULE
-        $packageName = cut_string_using_last('/', cut_string_using_last('/', $pagePath, 'left', false), 'right', false);
-        //$pageName = cut_string_using_first('.', cut_string_using_last('/', $templateName, 'right', false), 'left', false);
+        $page_name = cut_string_using_last('.', cut_string_using_last('/', $page_path, 'right', false), 'left', false);
+        // 例：AppsView 或 AppsCollection 或 AppsModel
+        $package_name = cut_string_using_last('/', cut_string_using_last('/', $page_path, 'left', false), 'right', false);
         /* @var $pageData string */
-        $pageData = file_get_contents($pagePath);
-        if ($pageData == '@todo') {
+        $page_data = file_get_contents($page_path);
+        if (trim($page_data) == '@todo') {
             //写入主模板的HTML
-            $pageData = file_get_contents(CHIGI_PATH . 'html/index.html');
-            $pageData = $this->chijiKwordReplace($pageData, $pagePath);
+            /* @var $page_data string */
+            $page_data = file_get_contents(CHIGI_PATH . 'html/index.html');
+            $page_data = $this->chijiKwordReplace($page_data, $page_path);
             $layout = file_get_contents(CHIGI_PATH . 'html/indexLayout.html');
-            $layout = $this->chijiKwordReplace($layout, $pagePath);
-            file_put_contents($pagePath, $pageData);
-            if (!file_exists($modulePath)) {
-                mkdir($modulePath);
+            $layout = $this->chijiKwordReplace($layout, $page_path);
+            file_put_contents($page_path, $page_data);
+            file_put_contents($dir_path . '/' . $page_name . 'Layout.html', $layout);
+            if (!file_exists($view_path)) {
+                mkdir($view_path);
             }
-            file_put_contents($modulePath . '/' . $pageName . 'Layout.html', $layout);
             return;
-        } elseif ($pageData == '@module') {
+        } elseif (trim($page_data) == '@view') {
             //写入module模板的HTML
-            $pageData = file_get_contents(CHIGI_PATH . 'html/module.html');
-            $pageData = $this->chijiKwordReplace($pageData, $pagePath);
-            file_put_contents($pagePath, $pageData);
+            $page_data = file_get_contents(CHIGI_PATH . 'html/view.html');
+            $page_data = $this->chijiKwordReplace($page_data, $page_path);
+            file_put_contents($page_path, $page_data);
             // 例：LeftMenu
             //$pageName = cut_string_using_first('.', cut_string_using_last('/', $templateName, 'right', false), 'left', false);
         }
-        if ('MODULE' == substr($packageName, -6)) {
-            return $pageData . '<script type="text/javascript">(function(){if("undefined" == typeof ' . $packageName . '_' . $pageName . '|| ' . $packageName . '_' . $pageName . ' instanceof HTMLElement){console.log(\'【var ' . $packageName . '_' . $pageName . '】\',\'未定义\');}else{console.log(\'【var ' . $packageName . '_' . $pageName . '】\',' . $packageName . '_' . $pageName . ');}})();</script>';
+        if ('View' == substr($package_name, -4)) {
+            return $page_data . '<script type="text/javascript">(function(){if("undefined" == typeof ' . $package_name . '_' . $page_name . '|| ' . $package_name . '_' . $page_name . ' instanceof HTMLElement){console.log(\'【var ' . $package_name . '_' . $page_name . '】\',\'未定义\');}else{console.log(\'【var ' . $package_name . '_' . $page_name . '】\',' . $package_name . '_' . $page_name . ');}})();</script>';
         }
     }
 
@@ -79,19 +86,20 @@ class Chiji {
      * 模板生成关键词替换
      *
      * @param string $data 要被替换的内容
-     * @param string $pagePath 当前模板路径，例：./Tpl/Default/Todo/test.html
+     * @param string $page_path 当前模板路径，例：./Tpl/Default/Todo/test.html
      * @return string 替换结果
      */
-    public function chijiKwordReplace($data, $pagePath) {
+    public function chijiKwordReplace($data, $page_path) {
         // index
-        $pageName = cut_string_using_first('.', cut_string_using_last('/', $pagePath, 'right', false), 'left', false);
-        // AppsMODULE
-        $packageName = cut_string_using_last('/', cut_string_using_last('/', $pagePath, 'left', false), 'right', false);
+        $page_name = cut_string_using_first('.', cut_string_using_last('/', $page_path, 'right', false), 'left', false);
+        // AppsView 或 AppsModel 或 AppsCollection
+        $package_name = cut_string_using_last('/', cut_string_using_last('/', $page_path, 'left', false), 'right', false);
         $replace = array(
-            '{PAGENAME}' => $pageName, //index
+            '{PAGENAME}' => $page_name, //index
+            '{IPAGENAME}' => parse_name($page_name), //index
             '{APPNAME}' => APP_NAME,
-            '{PACKAGENAME}' => $packageName, //PasswdReset
-            '{IPACKAGENAME}' => parse_name($packageName), //passwd_reset
+            '{PACKAGENAME}' => $package_name, //PasswdReset
+            '{IPACKAGENAME}' => parse_name($package_name), //passwd_reset
         );
         foreach ($replace as $key => $value) {
             $data = str_replace($key, $value, $data);
@@ -152,8 +160,8 @@ class Chiji {
         }
 
         $dataToWrite = $less->compile($lessFile);
-        if (file_put_contents($resourceDir . '/css/' . $packageName . '-' . $pageName . '.css', $dataToWrite)) {
-            trace('Chiji/css/' . parse_name($packageName) . '-' . $pageName . '.css', "页面CSS渲染完毕");
+        if (file_put_contents($resourceDir . '/css/' . parse_name($packageName) . '-' . parse_name($pageName) . '.css', $dataToWrite)) {
+            trace('Chiji/css/' . parse_name($packageName) . '-' . parse_name($pageName) . '.css', "页面CSS渲染完毕");
         } else {
             if (empty($dataToWrite)) {
                 trace("页面CSS无内容");
@@ -220,8 +228,8 @@ class Chiji {
             import('ORG.Chiji.JsCompress');
             $jsCombinedString = chijiJsCompress($jsCombinedString);
         }
-        if (file_put_contents($resourceDir . '/js/' . $packageName . '-' . $pageName . '.js', $jsCombinedString)) {
-            trace('Chiji/js/' . parse_name($packageName) . '-' . $pageName . '.js', "页面JS渲染完毕");
+        if (file_put_contents($resourceDir . '/js/' . parse_name($packageName) . '-' . parse_name($pageName) . '.js', $jsCombinedString)) {
+            trace('Chiji/js/' . parse_name($packageName) . '-' . parse_name($pageName) . '.js', "页面JS渲染完毕");
         } else {
             if (empty($jsCombinedString)) {
                 trace("页面JS无内容");
@@ -236,7 +244,7 @@ class Chiji {
      * JS模板编译器
      *
      * @param string $newer JS模板文件内容
-     * @param string $value 当前模块名：TodoMODULE:TodoApp
+     * @param string $value 当前模块名：TodoView:TodoApp
      * @return string 编译结果内容
      */
     public function jsCompiler($newer, $value) {
@@ -299,7 +307,7 @@ class Chiji {
     /**
      * moduleList 堆入
      *
-     * @param string $file 例：【TodoMODULE:TodoApp】
+     * @param string $file 例：【TodoView:TodoApp】
      */
     public function moduleListPush($file) {
         array_push($this->moduleList, $file);
@@ -308,7 +316,7 @@ class Chiji {
     /**
      * 已编译JS模块 堆入
      *
-     * @param string $moduleIdentifier 模块标识名：TestMODULE_TestView
+     * @param string $moduleIdentifier 模块标识名：TestView_TestView
      */
     public function jsListPush($moduleIdentifier) {
         array_push($this->jsList, $moduleIdentifier);
@@ -318,7 +326,7 @@ class Chiji {
     /**
      * 新加入待编译的JS模块 堆入
      *
-     * @param string $moduleIdentifier 模块标识名：TestMODULE_TestView
+     * @param string $moduleIdentifier 模块标识名：TestView_TestView
      */
     public function jsListAdd($moduleIdentifier) {
         if (in_array($moduleIdentifier, $this->jsList)) {
@@ -332,7 +340,7 @@ class Chiji {
     /**
      * 将指定模块从待编译区移动至已编译区
      *
-     * @param string $moduleIdentifier 模块标识名：TestMODULE_TestView
+     * @param string $moduleIdentifier 模块标识名：TestView_TestView
      */
     public function jsListPass($moduleIdentifier) {
         array_unshift($this->jsListAddition, $moduleIdentifier);
