@@ -306,6 +306,7 @@ class Chiji {
     }
 
     public function jsPHPEval($matches) {
+        trace($matches);
         $string_to_eval = $matches[1];
         $result = '';
         eval("\$result = $string_to_eval;");
