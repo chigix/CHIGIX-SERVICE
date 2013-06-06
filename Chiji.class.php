@@ -291,7 +291,8 @@ class Chiji {
         };
         // </editor-fold>
         $newer = preg_replace('/chigiThis\(.*(["\'\(].*[\'"\)])*\)/U', '{:$0}', $newer);
-        $newer = preg_replace_callback('/\{\:(.+(["\'].*[\'"].*)*)\}/U', create_function('$matches', 'return(eval(\'return \' . $matches[1] . \';\'));'), $newer);
+//        $newer = preg_replace_callback('/\{\:(.+(["\'].*[\'"].*)*)\}/U', create_function('$matches', 'return(eval(\'return \' . $matches[1] . \';\'));'), $newer);
+        $newer = preg_replace_callback('/\{\:(.+(["\'].*[\'"].*)*)\}/U', array(__CLASS__ , 'jsPHPEval'), $newer);
         //编译 chigiThis 关键字
         if ($count == 1) {
             //主入口
@@ -304,6 +305,12 @@ class Chiji {
         return $newer . PHP_EOL;
     }
 
+    public function jsPHPEval($matches) {
+        $string_to_eval = $matches[1];
+        $result = '';
+        eval("\$result = $string_to_eval;");
+        return ($result);
+    }
     /**
      * moduleList 堆入
      *
