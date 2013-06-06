@@ -255,7 +255,8 @@ class Chiji {
         $count++;
         // <editor-fold defaultstate="collapsed" desc="针对 require 的模块化编译">
         if ($detpos < 5 && is_int($detpos)) {
-            $eol = strpos($newer, PHP_EOL);
+            $newer = str_replace(array("\r\n", "\r"), "\n", $newer);
+            $eol = strpos($newer, "\n");
             $detpos += 9;
             $arr = array(
                 'jquery' => '$',
