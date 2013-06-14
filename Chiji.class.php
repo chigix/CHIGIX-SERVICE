@@ -18,6 +18,9 @@ class Chiji {
     public $jsListAddition = array();
     //已经编译过的JS模块
     public $jsList = array();
+    //对应已编译过的JS模块的具体数据，供SourceMap使用
+    public $jsListData = array();
+    public $jsListLines = array();
 
     public function __construct() {
         define('CHIGITEMPLATE_OK', true);
@@ -66,7 +69,7 @@ class Chiji {
             file_put_contents($page_path, $page_data);
             file_put_contents($dir_path . '/' . $page_name . 'Layout.html', $layout);
             if (!file_exists($view_path)) {
-                mkdir($view_path);
+                mkdir($view_path, 777);
             }
             return;
         } elseif (trim($page_data) == '@view') {
@@ -136,7 +139,8 @@ class Chiji {
         // </editor-fold>
         //★Less编译
         // <editor-fold defaultstate="collapsed" desc="Less编译">
-        import('ORG.Chiji.Lessc');
+
+        require_cache(CHIGI_PATH . 'Chiji/Lessc.php');
         $less = new lessc;
         //##处理module编译顺序列表并生成LESS的导入文件列表(String)
         foreach ($this->moduleList as $value) {
@@ -190,9 +194,13 @@ class Chiji {
                 $this->jsListPass($value);
                 continue;
             }
+            // 例：TodoView/TodoApp
             $class = str_replace(array(':', '#'), array('/', '.'), $value);
+            // 例：Array ( [0] => TodoView [1] => TodoApp )
             $class_strut = explode('/', $class);
+            // 例：TodoApp
             $jsFileItem = $class_strut[1];
+            // 例：./Tpl/Default/TodoView/
             $importDirItem = THEME_PATH . $class_strut[0] . '/';
             $CGString = '"' . str_replace('/', '_', $class) . '":' . str_replace('/', '_', $class);
             array_push($CGArray, $CGString);
@@ -215,7 +223,7 @@ class Chiji {
                 $module_path = str_replace('_', '/', $value);
                 $module_path = THEME_PATH . $module_path . '.js';
                 if (file_exists($module_path)) {
-                    $jsCombinedString .= $this->jsCompiler(file_get_contents($module_path), $value) . PHP_EOL;
+                    $jsCombinedString .= $this->jsCompiler(file_get_contents($module_path), $value);
                 } else {
                     trace($module_path, 'JS模块地址不存在', 'NOTIC');
                 }
@@ -223,10 +231,31 @@ class Chiji {
             }
         }
         $jsCombinedString .= 'define("CGA",[],function(){return {' . implode(',', $CGArray) . '};});';
-        //##JS代码压缩
-        if (!C("CHIJI.JS_DEBUG")) {
-            import('ORG.Chiji.JsCompress');
-            $jsCombinedString = chijiJsCompress($jsCombinedString);
+        if (C("CHIJI.JS_DEBUG")) {
+            // <editor-fold defaultstate="collapsed" desc="SourceMap调试支持">
+            // 加入SourceMap调试支持
+            require_once 'Chiji/SourceMap.php';
+            $sourceMapList = array();
+            foreach ($this->jsList as $sourceMapListItem) {
+                array_push($sourceMapList, './chijimap/' . str_replace('_', '/', $sourceMapListItem) . '.js');
+            }
+            $source_map = new SourceMap(parse_name($packageName) . '-' . parse_name($pageName) . '.js', $sourceMapList);
+            $source_map_offset = 0;
+            foreach ($this->jsList as $source_map_index => $sourceMapjsListItem) {
+                for ($sourceMapI = 0; $sourceMapI < $this->jsListLines[$sourceMapjsListItem]; ++$sourceMapI) {
+                    $source_map->mappings[] = array(
+                        'dest_line' => $source_map_offset + $sourceMapI,
+                        'dest_col' => 0,
+                        'src_index' => $source_map_index,
+                        'src_line' => $sourceMapI,
+                        'src_col' => 0
+                    );
+                }
+                $source_map_offset += $this->jsListLines[$sourceMapjsListItem] - 1;
+            }
+            file_put_contents($resourceDir . '/js/' . parse_name($packageName) . '-' . parse_name($pageName) . '.js.map', $source_map->generateJSON());
+            $jsCombinedString .= "\n//@ sourceMappingURL=" . parse_name($packageName) . '-' . parse_name($pageName) . '.js.map';
+            // </editor-fold>
         }
         if (file_put_contents($resourceDir . '/js/' . parse_name($packageName) . '-' . parse_name($pageName) . '.js', $jsCombinedString)) {
             trace('Chiji/js/' . parse_name($packageName) . '-' . parse_name($pageName) . '.js', "页面JS渲染完毕");
@@ -248,60 +277,102 @@ class Chiji {
      * @return string 编译结果内容
      */
     public function jsCompiler($newer, $value) {
-        //JS超级接口编译
-        /* @var $detpos integer */
-        $detpos = strpos($newer, '@require:');
+        $resourceDir = C('CHIJI.RC_DIR');
         static $count = 0;
         $count++;
-        // <editor-fold defaultstate="collapsed" desc="针对 require 的模块化编译">
-        if ($detpos < 5 && is_int($detpos)) {
-            $newer = str_replace(array("\r\n", "\r"), "\n", $newer);
-            $eol = strpos($newer, "\n");
-            $detpos += 9;
-            $arr = array(
-                'jquery' => '$',
-                'backbone' => 'Backbone',
-                'underscore' => '_'
-            );
-            /* @var $arrk array */
-            $arrk = explode(',', substr($newer, $detpos, $eol - $detpos));
-            $arrv = array();
-            foreach ($arrk as $subkey => $subvalue) {
+        // 将所有换行统一为 \n
+        $newer = str_replace(array("\r\n", "\r"), "\n", $newer);
+        $newer_lines = explode("\n", $newer);
+        $require = array(
+            'on' => false,
+            'deps' => array(),
+            'keys' => array(),
+            'values' => array(),
+            'lib' => array(
+                'jquery' => array('chigiThis("CHIJILIB/jquery")', '$'),
+                'backbone' => array('chigiThis("CHIJILIB/backbone")', 'Backbone'),
+                'underscore' => array('chigiThis("CHIJILIB/underscore")', '_'),
+                'localstorage' => array('chigiThis("CHIJILIB/localstorage")', 'Localstorage'),
+                'ChijiFuncs' => array('chigiThis("CHIJI/functions")', 'ChijiFuncs'),
+                'ChijiModel' => array('chigiThis("CHIJI/model")', 'ChijiModel')
+            )
+        );
+        $temp_newer = "";
+        foreach ($newer_lines as $newer_lines_item) {
+            // 开始进行多行 @ 命令遍历查询
+            /* @var $detpos integer */
+            $detpos = strpos($newer_lines_item, '@require:');
+            // <editor-fold defaultstate="collapsed" desc="针对 require 的模块化读取">
+            if ($detpos < 5 && is_int($detpos)) {
+                $require['on'] = true;
+                $detpos += 9;
+                $require['keys'] = array_unique(array_merge($require['keys'], explode(',', substr($newer_lines_item, $detpos))));
+            } else {
+                $temp_newer .= $newer_lines_item . PHP_EOL;
+            };
+            // </editor-fold>
+        }
+        $newer = $temp_newer;
+        // <editor-fold defaultstate="collapsed" desc="针对 require 的模块化编译生成">
+        if ($require['on']) {
+            foreach ($require['keys'] as $subkey => $subvalue) {
                 $subvalue = trim($subvalue);
                 if (substr($subvalue, 0, 6) == 'order!') {
                     $subvalue = substr($subvalue, 6);
                 }
-                if (isset($arr[$subvalue])) {
-                    // 已定义的在$arr 中的特殊JS类库
-                    array_push($arrv, $arr[$subvalue]);
+                if (isset($require['lib'][$subvalue])) {
+                    // 已定义的在 lib 中的特殊JS类库
+                    $require['keys'][$subkey] = $require['lib'][$subvalue][0];
+                    $require['values'][$subkey] = $require['lib'][$subvalue][1];
+                    if (substr($require['lib'][$subvalue][0], 0, 10) == 'chigiThis(') {
+                        //千路前端模块
+                        $param = array();
+                        $subvalue = preg_match('/chigiThis\(.*(["\'\(](.*)[\'"\)])*\)/U', $require['lib'][$subvalue][0], $param);
+                        $subvalue = chigiThis($param[2]);
+                        $this->jsListAdd($subvalue);
+                        if ('CHIJILIB' === substr($subvalue, 0, 8)) {
+                            $require['keys'][$subkey] = substr($subvalue, 9);
+                        } else {
+                            $require['keys'][$subkey] = $subvalue;
+                        }
+                    }
                 } elseif (substr($subvalue, 0, 10) == 'chigiThis(') {
                     //千路前端模块
                     $param = array();
                     $subvalue = preg_match('/chigiThis\(.*(["\'\(](.*)[\'"\)])*\)/U', $subvalue, $param);
                     $subvalue = chigiThis($param[2]);
-                    $arrk[$subkey] = $subvalue;
-                    array_push($arrv, ucfirst($subvalue));
+                    $require['keys'][$subkey] = $subvalue;
+                    array_push($require['values'], ucfirst($subvalue));
                     $this->jsListAdd($subvalue);
                 } else {
                     //其他普通模块
-                    array_push($arrv, ucfirst($subvalue));
+                    array_push($require['values'], ucfirst($subvalue));
                 }
             }
-            $newer = trim(substr($newer, $eol));
-            $newer = 'define("chigiThis",["' . implode('","', $arrk) . '"],function(' . implode(',', $arrv) . '){' . PHP_EOL . $newer . PHP_EOL . '});';
-        };
+            $newer = 'define("chigiThis",["' . implode('","', $require['keys']) . '"],function(' . implode(',', $require['values']) . '){' . PHP_EOL . $newer . PHP_EOL . '});';
+        }
         // </editor-fold>
         $newer = preg_replace('/chigiThis\(.*(["\'\(].*[\'"\)])*\)/U', '{:$0}', $newer);
         $newer = preg_replace_callback('/\{\:(.+(["\'].*[\'"].*)*)\}/U', create_function('$matches', 'return(eval(\'return \' . $matches[1] . \';\'));'), $newer);
         //编译 chigiThis 关键字
-        if ($count == 1) {
+        $newer = str_replace('chigiThis', str_replace(array(':', '_'), '_', $value), $newer);
+        if ($count == 1 && $require['on']) {
             //主入口
-            $newer = str_replace('chigiThis', 'app/' . strtolower(str_replace(':', '-', $value)), $newer);
-        } else {
-            $newer = str_replace('chigiThis', str_replace(':', '_', $value), $newer);
+            $newer .= 'define("app/' . strtolower(str_replace(':', '-', $value)) . '",function(){});requirejs(["' . str_replace(array(':', '_'), '_', $value) . '"]);';
         }
-        $this->jsListPush(str_replace(':', '_', $value));
-        $this->jsListPass(str_replace(':', '_', $value));
+        $this->jsListPush(str_replace(array(':', '_'), '_', $value));
+        $this->jsListPass(str_replace(array(':', '_'), '_', $value));
+        if (C('CHIJI.JS_DEBUG')) {
+            //JS代码普通处理，并存放入chijimap目录下
+            $this->jsListData[str_replace(array(':', '_'), '_', $value)] = $newer;
+            $this->jsListLines[str_replace(array(':', '_'), '_', $value)] = count(explode("\n", $newer));
+            $chijimap_write_path = $resourceDir . '/js/chijimap/' . str_replace(array(':', '_'), '/', $value) . '.js';
+            $chijimap_write_dir = cut_string_using_last('/', $chijimap_write_path, 'left', false);
+            if (!file_exists($chijimap_write_dir)) {
+                mkdir($chijimap_write_dir, 666, true);
+            }
+            file_put_contents($resourceDir . '/js/chijimap/' . str_replace(array(':', '_'), '/', $value) . '.js', $newer);
+        }
         return $newer . PHP_EOL;
     }
 

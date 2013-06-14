@@ -402,6 +402,50 @@ function redirect_link($addr, $params = array(), $domain = null, $sidShow = true
 }
 
 /**
+ * 生成带参复杂地址链接REST接口地址
+ *
+ * @param string $addr 支持HTTP地址或U生成地址
+ * @param string $params 地址参数，会自动根据当前COOKIE状态添加SID的显式传递
+ * 地址参数写法："key"=>"value"  →  ?key=value
+ * @param string $domain 指定域名，若为空则默认使用当前域名，所传入域名须包含完整的协议，且结尾没有斜杠
+ * @param boolean $sidShow 是否显示SID
+ */
+function rest_link($addr, $params = array(), $domain = null, $sidShow = true) {
+    if (strpos($addr, '://') > 0) {
+        //若传入参数为完整的URL地址
+        return $addr;
+    }
+    if ((!CHING::$COOKIE_STATUS) && $sidShow) {
+        //当前未检测到客户端中COOKIE支持，且允许显示SID
+        $params['sid'] = CHING::$CID;
+    }
+    if (isset($params[C('VAR_URL_PARAMS')])) {
+        //滤去可能来自GET中的 _URL_ 项
+        unset($params[C('VAR_URL_PARAMS')]);
+    }
+    $paramString = http_build_query($params);
+    //定位地址无任何可省略成分，最终需生成无后缀URL
+    $addr = is_null($domain) ? U($addr . '_chigix_restful', '', FALSE, false, true) : $domain . U($addr . '_chigix_restful', '', FALSE, false, false);
+    return($addr . (empty($paramString) ? '' : '?') . $paramString);
+}
+
+/**
+ * RETA数组包装类
+ *
+ * @param int $code
+ * @param string $info
+ * @param mixed $data
+ * @return RETA
+ */
+function chigi_reta($code, $info, $data = null) {
+    return array(
+        "status" => $code,
+        "info" => $info,
+        "data" => $data
+    );
+}
+
+/**
  * 检测目标字符串$haystack是否以$needle开头
  *
  * @param String $haystack

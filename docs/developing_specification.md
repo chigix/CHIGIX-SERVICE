@@ -22,6 +22,15 @@ Developing Specification
 
 在千木架构中，建议所有的方法或函数返回值均采用数组，示例格式如下：
 
+		// 1.8.5起，支持简化写法：
+		$return = chigi_reta(220,"获取文章id=13成功",
+			array(
+				"title" => "示例标题",
+				"content" => "此处示例内容",
+			),
+		);
+
+		// 旧版完整写法
 		$return = array(
 			'status' => 220,
 			'info' => "获取文章id=13成功",
@@ -196,29 +205,35 @@ Originally, it is same to define a method in the service manually:
 		return $this->request($_POST, 'addApp');
 	}
 
-## URL Params Via GET
+## RESTful Interface
 
-所有参数均基于PATH-INFO，且均以标准的 `key/value` 型书写，其中key则直接可从 `$_GET` 中获取，而部分value需经过 `base64_encode` 函数加密写入，获取时由 `base64_decode` 函数解密使用。（仅有本架构占用的一些特殊的GET变量需要进行如上转换，不影响开发者的一般使用）
+从 1.8.5 起，千木架构正式支持 RESTful 的 WebApp 开发，配合千路前端引擎提供的 Backbone、jQuery、underScore 的封装，可以非常便捷地部署REST接口。
 
-建议使用架构自提供的 `redirectHeader()` `redirect_link()` 和继承ChigiService的服务子类中的 `addAddrParams()` 方法来自动生成URL。
+REST接口在URL表现上，与普通的 `Action/Method` 形式一样，但是后面不得跟有伪静态后缀，可以使用 `rest_link('Action/interface')` 来生成目标REST接口的URL地址。
 
-本架构默认占用的GET变量名：
+部署上，REST接口与控制器操作一样，均写在控制器中，其代码表现是一个控制器中的属性，命名没有限制，可以与控制器中现有操作名重叠，不会冲突。
 
-1. $_GET['iframe']，全局化的GET变量，如果地址栏中没有设定，则会在架构中自动补充为NULL
+该属性类型为一关联数组，定义CURD四种不同请求的REST配置，其书写有一定的规则要求，如下所示：
 
-而获取时ChigiAction根类已自动将所有的$_GET参数（除ThinkPHP的URL索引外）全部进行了 `base64_decode` 解码。
+	class AjaxAction extends ChigiAction{
+		protected $test = array(
+			'CREATE' => array('ServiceName','MethodName'),
+			'UPDATE' => array('ServiceName','MethodName'),
+			'READ'   => array('ServiceName','MethodName'),
+			'DELETE' => array('ServiceName','MethodName'),
+		);
+	}
 
-[INDEX](#index)		
-[CONTENTS](../README.md#contents)
+	//访问该接口时，生成URL地址的rest_link写法：
+	rest_link('Ajax/test');
 
-## Communication Standard via POST & REQUEST
+另外，REST 接口定义时，可以根据前端请求类型需求，按需定义，并不一定要 CURD 四大请求类型全部写完整。
 
-POST认为是来自表单的参数传递，故所有的POST请求中均需有表单令牌验证。
+所有的实体业务逻辑均是指向到具体的服务类中，所以在这里其实可以和上面的表单接口on的业务逻辑进行复用，免去再针对REST接口进行单独开发。
 
-REQUEST由于包含了GET的信息，但却不与GET一起统一进行BASE64的解密，所以不建议使用REQUEST。
+在服务类中定义业务实体方法时，其书写规则与服务类中on接口方法的书写是一样的，亦可以直接使用 "on" 开头的方法名，以完成 Auto Request。
 
-[INDEX](#index)		
-[CONTENTS](../README.md#contents)
+唯一的区别就是在传参上， on 接口方法一般是针对表单使用，故一般可直接获取 `$_POST` ，而REST接口的数据必须在服务类方法中定义好预置参数，千木架构会自动将前端推送过来的数据传入，仅支持一个参数，一般即为前端推送的Model数据，而在URL中的id值，千木架构则会自动将其推入绑定数据层，直接通过 `$this->bind('rest_id')` 即可获取。
 
 ## Under: Method for Environment Check
 
@@ -357,3 +372,12 @@ CHING会话目前默认时效为15分钟，开发者亦可通过CHINGSET配置�
 
 [INDEX](#index)		
 [CONTENTS](../README.md#contents)
+
+## Naming rules for template files
+
+由于从1.8.5开始，千木架构原生支持SourceMap，所以大规模JS调试变得会十分方便。
+
+但为保证SourceMap的使用不会出错，请遵守相应的命名及目录部署规则：
+
+1. 保证主题路径（一般即 Default/）下仅能有一层子文件夹。
+2. 模板文件名中不得出现冒号（`:`）及下划线（`_`），命名方式可采用驼峰式。

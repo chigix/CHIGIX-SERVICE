@@ -29,6 +29,19 @@ There is no any altering for the view layer.
 
 The key point of the CHIJI Engine's design is to make the deployment service oriented for the templates and front-end resources.
 
+## Configuration
+
+	//千路前端配置
+    'CHIJI' => array(
+        'LESS_COMPRESS' => 'lessjs', //lessjs|compressed，LESS是否压缩
+        'JS_DEBUG' => false, //TRUE会启用SourceMap
+        'RC_DIR' => '/var/Chiji/',//前端统一资源目录，以斜杠结尾
+    ),
+    //模板引擎编译配置
+    "TMPL_PARSE_STRING" => array(
+        '__CHIJI__' => 'http://xxxxxx',//最后不带斜杠
+    ),
+
 ## Automatic Deployment for the Template files
 
 CHIJI Engine goals for the basic deployment to simplify the arrangement in the view. Therefore developers could possess a series of files for front-end to be modified rather than to be making from the beginning.

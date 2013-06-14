@@ -23,7 +23,7 @@ return array(
     //千路前端配置
     'CHIJI' => array(
         'LESS_COMPRESS' => 'lessjs', //lessjs|compressed，LESS是否压缩
-        'JS_DEBUG' => true, //FALSE则会JS压缩
+        'JS_DEBUG' => false, //TRUE会启用SourceMap
         'RC_DIR' => '/var/Chiji/',//前端统一资源目录，以斜杠结尾
     ),
     //模板引擎编译配置

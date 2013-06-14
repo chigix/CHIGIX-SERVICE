@@ -8,8 +8,23 @@
  */
 abstract class ChigiAction extends Action {
 
+    /**
+     * 计数当前Action 是第几次被构造
+     *
+     * @var int
+     */
+    public static $count = 0;
+
     public function __construct() {
-        $this->__chigiCheckURL();
+        self::$count++;
+        if (self::$count == 1) {
+            // 以下代码保证在整个千木架构体系中运行一次
+            $this->__chigiCheckURL();
+            define('REST_CREATE', 0);
+            define('REST_UPDATE', 1);
+            define('REST_READ', 2);
+            define('REST_DELETE', 3);
+        }
         $this->__chigiEmptyRedirection();
         parent::__construct();
     }
@@ -17,7 +32,7 @@ abstract class ChigiAction extends Action {
     //多重空检测与高级跳转
     private function __chigiEmptyRedirection() {
         if (get_class($this) == 'EmptyAction') {
-            //控制器不存在，则进行空控制器跳转
+            // <editor-fold defaultstate="collapsed" desc="控制器不存在，则进行空控制器跳转">
             switch (substr(MODULE_NAME, 0, 2)) {
                 case 'On':
                     //on当模块接收
@@ -55,8 +70,11 @@ abstract class ChigiAction extends Action {
                     // </editor-fold>
                     break;
             }
-        } elseif (method_exists($this, ACTION_NAME)) {
-            //如果目标操作直接在当前控制器中
+            // </editor-fold>
+        } elseif (method_exists($this, ACTION_NAME) || $this->isAjax()) {
+            // 需要跳过的访问情况：
+            // 1. 目标操作直接在当前控制器中
+            // 2. AJAX请求（RESTful），交由__call 去调用REST声明
             return;
         } elseif (substr(ACTION_NAME, 0, 2) == 'on') {
             //on当操作接收
@@ -112,10 +130,13 @@ abstract class ChigiAction extends Action {
             $successDirect = $_GET['iframe'];
         $service->setDirect($successDirect, $errorDirect);
         if (method_exists($service, $methodName)) {
-            //调用开发者定义的service请求
+            // 若在目标服务类中有定义的目标操作，
+            // 则调用开发者定义的service请求
             $result = $service->$methodName();
-        }  else {
-            //支持直接请求，service中可免写请求定义
+        } else {
+            // 若service中无指定的$methodName 的方法定义
+            // 则直接判定接口类型，保证不以on开头的方法名传入request
+            // 发送请求
             if ('on' == substr($methodName, 0, 2)) {
                 $methodName = substr($methodName, 2);
             }
@@ -161,6 +182,50 @@ abstract class ChigiAction extends Action {
 
     public function __chigiShow($content = "") {
         $this->show($content);
+    }
+
+    public function __call($name, $arguments) {
+        if ($this->isAjax() && property_exists($this, substr($name, 0, -15))) {
+            // <editor-fold defaultstate="collapsed" desc="REST接口调用">
+            header('Content-type: application/json; charset=utf-8');
+            $rest_interface_name = substr($name, 0, -15);
+            /* @var $rest_interface array REST操作接口 */
+            $rest_interface = $this->$rest_interface_name;
+            /* @var $model_id string 目标操作ID */
+            $model_id = $_GET['_URL_'][2];
+            /* @var $data array 来自前端的请求数据 */
+            $data = json_decode(file_get_contents("php://input"), true);
+            switch ($_SERVER['REQUEST_METHOD']) {
+                case 'POST':
+                    // <editor-fold defaultstate="collapsed" desc="REST_CREATE">
+                    $serviceName = $rest_interface['CREATE'][0];
+                    $methodName = $rest_interface['CREATE'][1];
+                    $service = service($serviceName);
+                    $service->bind('rest_id' , $model_id);
+                    $result = $service->$methodName($data);
+                    // </editor-fold>
+                    break;
+                case 'GET':
+                    // <editor-fold defaultstate="collapsed" desc="REST_READ">
+                    // </editor-fold>
+                    break;
+                case 'PUT':
+                    // <editor-fold defaultstate="collapsed" desc="REST_UPDATE">
+                    echo json_encode($data);
+                    //echo false;
+                    // </editor-fold>
+                    break;
+                case 'DELETE':
+                    // <editor-fold defaultstate="collapsed" desc="REST_DELETE">
+                    // </editor-fold>
+                    break;
+            }
+            return;
+            // </editor-fold>
+        } else {
+            //空操作调用
+            parent::__call($name, $arguments);
+        }
     }
 
 //-----------------------------------------------------
@@ -233,8 +298,9 @@ abstract class ChigiAction extends Action {
     }
 
     private function __chigiCheckURL() {
-        if (MODULE_NAME == 'On') {
-            //ON万能操作不在URL规范控制内
+        if (strtolower(MODULE_NAME) == 'on' || $this->isAjax()) {
+            // ON万能操作不在URL规范控制内
+            // ajax请求不在URL规范控制内
             return;
         }
         $the_host = $_SERVER['HTTP_HOST']; //取得当前域名

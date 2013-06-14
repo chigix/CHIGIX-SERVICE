@@ -1490,7 +1490,7 @@ class lessc {
 		if (is_null($color)) {
 			$this->throwError('color expected for red()');
 		}
-		
+
 		return $color[1];
 	}
 
@@ -1499,7 +1499,7 @@ class lessc {
 		if (is_null($color)) {
 			$this->throwError('color expected for green()');
 		}
-		
+
 		return $color[2];
 	}
 
@@ -1508,7 +1508,7 @@ class lessc {
 		if (is_null($color)) {
 			$this->throwError('color expected for blue()');
 		}
-		
+
 		return $color[3];
 	}
 

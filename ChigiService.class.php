@@ -224,7 +224,7 @@ class ChigiService {
      *
      * @return mixed 上次的目标key值
      */
-    protected function bind() {
+    public function bind() {
         $argNum = func_num_args();
         $arg = func_get_args();
         switch ($argNum) {
