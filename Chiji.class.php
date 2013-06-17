@@ -205,10 +205,10 @@ class Chiji {
             $CGString = '"' . str_replace('/', '_', $class) . '":' . str_replace('/', '_', $class);
             array_push($CGArray, $CGString);
             if (file_exists($importDirItem . $jsFileItem . '.js')) {
-                $jsCombinedString .= $this->jsCompiler(file_get_contents($importDirItem . $jsFileItem . '.js'), $value) . PHP_EOL;
+                $jsCombinedString .= $this->jsCompiler(file_get_contents($importDirItem . $jsFileItem . '.js'), $value);
             }
             if (C('CHIJI.JS_DEBUG') && file_exists($importDirItem . $jsFileItem . '-test.js')) {
-                $jsCombinedString .= file_get_contents($importDirItem . $jsFileItem . '-test.js') . PHP_EOL;
+                $jsCombinedString .= file_get_contents($importDirItem . $jsFileItem . '-test.js');
             }
         }
         //针对已编译模块中发现的依赖模块，进行编译
@@ -241,7 +241,9 @@ class Chiji {
             }
             $source_map = new SourceMap(parse_name($packageName) . '-' . parse_name($pageName) . '.js', $sourceMapList);
             $source_map_offset = 0;
-            foreach ($this->jsList as $source_map_index => $sourceMapjsListItem) {
+            foreach (array_values($this->jsList) as $source_map_index => $sourceMapjsListItem) {
+                dump($source_map_index);
+                dump($sourceMapjsListItem);
                 for ($sourceMapI = 0; $sourceMapI < $this->jsListLines[$sourceMapjsListItem]; ++$sourceMapI) {
                     $source_map->mappings[] = array(
                         'dest_line' => $source_map_offset + $sourceMapI,
@@ -277,6 +279,7 @@ class Chiji {
      * @return string 编译结果内容
      */
     public function jsCompiler($newer, $value) {
+        trace($value);
         $resourceDir = C('CHIJI.RC_DIR');
         static $count = 0;
         $count++;
@@ -293,6 +296,7 @@ class Chiji {
                 'backbone' => array('chigiThis("CHIJILIB/backbone")', 'Backbone'),
                 'underscore' => array('chigiThis("CHIJILIB/underscore")', '_'),
                 'localstorage' => array('chigiThis("CHIJILIB/localstorage")', 'Localstorage'),
+                'bootstrap' => array('chigiThis("CHIJI/bootstrap")', 'Bootstrap'),
                 'ChijiFuncs' => array('chigiThis("CHIJI/functions")', 'ChijiFuncs'),
                 'ChijiModel' => array('chigiThis("CHIJI/model")', 'ChijiModel')
             )
@@ -308,7 +312,7 @@ class Chiji {
                 $detpos += 9;
                 $require['keys'] = array_unique(array_merge($require['keys'], explode(',', substr($newer_lines_item, $detpos))));
             } else {
-                $temp_newer .= $newer_lines_item . PHP_EOL;
+                $temp_newer .= $newer_lines_item . "\n";
             };
             // </editor-fold>
         }
@@ -349,17 +353,18 @@ class Chiji {
                     array_push($require['values'], ucfirst($subvalue));
                 }
             }
-            $newer = 'define("chigiThis",["' . implode('","', $require['keys']) . '"],function(' . implode(',', $require['values']) . '){' . PHP_EOL . $newer . PHP_EOL . '});';
+            $newer = 'define("chigiThis",["' . implode('","', $require['keys']) . '"],function(' . implode(',', $require['values']) . '){' . "\n" . $newer . "\n" . '});';
         }
         // </editor-fold>
         $newer = preg_replace('/chigiThis\(.*(["\'\(].*[\'"\)])*\)/U', '{:$0}', $newer);
         $newer = preg_replace_callback('/\{\:(.+(["\'].*[\'"].*)*)\}/U', create_function('$matches', 'return(eval(\'return \' . $matches[1] . \';\'));'), $newer);
         //编译 chigiThis 关键字
-        $newer = str_replace('chigiThis', str_replace(array(':', '_'), '_', $value), $newer);
+        $newer = str_replace('chigiThis', str_replace(array(':', '_'), '_', $value), $newer) . "\n";
         if ($count == 1 && $require['on']) {
             //主入口
-            $newer .= 'define("app/' . strtolower(str_replace(':', '-', $value)) . '",function(){});requirejs(["' . str_replace(array(':', '_'), '_', $value) . '"]);';
+            $newer .= 'define("app/' . strtolower(str_replace(':', '-', $value)) . '",function(){});requirejs(["' . str_replace(array(':', '_'), '_', $value) . '"]);' . "\n";
         }
+        $newer .= "\n";
         $this->jsListPush(str_replace(array(':', '_'), '_', $value));
         $this->jsListPass(str_replace(array(':', '_'), '_', $value));
         if (C('CHIJI.JS_DEBUG')) {
@@ -373,7 +378,7 @@ class Chiji {
             }
             file_put_contents($resourceDir . '/js/chijimap/' . str_replace(array(':', '_'), '/', $value) . '.js', $newer);
         }
-        return $newer . PHP_EOL;
+        return $newer;
     }
 
     /**
@@ -418,7 +423,7 @@ class Chiji {
         array_unshift($this->jsListAddition, $moduleIdentifier);
         $this->jsListAddition = array_unique($this->jsListAddition);
         array_shift($this->jsListAddition);
-        array_push($this->jsList, $moduleIdentifier);
+        $this->jsListPush($moduleIdentifier);
     }
 
 }
