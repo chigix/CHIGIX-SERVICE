@@ -242,8 +242,6 @@ class Chiji {
             $source_map = new SourceMap(parse_name($packageName) . '-' . parse_name($pageName) . '.js', $sourceMapList);
             $source_map_offset = 0;
             foreach (array_values($this->jsList) as $source_map_index => $sourceMapjsListItem) {
-                dump($source_map_index);
-                dump($sourceMapjsListItem);
                 for ($sourceMapI = 0; $sourceMapI < $this->jsListLines[$sourceMapjsListItem]; ++$sourceMapI) {
                     $source_map->mappings[] = array(
                         'dest_line' => $source_map_offset + $sourceMapI,

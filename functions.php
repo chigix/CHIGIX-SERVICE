@@ -93,6 +93,9 @@ function chigiTrace() {
  * @return string 产生统一模块名字符串
  */
 function chigiThis() {
+    if (!APP_DEBUG) {
+        throw_exception("对不起，请勿在部署模式下使用chigiThis函数");
+    }
     //例：Todo:index
     static $currentThis = "";
     //例：Todo
