@@ -201,22 +201,38 @@ abstract class ChigiAction extends Action {
                     $serviceName = $rest_interface['CREATE'][0];
                     $methodName = $rest_interface['CREATE'][1];
                     $service = service($serviceName);
-                    $service->bind('rest_id' , $model_id);
                     $result = $service->$methodName($data);
+                    echo json_encode($result);
                     // </editor-fold>
                     break;
                 case 'GET':
                     // <editor-fold defaultstate="collapsed" desc="REST_READ">
+                    $serviceName = $rest_interface['READ'][0];
+                    $methodName = $rest_interface['READ'][1];
+                    $service = service($serviceName);
+                    $service->bind('rest_id', $model_id);
+                    $result = $service->$methodName($data);
+                    echo (json_encode($result));
                     // </editor-fold>
                     break;
                 case 'PUT':
                     // <editor-fold defaultstate="collapsed" desc="REST_UPDATE">
-                    echo json_encode($data);
-                    //echo false;
+                    $serviceName = $rest_interface['UPDATE'][0];
+                    $methodName = $rest_interface['UPDATE'][1];
+                    $service = service($serviceName);
+                    $service->bind('rest_id', $model_id);
+                    $result = $service->$methodName($data);
+                    echo json_encode($result);
                     // </editor-fold>
                     break;
                 case 'DELETE':
                     // <editor-fold defaultstate="collapsed" desc="REST_DELETE">
+                    $serviceName = $rest_interface['DELETE'][0];
+                    $methodName = $rest_interface['DELETE'][1];
+                    $service = service($serviceName);
+                    $service->bind('rest_id', $model_id);
+                    $result = $service->$methodName($data);
+                    echo json_encode($result);
                     // </editor-fold>
                     break;
             }

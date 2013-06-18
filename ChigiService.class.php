@@ -57,6 +57,7 @@ class ChigiService {
     protected $__bindings = array();
 
     public function __construct() {
+        //初始化绑定api类
         $this->request();
         $apiName = cut_string_using_last('.', $this->apiAction, 'right', false);
         $this->apiAction = new $apiName(C('CHIGI_AUTH'));
