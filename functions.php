@@ -449,6 +449,22 @@ function chigi_reta($code, $info, $data = null) {
 }
 
 /**
+ * 多RETA数组组合包装工具函数
+ *
+ * @param int $code
+ * @param string $info
+ * @param mixed $data
+ * @return RETA
+ */
+function chigi_retas($code, $info, $data = null) {
+    $return = array();
+    foreach ($data as $value) {
+        $return[] = chigi_reta($code, $info, $value);
+    }
+    return $return;
+}
+
+/**
  * 检测目标字符串$haystack是否以$needle开头
  *
  * @param String $haystack
