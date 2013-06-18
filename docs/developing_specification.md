@@ -3,20 +3,23 @@ Developing Specification
 
 # Developing Specification
 
-- [RETA:Return Values Formatting](#retareturn-values-formatting)
-- [On: Form Both-sides Standard](#on-form-both-sides-standard)
-	- [Public Interface](#public-interface)
-	- [Override Interface](#override-interface)
-- [URL Params Via GET](#url-params-via-get)
-- [Communication Standard via POST & REQUEST](#communication-standard-via-post--request)
-- [Under: Method for Environment Check](#under-method-for-environment-check)
-- [CHING-SESSION Mechanism](#ching-session-mechanism)
-	- [CHING会话部署 与 参数配置](#ching--)
-	- [The Ching() Function](#the-ching-function)
-	- [Ching-session Initialization](#ching-session-initialization)
-	- [Service registration on Ching](#service-registration-on-ching)
-	- [Ching-session Timeout](#ching-session-timeout)
-- [Naming rules for template assigning](#naming-rules-for-template-assigning)
+- [Developing Specification](#developing-specification-1)
+	- [RETA:Return Values Formatting](#retareturn-values-formatting)
+	- [On: Form Both-sides Standard](#on-form-both-sides-standard)
+		- [Public Interface](#public-interface)
+		- [Override Interface](#override-interface)
+		- [Defination Specification in the service developing](#defination-specification-in-the-service-developing)
+		- [AUTO REQUEST](#auto-request)
+	- [RESTful Interface](#restful-interface)
+	- [Under: Method for Environment Check](#under-method-for-environment-check)
+	- [CHING-SESSION Mechanism](#ching-session-mechanism)
+		- [CHING会话部署 与 参数配置](#ching--)
+		- [The Ching() Function](#the-ching-function)
+		- [Ching-session Initialization](#ching-session-initialization)
+		- [Service registration on Ching](#service-registration-on-ching)
+		- [Ching-session Timeout](#ching-session-timeout)
+	- [Naming rules for template assigning](#naming-rules-for-template-assigning)
+	- [Naming rules for template files](#naming-rules-for-template-files)
 
 ## RETA:Return Values Formatting
 

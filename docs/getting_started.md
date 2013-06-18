@@ -123,9 +123,8 @@ Put the sources downloaded into the ThinkPHP Extension Directory, default as `we
 
 1. Make a directory reference to `CHIJI.RC_DIR` and drag the resources from `samples\Chiji` into it.
 2. Make a directory reference to `CHINGSET.DIR` when the `CHINGSET.TYPE` was 'File';
-3. Make sure the folder `Extend/Library/ORG/Chiji/` is ready.
 
-@todo-1.8:
+@todo-1.9:
 
 Develop an installation checking script by a lockfile in the conf folder. The script will walk through the entire configure array to check every item valid.
 
