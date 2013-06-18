@@ -202,6 +202,27 @@ class ChigiReturn {
         return $this->__data;
     }
 
+    /**
+     * 生成整个数据抽象的JSON格式
+     *
+     * @return string
+     */
+    public function toJsonAll() {
+        return json_encode(array(
+            'status'=> $this->__code,
+            'info'=> $this->__info,
+            'data'=> $this->__data,
+        ));
+    }
+
+    /**
+     * 生成数据部分的JSON格式
+     *
+     * @return string
+     */
+    public function toJsonData() {
+        return json_encode($this->__data);
+    }
 }
 
 ?>
