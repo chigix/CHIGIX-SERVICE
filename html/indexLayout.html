@@ -11,9 +11,9 @@
 <!-- 置于文档最后以优先加载内容 -->
 <script src="__CHIJI__/js/require.js" type="text/javascript" charset="utf-8"></script><script type="text/javascript">
 {/*
-	Place third party dependencies in the lib folder 
-	Configure loading modules from the lib directory, 
-	except 'app' ones, 
+	Place third party dependencies in the lib folder
+	Configure loading modules from the lib directory,
+	except 'app' ones,
 */}
 requirejs.config({
     "baseUrl": "__CHIJI__",
@@ -30,4 +30,4 @@ requirejs.config({
 {/*
 	Load the main app module to start the app
 */}
-requirejs(["app/{IPACKAGENAME}-{IPAGENAME}","bootstrap"]);</script></body></html>
+requirejs(["app/{IPACKAGENAME}-{IPAGENAME}"]);</script></body></html>
