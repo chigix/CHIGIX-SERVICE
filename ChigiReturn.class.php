@@ -12,6 +12,8 @@ class ChigiReturn {
     private $__data = null;  //返回携带实体数据
     private $__info;  //官方返回信息
     private $__code; //操作码
+    // message→直接供ChigiAlert产生Alert用的信息，默认初始化使用info，
+    // 仅当状态码第三位为6时，使用data
     private $__messageSuccess = "HELLO~~";
     private $__messageError = "你的操作好像有问题 →_→";
     private $__view = 'table';
@@ -115,18 +117,38 @@ class ChigiReturn {
         }
     }
 
+    /**
+     * 用于判断当前数据是否为Valid(状态码为2开头)
+     *
+     * @return boolean
+     */
     public function isValid() {
         return chigiValid($this->__code);
     }
 
+    /**
+     * 判断当前数据是否为Error（状态码为5开头）
+     *
+     * @return boolean
+     */
     public function isError() {
         return chigiErrorstate($this->__code);
     }
 
+    /**
+     * 返回当前数据的3位十进制状态码
+     *
+     * @return int
+     */
     public function getCode() {
         return $this->__code;
     }
 
+    /**
+     * 返回当前数据的官方信息
+     *
+     * @return string
+     */
     public function getInfo() {
         return $this->__info;
     }
@@ -162,10 +184,25 @@ class ChigiReturn {
     /**
      * 设置message
      *
-     * @param string $name 仅能填Success或Error
+     * @param string $name 仅能填Success或Error（不区分大小写），
+     *                      可不填跳过，则默认根据ChigiCode自动判断要修改的目标信息
      * @param string $str
      */
-    public function setMsg($name, $str) {
+    public function setMsg() {
+        $args = func_get_args();
+        $args_num = func_num_args();
+        /* @var $name string Success/Error */
+        $name = "";
+        /* @var $str string 给出要设置的Msg内容 */
+        $str = "";
+        if ($args_num === 1) {
+            // 根据ChigiCode判断要修改的目标Msg
+            $name = $this->isValid() ? 'Success' : 'Error';
+            $str = $args[0];
+        } else {
+            $name = ucfirst($args[0]);
+            $str = $args[1];
+        }
         $name = "__message" . $name;
         $this->$name = $str;
     }
@@ -185,7 +222,7 @@ class ChigiReturn {
             $this->__view = $type;
             if ($pageName === null) {
                 $pageName = MODULE_NAME . 'View';
-            }  else {
+            } else {
                 $pageName .= 'View';
             }
 
@@ -211,10 +248,10 @@ class ChigiReturn {
      */
     public function toJsonAll() {
         return json_encode(array(
-            'status'=> $this->__code,
-            'info'=> $this->__info,
-            'data'=> $this->__data,
-        ));
+                    'status' => $this->__code,
+                    'info' => $this->__info,
+                    'data' => $this->__data,
+                ));
     }
 
     /**
@@ -225,6 +262,20 @@ class ChigiReturn {
     public function toJsonData() {
         return json_encode($this->__data);
     }
+
+    /**
+     * 返回RETA数组形式
+     *
+     * @return array
+     */
+    public function toReta() {
+        return array(
+            "status" => $this->__code,
+            "info" => $this->__info,
+            "data" => $this->__data
+        );
+    }
+
 }
 
 ?>
