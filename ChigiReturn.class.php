@@ -184,7 +184,9 @@ class ChigiReturn {
             //编译模式
             $this->__view = $type;
             if ($pageName === null) {
-                $pageName = MODULE_NAME . 'MODULE';
+                $pageName = MODULE_NAME . 'View';
+            }  else {
+                $pageName .= 'View';
             }
 
             // 数据格式转换

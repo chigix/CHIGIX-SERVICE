@@ -44,3 +44,34 @@ The ChigiReturn Object is allowed to get data via some magic proterty:
 	If the original data in the returnObj is an array, this expression will return the value of the 'key'.		
 	It is equal to the expression: `$returnObj->__['key']` .		
 	**NOTE**:If the original data is not an array or an array without the target 'key', it will return null equally.
+
+## Datas Visualization
+
+The ChigiReturn Object support Datas Visualization since 1.8.0.
+
+It's very easy to use through the method `ChigiReturn::View()` . Now, it only support 1-demention(linear) data and 2-demention(table) data. The view method could detect the data format smartly so as to decide which view to be generated automatically.
+
+* Description:
+
+		$obj->view('StrapTable', 'indexUserInfo', [false], ['Index']);
+
+* Parameters:
+
+	Param                   |Desc
+	------------------------|-----------------------------
+	$type                   |Give a formatting script for renderer, which file was in CHIGI_PATH/DataExt/
+	$name                   |Give the name of the target view to be generated, which would be the file name for the new template.
+	$isLock                 |Optional, if false, the template content would be refreshed everytime; if true it would not.
+	$pageName               |Optional, the target action name to put in the new template, it was the current action by default.
+
+* Example:
+
+		// ↓In the Action
+		$userInfo = new ChigiReturn($serviceSugar->currentUser());
+		$this->assign('ProfileView_indexUserInfo', array(
+            'indexUserInfo'=>$userInfo->view('StrapTable', 'indexUserInfo', false)
+        ));
+
+        // In the including template file such as the main template
+        <include file="ProfileView:indexUserInfo"/>
+        // Then the data would be included into the page as a view module.
