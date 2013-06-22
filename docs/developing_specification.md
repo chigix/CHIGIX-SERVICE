@@ -163,6 +163,7 @@ The support returns value/type are:
 * **1**: Success redirecting.
 * **0**: Error redirecting.
 * **-1**: Debug mode without redirecting.
+* **array('debug'=>$result)**: Debug mode without redirecting and with the addition of the information for the target `$result` data
 * **RETA**: redirecting upon the ChigiCode in the 'status' element.
 * **ChigiReturn**: redirecting upon the ChigiCode in the object.
 

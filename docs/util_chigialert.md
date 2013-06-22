@@ -11,7 +11,7 @@ The ChigiAlert class could help you send a global alert between pages and server
 
 	$alert = new ChigiAlert();
 	$alert = new ChigiAlert($ChigiReturnObj);
-	$alert = new ChigiAlert(array('status)=>200));
+	$alert = new ChigiAlert(array('status')=>200));
 	$alert = new ChigiAlert("此处为ALERT内容");
 	$alert = new ChigiAlert("此处为ALERT内容",'alert-info');
 

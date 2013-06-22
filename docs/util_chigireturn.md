@@ -45,11 +45,26 @@ The ChigiReturn Object is allowed to get data via some magic proterty:
 	It is equal to the expression: `$returnObj->__['key']` .		
 	**NOTE**:If the original data is not an array or an array without the target 'key', it will return null equally.
 
+## Datas Formatter
+
+The ChigiReturn Object could generate the two format of JSON and RETA upon the data itself.
+
+* Usage:
+
+		// ↓ Return the JSON for the whole abstract object
+		$returnObj->toJsonAll();
+
+		// ↓ Return the JSON only for the data part of the target object
+		$returnObj->toJsonData();
+
+		// ↓ Return the RETA format of the abstract object
+		$returnObj->toReta();
+
 ## Datas Visualization
 
 The ChigiReturn Object support Datas Visualization since 1.8.0.
 
-It's very easy to use through the method `ChigiReturn::View()` . Now, it only support 1-demention(linear) data and 2-demention(table) data. The view method could detect the data format smartly so as to decide which view to be generated automatically.
+It's very easy to use through the method `ChigiReturn::View()` . Now, it only support 1-dimension(linear) data and 2-dimension(table) data. The view method could detect the data format smartly so as to decide which view to be generated automatically.
 
 * Description:
 
