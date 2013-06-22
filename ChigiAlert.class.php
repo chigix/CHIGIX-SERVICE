@@ -52,10 +52,9 @@ class ChigiAlert {
             $this->message = isset($param['data']) ? $param['data'] : $param['info'];
             return $this;
         } elseif (is_object($param) && get_class($param) == 'ChigiReturn') {
-            $str = $param->getCode()< 300 ? "success" : "error";
-            $info = $param->getInfo();
+            $str = $param->isValid() ? "success" : "error";
             $this->option = "alert-$str";
-            $this->message = $info === null ? $this->getMsg($str) : $info;
+            $this->message = $param->getMsg();
             return $this;
         } elseif (is_string($param)) {
             //单参字符串数据传入
@@ -73,9 +72,11 @@ class ChigiAlert {
      * @param string $option 默认"alert-error"
      * @return \ChigiAlert
      */
-    public function pushSet($message, $option = 'alert-info') {
+    public function pushSet($message, $option = null) {
         $this->message = $message;
-        $this->option = $option;
+        if (!empty($option)) {
+            $this->option = $option;
+        }
         return $this;
     }
 
