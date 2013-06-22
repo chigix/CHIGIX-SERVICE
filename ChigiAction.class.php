@@ -42,7 +42,7 @@ abstract class ChigiAction extends Action {
                         return $this->$type();
                     } else {
                         // 进入表单接收操作on
-                        return($this->on());
+                        exit($this->on());
                     }
                     break;
                 default:
@@ -145,25 +145,34 @@ abstract class ChigiAction extends Action {
         // <editor-fold defaultstate="collapsed" desc="将非int型的$result根据返回值规范变换为-1,0,1">
         if (is_object($result) && 'ChigiReturn' == get_class($result)) {
             $result = $result->isValid() ? 1 : 0;
-        } elseif (is_array($result) && isset($result['status'])) {
+        } elseif (count($result) == 3 && isset($result['status'])) {
             $result = $result['status'] < 300 ? 1 : 0;
+        } elseif (is_bool($result)) {
+            $result = $result ? 1 : 0;
+        } elseif (count($result) === 1 && isset($result['debug'])) {
+            $temp_debug_result = $result['debug'];
+            $result = -1;
+        } elseif ($result === -1) {
+            $temp_debug_result = "本次调试没有要测试的result";
         }
         // </editor-fold>
         switch ($result) {
-            case false:
             case 0:
-                return($service->errorDirectHeader($errAlert));
+                redirect($service->errorDirectLink($errAlert), 0);
                 break;
-            case true:
             case 1:
-                return($service->successDirectHeader($sucAlert));
+                redirect($service->successDirectLink($sucAlert), 0);
                 break;
             case -1:
                 //DEBUG，不跳转
-                echo '<h1>ON操作调试模式</h1><br/><h2>Result返回结果：</h2><br/>';
-                dump($result);
-                echo '<h2>当前Service状态：</h2></br>';
-                dump($service);
+                echo '<h1>ON操作调试模式</h1><h2>成功URL地址</h2>';
+                var_dump($service->successDirectLink($errAlert));
+                echo '<h2>失败URL地址</h2>';
+                var_dump($service->errorDirectLink($errAlert));
+                echo '<h2>Result for the Request：</h2>';
+                var_dump($temp_debug_result);
+                echo '<h2>当前Service状态：</h2>';
+                var_dump($service);
                 B('ShowPageTrace');
                 return;
                 break;
