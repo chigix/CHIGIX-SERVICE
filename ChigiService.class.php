@@ -128,9 +128,12 @@ class ChigiService {
     }
 
     /**
-     * 跳转至执行成功页面
+     * 返回成功页面URL
+     *
+     * @param string $alertMsg 指定Alert内容
+     * @return string
      */
-    public function successDirectHeader($alertMsg = "") {
+    public function successDirectLink($alertMsg = "") {
         if (!empty($alertMsg)) {
             $alert = new ChigiAlert($alertMsg, 'alert-success');
             $alert->alert();
@@ -138,13 +141,25 @@ class ChigiService {
             $alert = new ChigiAlert($this->successAlert, 'alert-success');
             $alert->alert();
         }
-        redirectHeader($this->successRedirect, $this->addrParams);
+        return redirect_link($this->successRedirect, $this->addrParams);
     }
 
     /**
-     * 跳转至执行失败页面
+     * 跳转至执行成功页面
+     *
+     * @param string $alertMsg 指定Alert内容
      */
-    public function errorDirectHeader($alertMsg = "") {
+    public function successDirectHeader($alertMsg = "") {
+        redirect($this->successDirectLink($alertMsg), 0);
+    }
+
+    /**
+     * 返回失败页面URL
+     *
+     * @param string $alertMsg 指定Alert内容
+     * @return string
+     */
+    public function errorDirectLink($alertMsg = "") {
         if (!empty($alertMsg)) {
             $alert = new ChigiAlert($alertMsg, 'alert-error');
             $alert->alert();
@@ -152,7 +167,16 @@ class ChigiService {
             $alert = new ChigiAlert($this->errorAlert, 'alert-error');
             $alert->alert();
         }
-        redirectHeader($this->errorRedirect, $this->addrParams);
+        return redirect_link($this->errorRedirect, $this->addrParams);
+    }
+
+    /**
+     * 跳转至执行失败页面
+     *
+     * @param string $alertMsg 指定Alert内容
+     */
+    public function errorDirectHeader($alertMsg = "") {
+        redirect($this->errorDirectLink($alertMsg), 0);
     }
 
     /**
