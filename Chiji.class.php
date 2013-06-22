@@ -277,7 +277,6 @@ class Chiji {
      * @return string 编译结果内容
      */
     public function jsCompiler($newer, $value) {
-        trace($value);
         $resourceDir = C('CHIJI.RC_DIR');
         static $count = 0;
         $count++;
@@ -361,6 +360,8 @@ class Chiji {
         if ($count == 1 && $require['on']) {
             //主入口
             $newer .= 'define("app/' . strtolower(str_replace(':', '-', $value)) . '",function(){});requirejs(["' . str_replace(array(':', '_'), '_', $value) . '"]);' . "\n";
+        } elseif (in_array($value, $this->moduleList)) {
+            $newer .= 'requirejs(["' . str_replace(array(':', '_'), '_', $value) . '"]);' . "\n";
         }
         $newer .= "\n";
         $this->jsListPush(str_replace(array(':', '_'), '_', $value));
