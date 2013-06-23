@@ -27,9 +27,7 @@ Getting Started
 
 ## Requirement
 
-1. Lessc 编译库，已在Samples中附带，请移到ORG扩展目录下即可
-2. JSxs 编译库，已在Samples中附带，请移到ORG扩展目录下即可
-3. PHP 5.3
+PHP 5.3 +
 
 Friendly, the Lessc Compiler[1] and the JSxs Compiler[2] have been provided in the sample files of this project. You can directly drag the /Chigi/samples/ORG/Chiji directory to the ORG originally in the ThinkPHP Extend Folder(/ThinkPHP/Extend/Library/ORG/).
 
@@ -54,12 +52,10 @@ Put the sources downloaded into the ThinkPHP Extension Directory, default as `we
 
 若要使用千木服务架构来设计应用，仅需在项目的别名配置（alias.php）中加入如下两行即可（可直接拷贝，无需改动）：
 
-		require(EXTEND_PATH . 'Chigi/alias.php');
+		import('Chigi.Inc.Alias');
 		return chigi_alias();
 
-由于从1.7.0开始，架构内部完全集成前端渲染增强，故需要再安装前端渲染增强插件，可以在Samples/ORG/下找到Chiji目录，将该目录直接复制到ThinkPHP的扩展ORG目录下即可。该扩展包中集成了phpLess和JSxs，可与千木架构完美配合。
-
-至此整个项目便可以完全使用千木服务架构来进行开发。
+从1.8.9开始，千木架构安装目录部署需要以项目级外置，其内完全集成了前端渲染增强引擎，支持Less、RequireJS 合并，并在 `APP_DEBUG` 模式下能主动支持SouceMap技术，彻底简化前端开发与调试。
 
 千木架构在ThinkPHP上的安装基于alias别名控制文件，但是不影响开发者定义自己的别名文件，该函数中支持直接放入数组：
 
@@ -68,6 +64,7 @@ Put the sources downloaded into the ThinkPHP Extension Directory, default as `we
 			'Comment' => EXTEND_PATH . 'Example/Comment.class.php',
 			'User' => EXTEND_PATH . 'Example/User.class.php',
 			));
+			
 		//↓上面的别名定义与原生架构完美兼容：
 		import('Content');
 		$obj = new Content();  //与ThinkPHP自身的用法无区别★

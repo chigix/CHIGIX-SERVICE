@@ -3,6 +3,6 @@
  * 别名定义
  * @author 千木郷 chigix@zoho.com
  */
-require(EXTEND_PATH . 'Chigi/alias.php');
+import('Chigi.Inc.Alias');
 return chigi_alias(array());
 ?>

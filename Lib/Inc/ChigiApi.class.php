@@ -86,8 +86,8 @@ abstract class ChigiApi extends Action {
         if (method_exists($this, '_initResponse'))
             $this->_initResponse();
         $result = array();
-        $result['data'] = $this->$method($data['data']);//请求所返回的真正可操作数据
-        $result['bindings'] = $this->__bindings;//请求函数会自动将绑定数据进行更新，Service中无需手动操作
+        $result['data'] = $this->$method($data['data']); //请求所返回的真正可操作数据
+        $result['bindings'] = $this->__bindings; //请求函数会自动将绑定数据进行更新，Service中无需手动操作
         return $result;
     }
 

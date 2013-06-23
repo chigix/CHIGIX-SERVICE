@@ -228,7 +228,7 @@ class ChigiReturn {
 
             // 数据格式转换
             $class = $type . 'View';
-            require_once 'DataExt/' . $class . '.class.php';
+            require_once CHIGI_PATH . '../DataExt/' . $class . '.class.php';
             $result = new $class($this->__data, $name, $pageName);
             // 输出渲染结果
             if (file_put_contents(THEME_PATH . "$pageName/" . $name . ".html", $result->html)) {

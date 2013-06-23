@@ -19,6 +19,12 @@ abstract class ChigiAction extends Action {
         self::$count++;
         if (self::$count == 1) {
             // 以下代码保证在整个千木架构体系中运行一次
+            defined('CHIGI_PATH') or define('CHIGI_PATH', dirname(__FILE__) . '/');
+            require CHIGI_PATH . '../../QueryPath/qp.php';
+            require CHIGI_PATH . 'functions.php';
+            require CHIGI_PATH . 'Ching.class.php';
+            $_GET['iframe'] = isset($_GET['iframe']) ? $_GET['iframe'] : null;
+            CHING::getInstance(); //启动CHING会话
             $this->__chigiCheckURL();
             define('REST_CREATE', 0);
             define('REST_UPDATE', 1);

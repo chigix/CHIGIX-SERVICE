@@ -140,7 +140,7 @@ class Chiji {
         //★Less编译
         // <editor-fold defaultstate="collapsed" desc="Less编译">
 
-        require_cache(CHIGI_PATH . 'Chiji/Lessc.php');
+        require_cache(CHIGI_PATH . '../Chiji/Lessc.php');
         $less = new lessc;
         //##处理module编译顺序列表并生成LESS的导入文件列表(String)
         foreach ($this->moduleList as $value) {
@@ -234,7 +234,7 @@ class Chiji {
         if (C("CHIJI.JS_DEBUG")) {
             // <editor-fold defaultstate="collapsed" desc="SourceMap调试支持">
             // 加入SourceMap调试支持
-            require_once 'Chiji/SourceMap.php';
+            require_once CHIGI_PATH . '../Chiji/SourceMap.php';
             $sourceMapList = array();
             foreach ($this->jsList as $sourceMapListItem) {
                 array_push($sourceMapList, './chijimap/' . str_replace('_', '/', $sourceMapListItem) . '.js');
