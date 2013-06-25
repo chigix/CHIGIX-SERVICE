@@ -113,7 +113,7 @@ class IndexAction extends ChigiAction {
         $conf = str_replace("'true'", 'true', $conf);
         $conf = str_replace("'false'", 'false', $conf);
         $conf = str_replace("'null'", 'null', $conf);
-        file_put_contents($project_root_dir . 'Conf/conf.php', $conf);
+        file_put_contents($project_root_dir . 'Conf/config.php', $conf);
         // </editor-fold>
         // <editor-fold defaultstate="collapsed" desc="写入alias.php">
         $aliasStr = $str = <<<EOD
