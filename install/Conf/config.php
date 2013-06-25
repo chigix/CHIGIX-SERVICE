@@ -1,14 +1,4 @@
 <?php
-$rc_url = 'http://' . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
-$pos = strpos($rc_url, 'chigi/install');
-$chigi_root_url = substr($rc_url, 0, $pos);
-define('CHIGI_ROOT_URL', $chigi_root_url . 'chigi/');
-// 当前config.php文件的路径
-$rc_dir = dirname(__FILE__);
-$rc_dir = str_replace('\\', '/', $rc_dir);
-$pos = strpos($rc_dir, 'Chigi/install');
-$chigi_root_path = substr($rc_dir, 0, $pos);
-define('CHIGI_ROOT_PATH',$chigi_root_path . 'Chigi/');
 return array(
     //设置主题名（样式库名）
     'DEFAULT_THEME' => 'Default',
