@@ -169,6 +169,14 @@ The support returns value/type are:
 
 And in the invoking, no matter public interface or private interface, the writing must be completed such as 'onAddArticle' rather than 'addArticle' or 'AddArticle'.
 
+Since 1.8.9, you have been allowed to watch the `$result` data's detail in the Debug mode:
+
+	// ↓Service Layer
+	public function toBeDebuged(){
+		$result = $this->request('target');
+		return array('debug'=>$result);
+	}
+
 ### AUTO REQUEST
 
 Since 1.8.0, the auto-request has been supported in this infrastructure. 

@@ -1,0 +1,14 @@
+body {
+  padding-bottom: 40px;
+  padding-top: 20px;
+}
+.container-narrow {
+  margin: 0 auto;
+  max-width: 700px;
+}
+.container-narrow > hr {
+  margin: 30px 0;
+}
+#IndexView_normalForm .input-append li a {
+  cursor: pointer;
+}

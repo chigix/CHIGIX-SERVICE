@@ -1,0 +1,36 @@
+<layout name='Index/normal_install_firstLayout' />
+<include file="PublicView:Header" c="" />
+<div class="row-fluid">
+	<div class="span12">
+		<p>请指定要安装千木架构的项目。</p>
+		<p>千木架构普通安装只支持为当前已存在的ThinkPHP项目进行安装，且只能为与当前架构同级目录的项目进行安装。</p>
+		<p>本架构目前同级可支持安装千木架构的项目如下列出：</p>
+	</div>
+</div>
+<div class="row-fluid">
+	<div class="span12 well">
+		<form class="form-horizontal" method="post" action="{:redirect_link('Index/normal_install')}">
+			<fieldset>
+				<!-- Multiple Radios -->
+				<div class="control-group">
+					<label class="control-label" for="radios">请选择项目</label>
+					<div class="controls">
+						<volist name="project_list" id="vo">
+						<label class="radio" for="radios-{$key}">
+							<input name="project" id="radios-{$key}" value="{$vo[1]}" type="radio">
+							{$vo[0]}
+						</label>
+						</volist>
+					</div>
+				</div>
+				<!-- Button -->
+				<div class="control-group">
+					<div class="controls">
+						<button id="singlebutton" name="singlebutton" class="btn btn-primary">确认</button>
+					</div>
+				</div>
+			</fieldset>
+		</form>
+	</div>
+</div>
+<include file="PublicView:Footer" c="" />s

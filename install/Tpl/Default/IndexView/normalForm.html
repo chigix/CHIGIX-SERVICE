@@ -1,0 +1,135 @@
+<form class="form-horizontal" id="IndexView_normalForm">
+	<fieldset class="chiji_config">
+		<!-- Form Name -->
+		<legend>千路前端配置</legend>
+		<!-- RC_DIR-->
+		<div class="control-group">
+			<label class="control-label" for="CHIJI_RC_DIR">前端资源部署目录</label>
+			<div class="controls">
+				<input id="CHIJI_RC_DIR" name="CHIJI_RC_DIR" placeholder="请指定后端托管目录" class="input-xlarge" type="text">
+				<p class="help-block">所有CSS、图片、JS静态资源文件的后端托管目录，使用绝对路径</p>
+			</div>
+		</div>
+		<!-- RC_URL-->
+		<div class="control-group">
+			<label class="control-label" for="CHIJI_RC_URL">前端资源获取URL</label>
+			<div class="controls">
+				<input id="CHIJI_RC_URL" name="CHIJI_RC_URL" placeholder="请指定HTTP获取路径" class="input-xlarge" type="text">
+				<p class="help-block">所有前端静态资源文件的HTTP获取路径。</p>
+			</div>
+		</div>
+	</fieldset>
+	<fieldset>
+		<legend>CHING会话配置</legend>
+		<!-- CHING会话作用域名-->
+		<div class="control-group">
+			<label class="control-label" for="ching_domain">CHING会话作用域名</label>
+			<div class="controls">
+				<input id="ching_domain" name="ching_domain" placeholder="请指定COOKIE作用域名" class="input-xlarge" type="text">
+				<p class="help-block">例如：test.chigix.com。若像localhost之类的不带点的本地域名，请将此值填为null，否则将无法注入COOKIE</p>
+			</div>
+		</div>
+		<!-- CHING 会话池-->
+		<div class="control-group">
+			<label class="control-label" for="ching_pool">CHING会话池目录</label>
+			<div class="controls">
+				<input id="ching_pool" name="ching_pool" placeholder="部署CHING会话池目录" class="input-xlarge" type="text">
+				<p class="help-block">部署CHING会话池，仅针对采用文件缓存的会话有效，其余方式则可忽略</p>
+			</div>
+		</div>
+		<!-- CHING会话操作时效 -->
+		<div class="control-group">
+			<label class="control-label" for="ching_expire">CHING会话时效</label>
+			<div class="controls">
+				<div class="input-append">
+					<input id="ching_expire" name="ching_expire" class="input-xlarge" placeholder="请输入一个数值" type="text">
+					<div class="btn-group">
+						<a class="btn dropdown-toggle" data-toggle="dropdown">
+						秒
+						<span class="caret"></span>
+						</a>
+						<ul class="dropdown-menu">
+							<li><a class="input-append-dropdown-item">秒</a></li>
+							<li><a class="input-append-dropdown-item">分</a></li>
+							<li><a class="input-append-dropdown-item">小时</a></li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+	</fieldset>
+	<fieldset>
+		<legend>站点基本配置</legend>
+		<!-- 域名配置-->
+		<div class="control-group">
+			<label class="control-label" for="domain">标准域名</label>
+			<div class="controls">
+				<input id="domain" name="domain" placeholder="请输入标准域名" class="input-xlarge" type="text">
+				<p class="help-block">例：test.chigix.com，用于将其他别名地址自动转换为标准域名地址</p>
+			</div>
+		</div>
+		<!-- App Code-->
+		<div class="control-group">
+			<label class="control-label" for="app_code">App Code</label>
+			<div class="controls">
+				<input id="app_code" name="app_code" placeholder="请输入应用注册所得32位App Code" class="input-xlarge" type="text">
+				<p class="help-block">关于此码，需从<a href="http://apps.chigix.com">CHIGIX.com</a>官网查询</p>
+			</div>
+		</div>
+		<!-- 主题设置-->
+		<div class="control-group">
+			<label class="control-label" for="default_theme">默认主题</label>
+			<div class="controls">
+				<input id="default_theme" name="default_theme" placeholder="Default" class="input-xlarge" type="text">
+				<p class="help-block">直接指向项目目录下 Tpl/Theme</p>
+			</div>
+		</div>
+		<!-- Success Redirect-->
+		<div class="control-group">
+			<label class="control-label" for="success_redirect">成功跳转定向</label>
+			<div class="controls">
+				<input id="success_redirect" name="success_redirect" placeholder="控制器名/操作名" class="input-xlarge" type="text">
+			</div>
+		</div>
+		<!-- Failed Redirect-->
+		<div class="control-group">
+			<label class="control-label" for="error_redirect">失败跳转定向</label>
+			<div class="controls">
+				<input id="error_redirect" name="error_redirect" placeholder="控制器名/操作名" class="input-xlarge" type="text">
+			</div>
+		</div>
+		<!-- LESS Compressor -->
+		<div class="control-group">
+			<label class="control-label" for="less_compress">Less压缩</label>
+			<div class="controls">
+				<label class="radio inline" for="less_compress-0">
+					<input name="less_compress" id="less_compress-0" value="lessjs" checked="checked" type="radio">
+					关闭
+				</label>
+				<label class="radio inline" for="less_compress-1">
+					<input name="less_compress" id="less_compress-1" value="compressed" type="radio">
+					启用
+				</label>
+			</div>
+		</div>
+		<!-- JS_DEBUG -->
+		<div class="control-group">
+			<label class="control-label" for="js_debug">JS调试器</label>
+			<div class="controls">
+				<label class="radio inline" for="js_debug-0">
+					<input name="js_debug" id="js_debug-0" value="false" checked="checked" type="radio">
+					关闭
+				</label>
+				<label class="radio inline" for="js_debug-1">
+					<input name="js_debug" id="js_debug-1" value="true" type="radio">
+					启用
+				</label>
+			</div>
+		</div>
+	</fieldset>
+	<!-- Button (Double) -->
+	<div class="controls">
+		<input type="submit" id="normalForm_submit" name="button1id" class="btn btn-success" value="确认提交">
+	</div>
+</form>
+<script type="text/javascript">var IndexView_normalForm = {:json_encode($IndexView_normalForm)};</script>

@@ -43,10 +43,17 @@ https://github.com/chigix/CHIGIX-SERVICE
 
 RELEASES：
 
-[Version_1.7.1](https://github.com/chigix/CHIGIX-SERVICE/archive/V_1.7.1.zip)
-[Version_1.7.5 SPECIAL](https://github.com/chigix/CHIGIX-SERVICE/archive/V_1.7.5.zip)
+[Version_1.9.0](https://github.com/chigix/CHIGIX-SERVICE/archive/V_1.9.0.zip)
 
 Put the sources downloaded into the ThinkPHP Extension Directory, default as `webRoot/ThinkPHP/Extend/` . And then, just feel free to enjoy it.
+
+### SUPER INSTALLER
+
+![img](./img/install.jpg)
+
+Since 1.9.0, there has been an smart installer within the official CHIGIX-PACKAGE from github.
+
+Setting the Chigi directory ready and then run the installer by the address `http://domain/Chigi/install` in the browser.
 
 ### SETUP alias.php
 
@@ -115,6 +122,12 @@ Put the sources downloaded into the ThinkPHP Extension Directory, default as `we
 		    'DOMAIN' => "host.com", //设置ching会话SID的作用域名
 		    //↑【注意】：若像localhost之类的不带点的本地域名，请将此值填为null，否则将无法注入COOKIE
 		),
+
+### Setup EmptyAction
+
+This step is optional, however, you would allowed advanced features from this infrastructure such as "on", "Cookie Detection", etc.
+
+There's no rule for the script in the EmptyAction, it's okay just with the existence of the script file in the 'Action' folder.
 
 ### Directory Specification
 

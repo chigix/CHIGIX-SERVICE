@@ -62,9 +62,9 @@ class Chiji {
         if (trim($page_data) == '@todo') {
             //写入主模板的HTML
             /* @var $page_data string */
-            $page_data = file_get_contents(CHIGI_PATH . 'html/index.html');
+            $page_data = file_get_contents(CHIGI_PATH . '../html/index.html');
             $page_data = $this->chijiKwordReplace($page_data, $page_path);
-            $layout = file_get_contents(CHIGI_PATH . 'html/indexLayout.html');
+            $layout = file_get_contents(CHIGI_PATH . '../html/indexLayout.html');
             $layout = $this->chijiKwordReplace($layout, $page_path);
             file_put_contents($page_path, $page_data);
             file_put_contents($dir_path . '/' . $page_name . 'Layout.html', $layout);
@@ -74,7 +74,7 @@ class Chiji {
             return;
         } elseif (trim($page_data) == '@view') {
             //写入module模板的HTML
-            $page_data = file_get_contents(CHIGI_PATH . 'html/view.html');
+            $page_data = file_get_contents(CHIGI_PATH . '../html/view.html');
             $page_data = $this->chijiKwordReplace($page_data, $page_path);
             file_put_contents($page_path, $page_data);
             // 例：LeftMenu
