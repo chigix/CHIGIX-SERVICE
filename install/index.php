@@ -18,9 +18,11 @@ if ($version >= 5.3) {
 
     //define('APP_DEBUG', true); //您可以注释掉这行，关闭调试模式
     define('THINK_PATH', '../../Core/'); //定义正确的框架文件路径
+    if(!file_exists(THINK_PATH . 'ThinkPHP.php')){
+    	exit("未找到ThinkPHP内核位置，请在install/index.php中重新指定");
+    }
     require_once THINK_PATH . 'ThinkPHP.php';
 } else {
     exit("对不起，您的PHP版本略低，千木架构对PHP最低版本要求5.3");
 }
-exit;
 ?>

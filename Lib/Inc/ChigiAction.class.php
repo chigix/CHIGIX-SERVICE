@@ -19,6 +19,9 @@ abstract class ChigiAction extends Action {
         self::$count++;
         if (self::$count == 1) {
             // 以下代码保证在整个千木架构体系中运行一次
+            if((float) THINK_VERSION < 3.1){
+            	exit("对不起，您的ThinkPHP版本略低，请使用3.1以上版本");
+            }
             defined('CHIGI_PATH') or define('CHIGI_PATH', dirname(__FILE__) . '/');
             require CHIGI_PATH . '../../QueryPath/qp.php';
             require CHIGI_PATH . 'functions.php';
