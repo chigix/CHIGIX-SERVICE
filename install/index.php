@@ -2,8 +2,8 @@
 
 $version = (float) substr(phpversion(), 0, 3);
 $rc_url = 'http://' . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
-$pos = strpos($rc_url, 'chigi/install');
-$chigi_root_url = substr($rc_url, 0, $pos);
+$pos = strpos(strtolower($rc_url), 'chigi/install');
+$chigi_root_url = substr(strtolower($rc_url), 0, $pos);
 define('CHIGI_ROOT_URL', $chigi_root_url . 'chigi/');
 // 当前config.php文件的路径
 $rc_dir = dirname(__FILE__);
