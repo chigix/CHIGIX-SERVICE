@@ -3,7 +3,7 @@
 
 For ThinkPHP 3.1.0 +
 
-Version 1.9.0
+Version 1.9.1
 
 Author:   
 
@@ -28,12 +28,14 @@ Author:
 - [API——ChigiAction](./docs/api_chigiaction.md)
 - [API——ChigiApi](./docs/api_chigiapi.md)
 - [API——ChigiService](./docs/api_chigiservice.md)
+- [API——ChigiCouple](./docs/api_chigicouple.md)
 - [Functions](./docs/functions.md)
 - [CHING-SESSION](./docs/CHING_SESSION.md)
 - Utils
 	- [Chiji-Renderer](./docs/chiji_renderer.md)
 	- [ChigiReturn:Return Values Equalization](./docs/util_chigireturn.md)
 	- [ChigiAlert](./docs/util_chigialert.md)
+	- [ChigiRole](./docs/util_chigirole.md)
 - [MISC](./docs/misc.md)
 	- [Security](./docs/misc.md#security)
 	- [ChigiCode](./docs/misc.md#chigicode)
