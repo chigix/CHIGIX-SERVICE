@@ -106,6 +106,23 @@ The ChigiService Class
 [INDEX](#index)		
 [CONTENTS](../README.md#contents)
 
+## ChigiService::getCurrentRole
+
+* Description:
+
+		$this->getCurrentRole();
+
+	Return the current global ChigiRole Object registerred in this service.
+
+* Return Values: a ChigiRole Object
+* Example:
+
+		// We could have a powerful logic supported with the Role Based Access Control List.
+		$service->getCurrentRole()->checkPageAccess('Login');
+
+[INDEX](#index)		
+[CONTENTS](../README.md#contents)
+
 ## ChigiService::request
 
 * Description:
