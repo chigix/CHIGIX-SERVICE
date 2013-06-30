@@ -19,8 +19,8 @@ abstract class ChigiAction extends Action {
         self::$count++;
         if (self::$count == 1) {
             // 以下代码保证在整个千木架构体系中运行一次
-            if((float) THINK_VERSION < 3.1){
-            	exit("对不起，您的ThinkPHP版本略低，请使用3.1以上版本");
+            if ((float) THINK_VERSION < 3.1) {
+                exit("对不起，您的ThinkPHP版本略低，请使用3.1以上版本");
             }
             defined('CHIGI_PATH') or define('CHIGI_PATH', dirname(__FILE__) . '/');
             require CHIGI_PATH . '../../QueryPath/qp.php';
@@ -270,6 +270,7 @@ abstract class ChigiAction extends Action {
     }
 
     protected function display($templateFile = '', $charset = '', $contentType = '', $content = '', $prefix = '') {
+        $this->assignACL('SERVICE');
         // <editor-fold defaultstate="collapsed" desc="初始化视图类，摘自Action类initView方法">
         //实例化视图类
         if (!$this->view)
@@ -321,6 +322,34 @@ abstract class ChigiAction extends Action {
      */
     protected function assign($name, $value = '') {
         parent::assign($name, $value);
+    }
+
+    /**
+     * 获取 View 级视图输出权限
+     *
+     * @param \ChigiService 直接将实例化出来的多个服务类放入即可<br>
+     * 另支持特殊功能字符串："ALL"，则将分配当前所有已连接服务类
+     * @return ChigiAction
+     */
+    public function assignACL() {
+        static $count = 0;
+        if ($count > 0) {
+            return $this;
+        }
+        $count++;
+        $args = func_get_args();
+        if (in_array($args[0], array('ALL', 'SERVICE', 'COUPLE'))) {
+            $services = service($args[0]);
+        } else {
+            $services = array_unique($args);
+        }
+        foreach ($services as $service) {
+            $acl = $service->getCurrentRole()->getViewAccessList();
+            if (!empty($acl)) {
+                $this->assign(substr(get_class($service), 0, -7), $acl);
+            }
+        }
+        return $this;
     }
 
     private function checkcookie() {

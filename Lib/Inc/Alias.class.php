@@ -17,8 +17,10 @@ function chigi_alias($configarr = array()) {
         'ChigiAction' => $chigiActionPath,
         'ChigiApi' => CHIGI_PATH . 'ChigiApi.class.php',
         'ChigiService' => CHIGI_PATH . 'ChigiService.class.php',
+        'ChigiCouple' => CHIGI_PATH . 'ChigiCouple.class.php',
         'ChigiReturn' => CHIGI_PATH . 'ChigiReturn.class.php',
         'ChigiAlert' => CHIGI_PATH . 'ChigiAlert.class.php',
+        'ChigiRole' => CHIGI_PATH . 'ChigiRole.class.php',
         'Chiji' => CHIGI_PATH . 'Chiji.class.php',
     );
     return array_merge($orig, $configarr);

@@ -50,22 +50,193 @@ class ChigiService {
     public $apiAction = "";
 
     /**
+     * 32位服务标识码
+     *
+     * @var string 例：'SugarService'的md5
+     */
+    public $serviceID = "";
+
+    /**
      * 数据抽象绑定
      *
      * @var array
      */
     protected $__bindings = array();
 
+    /**
+     * 权限分配记录表
+     * @var Model
+     */
+    protected $ACL_TBL = "ChigiAccessCtrl";
+
+    /**
+     * Access Control List
+     *
+     * @var array
+     */
+    protected $ACL = array(
+        'PAGE' => array(),
+        'VIEW' => array(),
+        'FILTER' => array(),
+        // 当前服务类全局环境角色对象
+        'ROLE' => null
+    );
+
     public function __construct() {
         //初始化绑定api类
-        $this->request();
-        $apiName = cut_string_using_last('.', $this->apiAction, 'right', false);
-        $this->apiAction = new $apiName(C('CHIGI_AUTH'));
+        if (!empty($this->apiAction)) {
+            $this->request();
+            $apiName = cut_string_using_last('.', $this->apiAction, 'right', false);
+            $this->apiAction = new $apiName(C('CHIGI_AUTH'));
+        }
         isset($_GET['iframe']) ? $this->setDirect($_GET['iframe']) : $this->setDirect();
+
+        //指明权限列表存放数据表
+        $this->ACL_TBL = C('ACL_TBL') ? M(C('ACL_TBL')) : M($this->ACL_TBL);
+        $this->ACL += array(
+            'PAGE' => array(),
+            'VIEW' => array(),
+            'FILTER' => array(),
+            'ROLE' => null
+        );
+        // 权限列表中，字符串定义的则转化为数组，包含住本权限声明定义所在的服务对象，
+        // 布尔值写死在程序中的，则保留布尔值，不允许被覆盖
+        // 直接写了数组的，则不转换，相当于作一个默认值
+        // <editor-fold defaultstate="collapsed" desc="权限列表规范化">
+        foreach ($this->ACL['PAGE'] as $pageName => $accessStatus) {
+            if (is_string($accessStatus)) {
+                $this->ACL['PAGE'][$pageName] = array($accessStatus, $this);
+            }
+        }
+        foreach ($this->ACL['VIEW'] as $package => $viewArr) {
+            if (is_array($viewArr)) {
+                foreach ($viewArr as $viewItem => $accessStatus) {
+                    $this->ACL['VIEW'][$package . '_' . $viewItem] =
+                            is_string($accessStatus) ?
+                            array($accessStatus, $this) : $accessStatus;
+                }
+                unset($this->ACL['VIEW'][$package]);
+            }
+        }
+        // </editor-fold>
+        $this->ACL['FILTER']['SELF'] = array();
+        //初始化当前服务32位标识码（本地使用）
+        $this->serviceID = md5(get_class($this));
         if (!CHING::$COOKIE_STATUS)
             $this->addAddrParams("sid", CHING::$CID);
         if (method_exists($this, '_initialize'))
             $this->_initialize();
+    }
+
+    /**
+     * 获取当前服务类中指定的数据ID作为角色对象返回
+     *
+     * @param int $id
+     * @return \ChigiRole
+     */
+    public function getRole($id) {
+        $this->bind('id', $id);
+        $role_info = $this->request(null, 'chigiRoleName');
+        $role = ChigiRole::instance($id, $this, $role_info->name, $role_info->title);
+        return $role;
+    }
+
+    /**
+     * 根据给出的$me_role 角色，来获取其以上的 N 级父元素
+     * @param ChigiRole $me_role 作为往上查询的根据的底层角色
+     * @param int $max_level N的最大值，默认为5，0即不往上查询
+     * @return array 一维数值型角色数组，键值表示其往上查询的级别
+     */
+    public function getParents($me_role, $max_level = 5) {
+        $this->bind('id', $me_role->id);
+        $parents = $this->request($max_level, 'chigiParentsFetch')->__;
+        foreach ($parents as $key => $value) {
+            /* @var $value array */
+            $parents[$key] = ChigiRole::instance($value['id'], $this, $value['name'], $value['title']);
+        }
+        return $parents;
+    }
+
+    /**
+     * 获取当前角色权限
+     *
+     * @param string $level 'PAGE'/'VIEW'/'FILTER'/'ALL'
+     * @return array
+     */
+    public function getACL($level = 'ALL') {
+        if ($level === 'ALL') {
+            return array(
+                'PAGE' => $this->ACL['PAGE'],
+                'VIEW' => $this->ACL['VIEW'],
+                'FILTER' => $this->ACL['FILTER'],
+            );
+        } else {
+            return $this->ACL[$level];
+        }
+    }
+
+    /**
+     * 为当前服务类的权限机制指定角色对象
+     *
+     * @param \ChigiRole $role
+     * @param \ChigiService
+     */
+    public function setRole($role) {
+        $this->ACL['ROLE'] = $role;
+        return $this;
+    }
+
+    /**
+     * 获取当前服务类全局环境唯一注册对象
+     * @return ChigiRole
+     */
+    public function getCurrentRole() {
+        if ($this->ACL['ROLE']) {
+            return $this->ACL['ROLE'];
+        } else {
+            $args = func_get_args();
+            $this->ACL['ROLE'] = $this->getRole($args[0]);
+            return $this->ACL['ROLE'];
+        }
+    }
+
+    /**
+     * 检查PAGE级权限统一方法
+     *
+     * @param string $pageName PAGE资源名称，声明于 $resource 服务类中
+     * @param ChigiRole $role 要查询的目标角色
+     * @param ChigiService $resource PAGE资源所在的服务类
+     * @return bool
+     */
+    public function chigiCheckPage($pageName, $role, $resource) {
+        $condition = array(
+            'role_service' => $role->roleService->serviceID,
+            'role_id' => $role->id,
+            'node_service' => $resource->serviceID,
+            'node_name' => md5($pageName),
+            'node_level' => 'PAGE',
+        );
+        $result = $this->ACL_TBL->where($condition)->find();
+        return $result ? TRUE : FALSE;
+    }
+
+    /**
+     * 检查VIEW级权限统一方法
+     * @param string $viewName VIEW资源名称，声明于 $resource 服务类中
+     * @param ChigiRole $role 要查询的目标角色
+     * @param ChigiService $resource VIEW资源所在的服务类
+     * @return bool
+     */
+    public function chigiCheckView($viewName, $role, $resource) {
+        $condition = array(
+            'role_service' => $role->roleService->serviceID,
+            'role_id' => $role->id,
+            'node_service' => $resource->serviceID,
+            'node_name' => md5($viewName),
+            'node_level' => 'VIEW',
+        );
+        $result = $this->ACL_TBL->where($condition)->find();
+        return $result ? TRUE : FALSE;
     }
 
     public function setDirect($successAdd = null, $errorAdd = null) {
@@ -247,6 +418,8 @@ class ChigiService {
     /**
      * 原型key-value数据绑定
      *
+     * @param string $key
+     * @param string $value
      * @return mixed 上次的目标key值
      */
     public function bind() {

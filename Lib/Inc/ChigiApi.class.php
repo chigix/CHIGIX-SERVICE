@@ -11,13 +11,19 @@ abstract class ChigiApi extends Action {
     protected $time;
     protected $user_agent = array(); //客户端信息
     protected $__bindings = array(); //数据抽象绑定
+    protected $CHIGI_ROLE = array(
+        'TBL' => '',
+        'FIELD' => array(
+            'name' => 'name',
+            'title' => 'title'
+        ),
+    );
 
     /**
      * 原型key-value数据绑定
      *
      * @return mixed
      */
-
     protected function bind() {
         $argNum = func_num_args();
         $arg = func_get_args();
@@ -89,6 +95,31 @@ abstract class ChigiApi extends Action {
         $result['data'] = $this->$method($data['data']); //请求所返回的真正可操作数据
         $result['bindings'] = $this->__bindings; //请求函数会自动将绑定数据进行更新，Service中无需手动操作
         return $result;
+    }
+
+    /**
+     * 内部响应千木角色型数据获取→针对name和title
+     *
+     * @return array RETA
+     */
+    public function requestChigiRoleName() {
+        $result = M($this->CHIGI_ROLE['TBL'])->field($this->CHIGI_ROLE['FIELD'])->find($this->bind('id'));
+        if ($result) {
+            return chigi_reta(221, 'Return the name for the chigi role.', $result);
+        } else {
+            return chigi_reta(221, 'Return the null role of 0.', array('name' => 'NONE', 'title' => 'NOTHING'));
+        }
+    }
+
+    /**
+     * 内部响应千木父角色数据获取<br>
+     * 需要：id/name/title/
+     * 返回：一个SELECT出来的二维数组
+     * @param int $max_level 往上查询的最大级数
+     * @return array
+     */
+    public function requestChigiParentsFetch($max_level) {
+        return array();
     }
 
 }

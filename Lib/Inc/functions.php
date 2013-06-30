@@ -239,15 +239,47 @@ function keywordSpaceClip($targetString) {
 }
 
 /**
- * 指定Service连接函数
+ * 指定Service连接函数，内含视图级访问权限初始检查
  *
- * @param String $serviceName Service名称，如“Article”即可
+ * @param string $serviceName Service名称，如“Article”即可<br>
+ * 另支持特殊功能参数：'ALL'/'SERVICE'/'COUPLE'/'ID_ALL'
  * @return \ChigiService
  */
 function service($serviceName) {
     $service = $serviceName . 'Service';
+    /* @var $services array */
+    // $services = array('$serviceName'=>ChigiService)
     static $services = array(); //静态，模拟单例模式
-    if (isset($services[$serviceName])) {
+    if ($serviceName === 'ALL') {
+        //列出当前所有服务类
+        return $services;
+    } elseif ($serviceName === 'SERVICE') {
+        // 列出当前所有基本服务类
+        $arr_to_return = array();
+        foreach ($services as $value) {
+            if ('ChigiService' === get_parent_class($value)) {
+                $arr_to_return[] = $value;
+            }
+        }
+        return $arr_to_return;
+    } elseif ($serviceName === 'COUPLE') {
+        // 列出当前所有拼装服务类
+        $arr_to_return = array();
+        foreach ($services as $value) {
+            if ('ChigiCouple' === get_parent_class($value)) {
+                $arr_to_return[] = $value;
+            }
+        }
+        return $arr_to_return;
+    } elseif ($serviceName === 'ID_ALL') {
+        // 列出当前所有服务类（以32位 serviceID 作键）
+        $arr_to_return = array();
+        foreach ($services as $value) {
+            /* @var $value ChigiService */
+            $arr_to_return[$value->serviceID] = $value;
+        }
+        return $arr_to_return;
+    } elseif (isset($services[$serviceName])) {
         return $services[$serviceName];
     } elseif (import('@.Service.' . $service)) {
         $services[$serviceName] = new $service();
@@ -255,6 +287,7 @@ function service($serviceName) {
     } else {
         $traceInfo = debug_backtrace();
         throw_exception('Service ' . $serviceName . ' not found ' . $traceInfo[0]['file'] . ' 第 ' . $traceInfo[0]['line'] . ' 行.');
+        return;
     }
 }
 
@@ -441,6 +474,9 @@ function rest_link($addr, $params = array(), $domain = null, $sidShow = true) {
  * @return RETA
  */
 function chigi_reta($code, $info, $data = null) {
+    if (is_object($data) && get_class($data) === 'ChigiReturn') {
+        $data = $data->__;
+    }
     return array(
         "status" => $code,
         "info" => $info,
