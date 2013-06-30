@@ -55,7 +55,7 @@ function swritefile($filename, $writetext, $openmod = 'w') {
  */
 function recurse_copy($src, $dst) {  // 原目录，复制到的目录
     $dir = opendir($src);
-    @mkdir($dst, 666 , true);
+    @mkdir($dst, 755 , true);
     while (false !== ( $file = readdir($dir))) {
         if (( $file != '.' ) && ( $file != '..' )) {
             if (is_dir($src . '/' . $file)) {
