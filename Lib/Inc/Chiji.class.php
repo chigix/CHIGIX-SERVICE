@@ -351,18 +351,20 @@ class Chiji {
                 }
             }
             $newer = 'define("chigiThis",["' . implode('","', $require['keys']) . '"],function(' . implode(',', $require['values']) . '){' . "\n" . $newer . "\n" . '});';
+            // 检查并设置入口模块
+            static $entry_setted = false;
+            if (!$entry_setted) {
+                // 主入口
+                $newer .= 'define("app/' . strtolower(str_replace(':', '-', $value)) . '",function(){});requirejs(["' . str_replace(array(':', '_'), '_', $value) . '"]);' . "\n";
+            }elseif (in_array($value, $this->moduleList)) {
+                $newer .= 'requirejs(["' . str_replace(array(':', '_'), '_', $value) . '"]);' . "\n";
+            }
         }
         // </editor-fold>
         $newer = preg_replace('/chigiThis\(.*(["\'\(].*[\'"\)])*\)/U', '{:$0}', $newer);
         $newer = preg_replace_callback('/\{\:(.+(["\'].*[\'"].*)*)\}/U', create_function('$matches', 'return(eval(\'return \' . $matches[1] . \';\'));'), $newer);
         //编译 chigiThis 关键字
         $newer = str_replace('chigiThis', str_replace(array(':', '_'), '_', $value), $newer) . "\n";
-        if ($count == 1 && $require['on']) {
-            //主入口
-            $newer .= 'define("app/' . strtolower(str_replace(':', '-', $value)) . '",function(){});requirejs(["' . str_replace(array(':', '_'), '_', $value) . '"]);' . "\n";
-        } elseif (in_array($value, $this->moduleList)) {
-            $newer .= 'requirejs(["' . str_replace(array(':', '_'), '_', $value) . '"]);' . "\n";
-        }
         $newer .= "\n";
         $this->jsListPush(str_replace(array(':', '_'), '_', $value));
         $this->jsListPass(str_replace(array(':', '_'), '_', $value));
