@@ -87,9 +87,9 @@ class IndexAction extends ChigiAction {
             "TMPL_PARSE_STRING" => array(
                 '__CHIJI__' => $_POST['CHIJI_RC_URL'], //最后不带斜杠
             ),
-            'TMPL_VAR_IDENTIFY' => "obj",
             //URL模式配置
             'URL_MODEL' => 1,
+            'URL_CGI_FIX' => 'false',
             'URL_HTML_SUFFIX' => 'html',
             'URL_CASE_INSENSITIVE' => 'true',
             //CHING参数设置

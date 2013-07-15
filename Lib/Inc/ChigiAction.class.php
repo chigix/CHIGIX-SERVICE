@@ -26,13 +26,15 @@ abstract class ChigiAction extends Action {
             require CHIGI_PATH . '../../QueryPath/qp.php';
             require CHIGI_PATH . 'functions.php';
             require CHIGI_PATH . 'Ching.class.php';
+            // <editor-fold defaultstate="collapsed" desc="$_GET 数组优化">
+            //==$_GET 数组优化======================
             $_GET['iframe'] = isset($_GET['iframe']) ? $_GET['iframe'] : null;
+            if (C('URL_MODEL') === 2 && C('URL_CGI_FIX')) {
+                array_shift($_GET);
+            }
+            // </editor-fold>
             CHING::getInstance(); //启动CHING会话
             $this->__chigiCheckURL();
-            define('REST_CREATE', 0);
-            define('REST_UPDATE', 1);
-            define('REST_READ', 2);
-            define('REST_DELETE', 3);
         }
         $this->__chigiEmptyRedirection();
         parent::__construct();
@@ -360,6 +362,10 @@ abstract class ChigiAction extends Action {
         redirectHeader($addr);
     }
 
+    /**
+     * 检查当前访问地址是否标准，保证访问地址唯一性
+     * @return void
+     */
     private function __chigiCheckURL() {
         if (strtolower(MODULE_NAME) == 'on' || $this->isAjax()) {
             // ON万能操作不在URL规范控制内

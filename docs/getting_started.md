@@ -105,10 +105,12 @@ Setting the Chigi directory ready and then run the installer by the address `htt
 			//前端资源获取统一URL路径，与后端的 `CHIJI.RC_DIR` 对应
 		    '__CHIJI__' => 'http://xxxxxx',  //最后不带斜杠
 		),
-		'TMPL_VAR_IDENTIFY' => "obj",
 		
 		//URL模式配置
 		'URL_MODEL' => 1,
+		'URL_CGI_FIX' => false, //fast-cgi 模式下，rewrite重写在$_GET上的修复
+		// 仅针对URL_MODEL为2时有效，1.9.2+ 
+
 		'URL_HTML_SUFFIX' => 'html',
 		'URL_CASE_INSENSITIVE' => true,
 		
