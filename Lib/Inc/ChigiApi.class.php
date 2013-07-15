@@ -6,11 +6,35 @@
  */
 abstract class ChigiApi extends Action {
 
+    /**
+     * 连接本次API的应用的32位APP标识码
+     * @var string
+     */
     protected $appHost;
-    public $appHostIp; //连接本API的应用所在服务器IP
+
+    /**
+     * 连接本次API的应用所在的服务器IP
+     * @var string
+     */
+    public $appHostIp;
     protected $time;
-    protected $user_agent = array(); //客户端信息
-    protected $__bindings = array(); //数据抽象绑定
+
+    /**
+     * 客户端浏览器信息
+     * @var array
+     */
+    protected $user_agent = array();
+
+    /**
+     * 数据绑定层
+     * @var array
+     */
+    protected $__bindings = array();
+
+    /**
+     * 关于角色逻辑的一些配置项
+     * @var array
+     */
     protected $CHIGI_ROLE = array(
         'TBL' => '',
         'FIELD' => array(
@@ -116,10 +140,18 @@ abstract class ChigiApi extends Action {
      * 需要：id/name/title/
      * 返回：一个SELECT出来的二维数组
      * @param int $max_level 往上查询的最大级数
-     * @return array
+     * @return array RETA
      */
     public function requestChigiParentsFetch($max_level) {
-        return array();
+        return chigi_reta(231, 'Return an empty array', array());
+    }
+
+    /**
+     * 内部响应当前服务所有数据获取
+     * @return array RETA
+     */
+    public function requestGetAllDatas($data) {
+        return chigi_reta(231, 'Return an empty array', array());
     }
 
 }

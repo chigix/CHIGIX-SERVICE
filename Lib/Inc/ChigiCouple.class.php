@@ -44,7 +44,6 @@ class ChigiCouple extends ChigiService {
             'FILTER' => array(),
             'ROLE' => null
         );
-        $this->ACL += $this->serviceResource->getACL('ALL');
         //指明拼装关联数据存放的数据表名
         $this->COUPLE_TBL = C('COUPLE_TBL') ? M(C('COUPLE_TBL')) : M($this->COUPLE_TBL);
         parent::__construct();
@@ -96,6 +95,30 @@ class ChigiCouple extends ChigiService {
             $parents[$key] = ChigiRole::instance($value['id'], $this, $value['name'], $value['title']);
         }
         return $parents;
+    }
+
+    /**
+     * 获取当前服务的所有角色（数据）
+     * @param array $data 指定范围集，开发者空参使用，主供拼装数据使用，开发者无需考虑
+     * @return array 一维数值数组（元素为ChigiRole）
+     */
+    public function getAllRoles($data = null) {
+        $condition = array(
+            'couple_service' => $this->serviceID,
+        );
+        $result = $this->COUPLE_TBL->field('main_id')->where($condition)->select();
+        foreach ($result as $key => $value) {
+            $result[$key] = $value['main_id'];
+        }
+        $result = $this->serviceMain->request($result, 'getAllDatas')->__;
+        $arr = array();
+        foreach ($result as $data) {
+            $new_role = ChigiRole::instance($data['id'], $this, $data['name'], $data['title']);
+            if (!in_array($new_role, $arr)) {
+                array_push($arr, $new_role);
+            }
+        }
+        return $arr;
     }
 
     /**
@@ -157,6 +180,24 @@ class ChigiCouple extends ChigiService {
             }
             return $result ? $result : array();
         }
+    }
+
+    /**
+     * 获取当前角色权限
+     *
+     * @param string $level 'PAGE'/'VIEW'/'FILTER'/'ALL'
+     * @return array
+     */
+    public function getACL($level = 'ALL') {
+        if ($level === 'ALL') {
+            $acl['PAGE'] = $this->getACL('PAGE');
+            $acl['VIEW'] = $this->getACL('VIEW');
+            $acl['FILTER'] = $this->getACL('FILTER');
+        } else {
+            $acl = $this->ACL[$level];
+            $acl += $this->serviceResource->getACL($level);
+        }
+        return $acl;
     }
 
     public function __call($name, $arguments) {

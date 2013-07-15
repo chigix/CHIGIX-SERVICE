@@ -142,37 +142,20 @@ class ChigiService {
     }
 
     /**
-     * 根据给出的$me_role 角色，来获取其以上的 N 级父元素
-     * @param ChigiRole $me_role 作为往上查询的根据的底层角色
-     * @param int $max_level N的最大值，默认为5，0即不往上查询
-     * @return array 一维数值型角色数组，键值表示其往上查询的级别
+     * 获取当前服务的所有角色（数据）
+     * @param array $data 指定范围集，开发者空参使用，主供拼装数据使用，开发者无需考虑
+     * @return array 一维数值数组（元素为ChigiRole）
      */
-    public function getParents($me_role, $max_level = 5) {
-        $this->bind('id', $me_role->id);
-        $parents = $this->request($max_level, 'chigiParentsFetch')->__;
-        foreach ($parents as $key => $value) {
-            /* @var $value array */
-            $parents[$key] = ChigiRole::instance($value['id'], $this, $value['name'], $value['title']);
+    public function getAllRoles($data = null) {
+        $result = $this->request($data, 'getAllDatas')->__;
+        $arr = array();
+        foreach ($result as $data) {
+            $new_role = ChigiRole::instance($data['id'], $this, $data['name'], $data['title']);
+            if (!in_array($new_role, $arr)) {
+                array_push($arr, $new_role);
+            }
         }
-        return $parents;
-    }
-
-    /**
-     * 获取当前角色权限
-     *
-     * @param string $level 'PAGE'/'VIEW'/'FILTER'/'ALL'
-     * @return array
-     */
-    public function getACL($level = 'ALL') {
-        if ($level === 'ALL') {
-            return array(
-                'PAGE' => $this->ACL['PAGE'],
-                'VIEW' => $this->ACL['VIEW'],
-                'FILTER' => $this->ACL['FILTER'],
-            );
-        } else {
-            return $this->ACL[$level];
-        }
+        return $arr;
     }
 
     /**
@@ -197,6 +180,43 @@ class ChigiService {
             $args = func_get_args();
             $this->ACL['ROLE'] = $this->getRole($args[0]);
             return $this->ACL['ROLE'];
+        }
+    }
+
+    /**
+     * 根据给出的$me_role 角色，来获取其以上的 N 级父元素
+     * @param ChigiRole $me_role 作为往上查询的根据的底层角色
+     * @param int $max_level N的最大值，默认为5，0即不往上查询
+     * @return array 一维数值型角色数组，键值表示其往上查询的级别
+     */
+    public function getParents($me_role, $max_level = 5) {
+        if (get_class($this) !== get_class($me_role->roleService)) {
+            trace('[0]目标角色所属服务非本服务：' . get_class($this), '', 'NOTIC');
+        }
+        $this->bind('id', $me_role->id);
+        $parents = $this->request($max_level, 'chigiParentsFetch')->__;
+        foreach ($parents as $key => $value) {
+            /* @var $value array */
+            $parents[$key] = ChigiRole::instance($value['id'], $this, $value['name'], $value['title']);
+        }
+        return $parents;
+    }
+
+    /**
+     * 获取当前角色权限
+     *
+     * @param string $level 'PAGE'/'VIEW'/'FILTER'/'ALL'
+     * @return array
+     */
+    public function getACL($level = 'ALL') {
+        if ($level === 'ALL') {
+            return array(
+                'PAGE' => $this->ACL['PAGE'],
+                'VIEW' => $this->ACL['VIEW'],
+                'FILTER' => $this->ACL['FILTER'],
+            );
+        } else {
+            return $this->ACL[$level];
         }
     }
 
@@ -239,6 +259,17 @@ class ChigiService {
         return $result ? TRUE : FALSE;
     }
 
+    /**
+     * 为目标跳转地址添加地址参数
+     * @param string $key
+     * @param string $value
+     * @return \ChigiService
+     */
+    public function addAddrParams($key, $value) {
+        $this->addrParams[$key] = $value;
+        return $this;
+    }
+
     public function setDirect($successAdd = null, $errorAdd = null) {
         $this->setSuc($successAdd);
         $this->setErr($errorAdd);
@@ -270,31 +301,6 @@ class ChigiService {
         } else {
             $this->errorRedirect = C("CHIGI_ERRORDIRECT");
         }
-        return $this;
-    }
-
-    /**
-     * 设置跳转成功提示信息
-     *
-     * @param string $msg
-     */
-    protected function setSucAlert($msg = "") {
-        $this->successAlert = $msg;
-        return $this;
-    }
-
-    /**
-     * 设置跳转失败提示信息
-     *
-     * @param string $msg
-     */
-    protected function setErrAlert($msg = "") {
-        $this->errorAlert = $msg;
-        return $this;
-    }
-
-    public function addAddrParams($key, $value) {
-        $this->addrParams[$key] = $value;
         return $this;
     }
 
@@ -351,22 +357,6 @@ class ChigiService {
     }
 
     /**
-     * 环境保障操作【链写】
-     *
-     * 使用示例：
-     * $service->under('Login')->setDirect('Login/index')->pushAlert("对不起，请先登录")->check();
-     *
-     * @param string $method
-     * @return \underCheck
-     */
-    public function under($method) {
-        $method = 'under' . $method;
-        $result = $this->$method();
-        $underObj = new underCheck($result);
-        return $underObj;
-    }
-
-    /**
      * Alert推送操作【支持链写】
      *
      * @param string $message
@@ -380,6 +370,42 @@ class ChigiService {
         $serviceAlert = service("Alert");
         $serviceAlert->pushSet($message, $option);
         return $this;
+    }
+
+    /**
+     * 设置跳转成功提示信息
+     *
+     * @param string $msg
+     */
+    protected function setSucAlert($msg = "") {
+        $this->successAlert = $msg;
+        return $this;
+    }
+
+    /**
+     * 设置跳转失败提示信息
+     *
+     * @param string $msg
+     */
+    protected function setErrAlert($msg = "") {
+        $this->errorAlert = $msg;
+        return $this;
+    }
+
+    /**
+     * 环境保障操作【链写】
+     *
+     * 使用示例：
+     * $service->under('Login')->setDirect('Login/index')->pushAlert("对不起，请先登录")->check();
+     *
+     * @param string $method
+     * @return \underCheck
+     */
+    public function under($method) {
+        $method = 'under' . $method;
+        $result = $this->$method();
+        $underObj = new underCheck($result);
+        return $underObj;
     }
 
     /**

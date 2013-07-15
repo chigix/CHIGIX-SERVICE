@@ -81,7 +81,7 @@ class ChigiRole {
         $this->ACL_TBL = C("ACL_TBL") ? M(C("ACL_TBL")) : M($this->ACL_TBL);
         // 指明拼装列表存放数据表模型
         $this->COUPLE_TBL = C("COUPLE_TBL") ? M(C("COUPLE_TBL")) : M($this->COUPLE_TBL);
-        $this->id = $id;
+        $this->id = (int) $id;
         $this->roleService = $role_service;
         $this->roleName = $role_name;
         $this->roleTitle = $role_title;
@@ -408,6 +408,15 @@ class ChigiRole {
                 // </editor-fold>
             }
         }
+        return $acl;
+    }
+
+    /**
+     * 获取分配模式下的权限控制列表
+     * @param ChigiRole $resource 供递归使用
+     */
+    public function getAssignAccessList($resource = null) {
+        $acl = $this->roleService->getACL();
         return $acl;
     }
 
