@@ -1,6 +1,12 @@
 The ChigiApi Class
 ===============================
 
+## NEED TOBE Overrided
+
+### ChigiApi::requestChigiParentsFetch
+
+### ChigiApi::requestGetAllDatas
+
 ## ChigiApi::$appHost
 
 * 描述：当前运行的应用的注册32位密钥

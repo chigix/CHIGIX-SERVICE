@@ -14,6 +14,12 @@ The ChigiService Class
 - [ChigiService::successDirectHeader](#chigiservicesuccessdirectheader)
 - [ChigiService::under](#chigiserviceunder)
 
+## Need to be Overrided
+
+### ChigiService::getCurrentRole
+
+### ChigiService::getParents
+
 ## ChigiService::$apiAction
 
 * 描述：指向当前Service服务类所对应的api接口对象
