@@ -18,7 +18,43 @@ The ChigiService Class
 
 ### ChigiService::getCurrentRole
 
+* 描述：获取当前服务中的全局注册角色
+* 使用：
+
+		// 一般用在控制器中，以获取当前服务所对应的角色的一些信息
+		$UserService->getCurrentRole();
+		
+
+[INDEX](#index)		
+[CONTENTS](../README.md#contents)
+
 ### ChigiService::getParents
+
+* Description:
+		
+		$this->getParents($me_role, $max_level = 5);
+
+	Get the array of the parent roles for the `$me_role` as target.
+
+* Parameters：
+
+	Param                   |Desc
+	------------------------|-----------------------------
+	`$me_role`              |The target role to be upon for getting parent roles.
+	`$max_level`            |Option. The max value limit for the recursive parent levels. The default value is 5.
+
+* Return Values:
+
+	The array of the parent roles.
+
+* 使用：
+
+		// 一般用在控制器中，以获取当前服务所对应的角色
+		$role = $UserService->getCurrentRole();
+		$parents = $UserService->getParents($role, 5);
+
+[INDEX](#index)		
+[CONTENTS](../README.md#contents)
 
 ## ChigiService::$apiAction
 
@@ -31,6 +67,12 @@ The ChigiService Class
 		//使用示例
 		$this->apiAction->onlineip = getClientIp(); //属性访问
 		$this->apiAction->requestCurrentUser($property); //操作访问调用
+
+* 说明：
+
+	此属性为可选，但是作为连接对应API层的必需接口声明。
+
+	若声明此属性，则千木服务类在实例化之初自动与API层建立起初始连接状态。
 
 [INDEX](#index)		
 [CONTENTS](../README.md#contents)

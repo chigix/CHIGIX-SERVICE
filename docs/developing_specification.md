@@ -117,7 +117,7 @@ service 中可以不定义on业务逻辑处理的唯一允许条件就是仅针�
 
 ### Override Interface
 
-表单提交地址为： `{:redirect_link('/onxxx/',array('iframe'=>$_GET['iframe']))}` ，对应在Index控制器中定义的 `onxxx` 操作。
+表单提交地址为： `{:redirect_link('Index/onxxx/',array('iframe'=>$_GET['iframe']))}` ，对应在Index控制器中定义的 `onxxx` 操作。
 
 控制器中操作定义：必须以on开头：
 
@@ -131,6 +131,9 @@ service 中可以不定义on业务逻辑处理的唯一允许条件就是仅针�
 		}
 
 服务类中定义：必须以on开头：
+
+		public $onTest = array();...//建立声明此与on方法名一样的属性，以作为表单数据源对象使用
+		// ↑详见后面相隔的 Data Source Support 一节
 
 		public function onTest(){
 			if(DEBUG) return -1;
@@ -152,7 +155,7 @@ service 中可以不定义on业务逻辑处理的唯一允许条件就是仅针�
 [INDEX](#index)		
 [CONTENTS](../README.md#contents)
 
-### Defination Specification in the service developing
+### Definition Specification in the service developing
 
 Only business logic is in need, in the service layer, for the 'on' methods, and the return value would be catched in the infrasture so as to do some judgement on the result and redirecting then.
 
@@ -175,6 +178,24 @@ Since 1.8.9, you have been allowed to watch the `$result` data's detail in the D
 	public function toBeDebuged(){
 		$result = $this->request('target');
 		return array('debug'=>$result);
+	}
+
+### Data Source Support
+
+Since 1.9.3, this structure begin to support data source programming, especially for form developing.
+
+Specificly, the Data Source is designed for the form and extending the on interface. So it's very easy to define just using a property with a same name of the target on method.
+
+The reference of the definition of the data source in the service:
+
+	// ↓Service Layer
+	public $onTest = array(
+			'field_name'=>array('validate_rule','err_msg' [,'auto_fill_rule', 'auto_fill_contents']),
+			'email'=>array('email','对不起，邮箱地址不正确','string','NO EMAIL'),
+		);
+
+	public function onTest(){
+		...// Referenced to the section of 'Override Interface'
 	}
 
 ### AUTO REQUEST
