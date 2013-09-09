@@ -46,3 +46,4 @@ jQuery.fn.DefaultValue = function(text) {
 		});
 	});
 };
+

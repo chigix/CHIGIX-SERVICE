@@ -1,0 +1,35 @@
+<layout name='Deploy/indexLayout' />
+<include file="PublicView:Header" c="" />
+<div class="row-fluid">
+	<div class="span12">
+		<p>请指定要生成部署的目标项目。</p>
+	</div>
+</div>
+<div class="row-fluid">
+	<div class="span12 well">
+		<form class="form-horizontal" method="post" action="{$form:action}">
+			<fieldset>
+				<!-- Multiple Radios -->
+				<div class="control-group">
+					<label class="control-label" for="radios">请选择项目</label>
+					<div class="controls">
+						<volist name="project_list" id="vo">
+						<label class="radio" for="radios-{$key}">
+							<input name="project" id="radios-{$key}" value="{$vo[1]}" type="radio">
+							{$vo[0]}
+						</label>
+						</volist>
+					</div>
+				</div>
+				<!-- Button -->
+				<div class="control-group">
+					<div class="controls">
+						<button id="singlebutton" name="singlebutton" class="btn btn-primary">确认</button>
+					</div>
+				</div>
+			</fieldset>
+			{$form:recorder}
+		</form>
+	</div>
+</div>
+<include file="PublicView:Footer" c="" />

@@ -1,0 +1,9 @@
+{/*<literal>=========================================================
+使用：include file="CHIJIVIEW:TopAlert"
+====================================================================</literal>*/}
+<if condition="ching('chijiAlertOn',null)">
+	<div class="alert {:ching('chijiAlert.option',null)}">
+		<button type="button" class="close" data-dismiss="alert">&times;</button>
+		<strong>{:ching('chijiAlert.message',null)}</strong>
+		</div>
+</if>

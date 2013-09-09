@@ -4,8 +4,8 @@
 define("PublicView_Header",["jquery"],function($){
 $('#PublicView_Header .nav > li[data-action=' + PublicView_Header.pageName + ']').addClass('active');
 
-});
-requirejs(["PublicView_Header"]);
+});define("app/publicview-header",function(){});requirejs(["PublicView_Header"]);
+
 
 /*!
  * jQuery JavaScript Library v1.10.1
@@ -9817,4 +9817,4 @@ if ( typeof module === "object" && module && typeof module.exports === "object" 
 
 
 
-define("CGA",[],function(){return {"PublicView_Header":PublicView_Header,"PublicView_Footer":PublicView_Footer};});
+define("CGA",[],function(){return {"PublicView_Header":PublicView_Header,"PublicView_Footer":null};});

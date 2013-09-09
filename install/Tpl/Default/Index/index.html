@@ -1,15 +1,15 @@
 <layout name='Index/indexLayout' />
 <include file="PublicView:Header" c="" />
 	<div class="row-fluid scaffold">
-		<a class="span4" href="{:redirect_link('Index/quick_install')}">
-			<img src="__CHIJI__/img/install3.png" class="marketing-img">
-			<h2>快速安装</h2>
-			<p>即<b>一键安装</b>，主针对<b>测试级</b>的应用，无需填写任何配置，即可一步安装到位（所有的配置参数均使用安装器<b>自带默认值</b>）。</p>
-		</a>
 		<a class="span4" href="{:redirect_link('Index/normal_install_first')}">
 			<img src="__CHIJI__/img/install2.png" class="marketing-img">
-			<h2>普通安装</h2>
+			<h2>安装框架</h2>
 			<p>针对一般的<b>起步</b>型的应用，纯粹用于安装框架本身而无其他额外的逻辑封装，提供<b>所有必需参数</b>的自定义配置。</p>
+		</a>
+		<a class="span4" href="{:redirect_link('Deploy/index')}">
+			<img src="__CHIJI__/img/deployment.png" class="marketing-img">
+			<h2>生成部署</h2>
+			<p>用以将目前原码进行打包，并根据部署指定的配置文件集成编译前端静态资源文件。</p>
 		</a>
 		<a class="span4" href="#">
 			<img src="__CHIJI__/img/install1.png" class="marketing-img">

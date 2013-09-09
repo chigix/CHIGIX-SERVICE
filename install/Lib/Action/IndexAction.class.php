@@ -13,10 +13,6 @@ class IndexAction extends ChigiAction {
         $this->display('index');
     }
 
-    public function quick_install() {
-        $this->display();
-    }
-
     /**
      * 普通安装第一页
      */
