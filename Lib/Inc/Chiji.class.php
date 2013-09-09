@@ -114,8 +114,9 @@ class Chiji {
      * 前端JS、CSS资源部署生成器
      *
      * @param string $pagePath 当前模板文件路径：./Tpl/Default/Todo/index.html
+     * @param array $templateVar
      */
-    public function chijiJCGenerator($pagePath) {
+    public function chijiJCGenerator($pagePath,$templateVar) {
         static $count = 0;
         $count++;
         if ($count > 1) {
@@ -184,7 +185,7 @@ class Chiji {
         //例：Todo:index
         chigiThis($page_strut);
         $jsCombinedString = $this->jsCompiler($jsCombinedString, $page_strut);
-        //用来存放每个模板模块推送的变量
+        //用来存放每个模板模块推送的变量，专用于生成CGA模块字符串
         $CGArray = array();
         //针对随HTML的JS模块进行编译
         foreach ($this->moduleList as $key => $value) {
@@ -202,7 +203,9 @@ class Chiji {
             $jsFileItem = $class_strut[1];
             // 例：./Tpl/Default/TodoView/
             $importDirItem = THEME_PATH . $class_strut[0] . '/';
-            $CGString = '"' . str_replace('/', '_', $class) . '":' . str_replace('/', '_', $class);
+            $CGKey = str_replace('/', '_', $class);
+            $CGValue = isset($templateVar[$CGKey])?$CGKey:'null';
+            $CGString = '"' . $CGKey . '":' . $CGValue;
             array_push($CGArray, $CGString);
             if (file_exists($importDirItem . $jsFileItem . '.js')) {
                 $jsCombinedString .= $this->jsCompiler(file_get_contents($importDirItem . $jsFileItem . '.js'), $value);

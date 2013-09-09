@@ -272,6 +272,8 @@ abstract class ChigiAction extends Action {
     }
 
     protected function display($templateFile = '', $charset = '', $contentType = '', $content = '', $prefix = '') {
+        // 下行代码不明确，仅暂作保留
+        // $this->assign('CHIGI_DATASOURCE', $charset);
         $this->assignACL('SERVICE');
         // <editor-fold defaultstate="collapsed" desc="初始化视图类，摘自Action类initView方法">
         //实例化视图类
@@ -346,7 +348,11 @@ abstract class ChigiAction extends Action {
             $services = array_unique($args);
         }
         foreach ($services as $service) {
-            $acl = $service->getCurrentRole()->getViewAccessList();
+            // 遍历每一个 service 实例，并检查目标 API 连接情况
+            // 若目标API 指向不为空，则获取并assign VIEW 级权限列表。
+            if (!empty($service->apiAction)) {
+                $acl = $service->getCurrentRole()->getViewAccessList();
+            }
             if (!empty($acl)) {
                 $this->assign(substr(get_class($service), 0, -7), $acl);
             }

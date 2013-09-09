@@ -87,7 +87,7 @@ class ThinkTemplate {
         // 模板阵列变量分解成为独立变量
         extract($templateVar, EXTR_OVERWRITE);
         /*@chiji 编译前端JS和LESS*/
-        $this->chiji->chijiJCGenerator($templateFile);
+        $this->chiji->chijiJCGenerator($templateFile,$templateVar);
         //载入模版缓存文件
         include $templateCacheFile;
     }
